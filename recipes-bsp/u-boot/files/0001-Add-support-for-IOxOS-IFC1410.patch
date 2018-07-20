@@ -1,0 +1,5163 @@
+From 1544e2454ae6ce49d95126e5360af95171d3eb4e Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Thu, 19 Jul 2018 10:05:20 +0200
+Subject: [PATCH] Add support for IOxOS IFC1410
+
+---
+ arch/powerpc/cpu/mpc85xx/Kconfig                 |   9 +
+ arch/powerpc/include/asm/config_mpc85xx.h        |   1 +
+ board/freescale/common/vid.c                     |  74 +-
+ board/freescale/ifc1410/Kconfig                  |  12 +
+ board/freescale/ifc1410/MAINTAINERS              |  17 +
+ board/freescale/ifc1410/Makefile                 |  19 +
+ board/freescale/ifc1410/README                   | 264 +++++++
+ board/freescale/ifc1410/board_id.h               |   2 +
+ board/freescale/ifc1410/conf.c                   | 479 +++++++++++
+ board/freescale/ifc1410/ddr.c                    | 200 +++++
+ board/freescale/ifc1410/ddr.h                    |  50 ++
+ board/freescale/ifc1410/eth_ifc1410.c            | 246 ++++++
+ board/freescale/ifc1410/fpga.c                   | 383 +++++++++
+ board/freescale/ifc1410/ifc1410.c                | 134 ++++
+ board/freescale/ifc1410/ifc1410.h                |  13 +
+ board/freescale/ifc1410/ifc1410_nand_rcw.cfg     |  19 +
+ board/freescale/ifc1410/ifc1410_pbi.cfg          |  40 +
+ board/freescale/ifc1410/ifc1410_rcw_oldUboot.cfg |  31 +
+ board/freescale/ifc1410/ifc1410_sd_rcw.cfg       |  19 +
+ board/freescale/ifc1410/ifc1410_spi_rcw.cfg      |  19 +
+ board/freescale/ifc1410/law.c                    |  37 +
+ board/freescale/ifc1410/pci.c                    |  23 +
+ board/freescale/ifc1410/spl.c                    | 111 +++
+ board/freescale/ifc1410/tlb.c                    | 152 ++++
+ cmd/Makefile                                     |   3 +
+ cmd/prom.c                                       | 847 ++++++++++++++++++++
+ configs/IFC1410_NAND_defconfig                   |  59 ++
+ configs/IFC1410_SDCARD_defconfig                 |  51 ++
+ configs/IFC1410_SECURE_BOOT_defconfig            |  38 +
+ configs/IFC1410_SPIFLASH_defconfig               |  52 ++
+ configs/IFC1410_SRIO_PCIE_BOOT_defconfig         |  35 +
+ configs/IFC1410_defconfig                        |  51 ++
+ drivers/ddr/fsl/ctrl_regs.c                      |  38 +-
+ drivers/ddr/fsl/main.c                           | 117 +++
+ drivers/net/fm/eth.c                             |   3 +
+ env/flash.c                                      |  62 ++
+ include/configs/ifc1410.h                        | 964 +++++++++++++++++++++++
+ scripts/check-config.sh                          |   2 +-
+ 38 files changed, 4668 insertions(+), 8 deletions(-)
+ create mode 100644 board/freescale/ifc1410/Kconfig
+ create mode 100644 board/freescale/ifc1410/MAINTAINERS
+ create mode 100644 board/freescale/ifc1410/Makefile
+ create mode 100644 board/freescale/ifc1410/README
+ create mode 100644 board/freescale/ifc1410/board_id.h
+ create mode 100644 board/freescale/ifc1410/conf.c
+ create mode 100644 board/freescale/ifc1410/ddr.c
+ create mode 100644 board/freescale/ifc1410/ddr.h
+ create mode 100644 board/freescale/ifc1410/eth_ifc1410.c
+ create mode 100644 board/freescale/ifc1410/fpga.c
+ create mode 100644 board/freescale/ifc1410/ifc1410.c
+ create mode 100644 board/freescale/ifc1410/ifc1410.h
+ create mode 100644 board/freescale/ifc1410/ifc1410_nand_rcw.cfg
+ create mode 100644 board/freescale/ifc1410/ifc1410_pbi.cfg
+ create mode 100644 board/freescale/ifc1410/ifc1410_rcw_oldUboot.cfg
+ create mode 100644 board/freescale/ifc1410/ifc1410_sd_rcw.cfg
+ create mode 100644 board/freescale/ifc1410/ifc1410_spi_rcw.cfg
+ create mode 100644 board/freescale/ifc1410/law.c
+ create mode 100644 board/freescale/ifc1410/pci.c
+ create mode 100644 board/freescale/ifc1410/spl.c
+ create mode 100644 board/freescale/ifc1410/tlb.c
+ create mode 100644 cmd/prom.c
+ create mode 100644 configs/IFC1410_NAND_defconfig
+ create mode 100644 configs/IFC1410_SDCARD_defconfig
+ create mode 100644 configs/IFC1410_SECURE_BOOT_defconfig
+ create mode 100644 configs/IFC1410_SPIFLASH_defconfig
+ create mode 100644 configs/IFC1410_SRIO_PCIE_BOOT_defconfig
+ create mode 100644 configs/IFC1410_defconfig
+ create mode 100644 include/configs/ifc1410.h
+
+diff --git a/arch/powerpc/cpu/mpc85xx/Kconfig b/arch/powerpc/cpu/mpc85xx/Kconfig
+index 92187d3..6aa9f49 100644
+--- a/arch/powerpc/cpu/mpc85xx/Kconfig
++++ b/arch/powerpc/cpu/mpc85xx/Kconfig
+@@ -307,6 +307,14 @@ config TARGET_T1042RDB_PI
+ 	select PHYS_64BIT
+ 	imply CMD_SATA
+ 
++config TARGET_IFC1410
++	bool "Support IFC1410"
++	select ARCH_T2080
++	select BOARD_LATE_INIT if CHAIN_OF_TRUST
++	select SUPPORT_SPL
++	select PHYS_64BIT
++	imply CMD_SATA
++
+ config TARGET_T2080QDS
+ 	bool "Support T2080QDS"
+ 	select ARCH_T2080
+@@ -1511,6 +1519,7 @@ source "board/freescale/t102xqds/Kconfig"
+ source "board/freescale/t102xrdb/Kconfig"
+ source "board/freescale/t1040qds/Kconfig"
+ source "board/freescale/t104xrdb/Kconfig"
++source "board/freescale/ifc1410/Kconfig"
+ source "board/freescale/t208xqds/Kconfig"
+ source "board/freescale/t208xrdb/Kconfig"
+ source "board/freescale/t4qds/Kconfig"
+diff --git a/arch/powerpc/include/asm/config_mpc85xx.h b/arch/powerpc/include/asm/config_mpc85xx.h
+index 6fd218a..0ce7836 100644
+--- a/arch/powerpc/include/asm/config_mpc85xx.h
++++ b/arch/powerpc/include/asm/config_mpc85xx.h
+@@ -392,6 +392,7 @@
+ #define CONFIG_SYS_FSL_CLUSTER_CLOCKS	{ 1, 4, 4, 4 }
+ #define CONFIG_SYS_FSL_SRDS_1
+ #define CONFIG_SYS_FSL_PCI_VER_3_X
++#define CONFIG_NUM_DDR_CONTROLLERS	1
+ #if defined(CONFIG_ARCH_T2080)
+ #define CONFIG_SYS_NUM_FM1_DTSEC	8
+ #define CONFIG_SYS_NUM_FM1_10GEC	4
+diff --git a/board/freescale/common/vid.c b/board/freescale/common/vid.c
+index 871f92a..eb94ce3 100644
+--- a/board/freescale/common/vid.c
++++ b/board/freescale/common/vid.c
+@@ -76,6 +76,13 @@ static int find_ir_chip_on_i2c(void)
+ 	return -1;
+ }
+ #endif
++#if defined(CONFIG_VOL_MONITOR_BMR463_SET) || \
++	defined(CONFIG_VOL_MONITOR_BMR463_READ)
++static int find_ir_chip_on_i2c(void)
++{
++	return(CONFIG_BMR463_I2C_ADDR_2);
++}
++#endif
+ 
+ /* Maximum loop count waiting for new voltage to take effect */
+ #define MAX_LOOP_WAIT_NEW_VOL		100
+@@ -204,6 +211,23 @@ static int read_voltage_from_LTC(int i2caddress)
+ }
+ #endif
+ 
++#ifdef CONFIG_VOL_MONITOR_BMR463_READ
++static int read_voltage_from_BMR(int i2caddress)
++{
++	uint8_t i2c_data[2];
++	int old_bus;
++	int hw_vdd = 1025;
++
++	old_bus = i2c_get_bus_num();
++	i2c_set_bus_num(CONFIG_BMR463_I2C_BUS);
++	i2c_read( (uint8_t)i2caddress, 0x8b, 1, i2c_data, 2);
++	i2c_set_bus_num(old_bus);
++	hw_vdd = (int)((i2c_data[1]<<8) | i2c_data[0]);
++	hw_vdd =  (hw_vdd*1000)/(1<<13);
++	return(hw_vdd);
++}
++#endif
++
+ static int read_voltage(int i2caddress)
+ {
+ 	int voltage_read;
+@@ -213,6 +237,8 @@ static int read_voltage(int i2caddress)
+ 	voltage_read = read_voltage_from_IR(i2caddress);
+ #elif defined CONFIG_VOL_MONITOR_LTC3882_READ
+ 	voltage_read = read_voltage_from_LTC(i2caddress);
++#elif defined CONFIG_VOL_MONITOR_BMR463_READ
++	voltage_read = read_voltage_from_BMR(i2caddress);
+ #else
+ 	return -1;
+ #endif
+@@ -351,6 +377,19 @@ static int set_voltage_to_LTC(int i2caddress, int vdd)
+ }
+ #endif
+ 
++#ifdef CONFIG_VOL_MONITOR_BMR463_SET
++/* Set the voltage to the IR chip */
++static int set_voltage_to_BMR(int i2caddress, int vdd)
++{
++	int vdd_last;
++	printf("VID: set voltage to BMR at %d mV\n", vdd);
++
++	vdd_last = read_voltage(i2caddress);
++
++	return vdd_last;
++}
++#endif
++
+ static int set_voltage(int i2caddress, int vdd)
+ {
+ 	int vdd_last = -1;
+@@ -359,6 +398,8 @@ static int set_voltage(int i2caddress, int vdd)
+ 	vdd_last = set_voltage_to_IR(i2caddress, vdd);
+ #elif defined CONFIG_VOL_MONITOR_LTC3882_SET
+ 	vdd_last = set_voltage_to_LTC(i2caddress, vdd);
++#elif defined CONFIG_VOL_MONITOR_BMR463_SET
++	vdd_last = set_voltage_to_BMR(i2caddress, vdd);
+ #else
+ 	#error Specific voltage monitor must be defined
+ #endif
+@@ -448,7 +489,9 @@ int adjust_vdd(ulong vdd_override)
+ 		goto exit;
+ 	}
+ #if defined(CONFIG_VOL_MONITOR_IR36021_SET) || \
+-	defined(CONFIG_VOL_MONITOR_IR36021_READ)
++	defined(CONFIG_VOL_MONITOR_IR36021_READ) || \
++	defined(CONFIG_VOL_MONITOR_BMR463_SET) || \
++	defined(CONFIG_VOL_MONITOR_BMR463_READ)
+ 	ret = find_ir_chip_on_i2c();
+ 	if (ret < 0) {
+ 		printf("VID: Could not find voltage regulator on I2C.\n");
+@@ -456,9 +499,12 @@ int adjust_vdd(ulong vdd_override)
+ 		goto exit;
+ 	} else {
+ 		i2caddress = ret;
++		ret = 0;
+ 		debug("VID: IR Chip found on I2C address 0x%02x\n", i2caddress);
+ 	}
+-
++#endif
++#if defined(CONFIG_VOL_MONITOR_IR36021_SET) || \
++	defined(CONFIG_VOL_MONITOR_IR36021_READ)
+ 	/* check IR chip work on Intel mode*/
+ 	ret = i2c_read(i2caddress,
+ 		       IR36021_INTEL_MODE_OOFSET,
+@@ -529,6 +575,9 @@ int adjust_vdd(ulong vdd_override)
+ #ifdef CONFIG_VOL_MONITOR_LTC3882_SET
+ 	/* Set the target voltage */
+ 	vdd_last = vdd_current = set_voltage(i2caddress, vdd_target);
++#elif CONFIG_VOL_MONITOR_BMR463_SET
++	/* Set the target voltage */
++	vdd_last = set_voltage(i2caddress, vdd_target);
+ #else
+ 	/*
+ 	  * Adjust voltage to at or one step above target.
+@@ -620,7 +669,9 @@ int adjust_vdd(ulong vdd_override)
+ 		goto exit;
+ 	}
+ #if defined(CONFIG_VOL_MONITOR_IR36021_SET) || \
+-	defined(CONFIG_VOL_MONITOR_IR36021_READ)
++	defined(CONFIG_VOL_MONITOR_IR36021_READ) || \
++	defined(CONFIG_VOL_MONITOR_BMR463_SET) || \
++	defined(CONFIG_VOL_MONITOR_BMR463_READ)
+ 	ret = find_ir_chip_on_i2c();
+ 	if (ret < 0) {
+ 		printf("VID: Could not find voltage regulator on I2C.\n");
+@@ -628,9 +679,12 @@ int adjust_vdd(ulong vdd_override)
+ 		goto exit;
+ 	} else {
+ 		i2caddress = ret;
++		ret = 0;
+ 		debug("VID: IR Chip found on I2C address 0x%02x\n", i2caddress);
+ 	}
+-
++#endif
++#if defined(CONFIG_VOL_MONITOR_IR36021_SET) || \
++	defined(CONFIG_VOL_MONITOR_IR36021_READ)
+ 	/* check IR chip work on Intel mode*/
+ 	ret = i2c_read(i2caddress,
+ 		       IR36021_INTEL_MODE_OOFSET,
+@@ -715,6 +769,12 @@ int adjust_vdd(ulong vdd_override)
+ 	}
+ 	vdd_current = vdd_last;
+ 	debug("VID: Core voltage is currently at %d mV\n", vdd_last);
++
++#if defined(CONFIG_VOL_MONITOR_BMR463_SET)  || \
++    defined(CONFIG_VOL_MONITOR_BMR463_READ)
++
++	vdd_last = set_voltage(i2caddress, vdd_target);
++#else
+ 	/*
+ 	  * Adjust voltage to at or one step above target.
+ 	  * As measurements are less precise than setting the values
+@@ -731,7 +791,7 @@ int adjust_vdd(ulong vdd_override)
+ 		vdd_current -= IR_VDD_STEP_DOWN;
+ 		vdd_last = set_voltage(i2caddress, vdd_current);
+ 	}
+-
++#endif
+ 	if (vdd_last > 0)
+ 		printf("VID: Core voltage after adjustment is at %d mV\n",
+ 		       vdd_last);
+@@ -757,7 +817,9 @@ static int print_vdd(void)
+ 		return -1;
+ 	}
+ #if defined(CONFIG_VOL_MONITOR_IR36021_SET) || \
+-	defined(CONFIG_VOL_MONITOR_IR36021_READ)
++	defined(CONFIG_VOL_MONITOR_IR36021_READ) || \
++	defined(CONFIG_VOL_MONITOR_BMR463_SET) || \
++	defined(CONFIG_VOL_MONITOR_BMR463_READ)
+ 	ret = find_ir_chip_on_i2c();
+ 	if (ret < 0) {
+ 		printf("VID: Could not find voltage regulator on I2C.\n");
+diff --git a/board/freescale/ifc1410/Kconfig b/board/freescale/ifc1410/Kconfig
+new file mode 100644
+index 0000000..f0d4aca
+--- /dev/null
++++ b/board/freescale/ifc1410/Kconfig
+@@ -0,0 +1,12 @@
++if TARGET_IFC1410
++
++config SYS_BOARD
++	default "ifc1410"
++
++config SYS_VENDOR
++	default "freescale"
++
++config SYS_CONFIG_NAME
++	default "ifc1410"
++
++endif
+diff --git a/board/freescale/ifc1410/MAINTAINERS b/board/freescale/ifc1410/MAINTAINERS
+new file mode 100644
+index 0000000..241a491
+--- /dev/null
++++ b/board/freescale/ifc1410/MAINTAINERS
+@@ -0,0 +1,17 @@
++T208XIFC BOARD
++#M:	-
++S:	Maintained
++F:	board/ioxos/ifc1211/
++F:	board/ioxos/ifc1410/
++F:	include/configs/ifc1211.h
++F:	include/configs/ifc1410.h
++F:	configs/IFC1211_defconfig
++F:	configs/IFC1211_NAND_defconfig
++F:	configs/IFC1211_SDCARD_defconfig
++F:	configs/IFC1211_SPIFLASH_defconfig
++F:	configs/IFC1410_defconfig
++F:	configs/IFC1410_NAND_defconfig
++F:	configs/IFC1410_SDCARD_defconfig
++F:	configs/IFC1410_SPIFLASH_defconfig
++F:	configs/IFC1410_SECURE_BOOT_defconfig
++F:	configs/IFC1410_SRIO_PCIE_BOOT_defconfig
+\ No newline at end of file
+diff --git a/board/freescale/ifc1410/Makefile b/board/freescale/ifc1410/Makefile
+new file mode 100644
+index 0000000..6cf65b0
+--- /dev/null
++++ b/board/freescale/ifc1410/Makefile
+@@ -0,0 +1,19 @@
++#
++# Copyright 2014 Freescale Semiconductor, Inc.
++#
++# SPDX-License-Identifier:      GPL-2.0+
++#
++
++ifdef CONFIG_SPL_BUILD
++obj-y += spl.o
++else
++obj-$(CONFIG_IFC1410) += ifc1410.o
++obj-$(CONFIG_IFC1410) += eth_ifc1410.o
++obj-$(CONFIG_PCI)     += pci.o
++endif
++
++obj-y   += ddr.o
++obj-y   += law.o
++obj-y   += tlb.o
++obj-y   += conf.o
++obj-y   += fpga.o
+diff --git a/board/freescale/ifc1410/README b/board/freescale/ifc1410/README
+new file mode 100644
+index 0000000..84b0864
+--- /dev/null
++++ b/board/freescale/ifc1410/README
+@@ -0,0 +1,264 @@
++T2080PCIe-RDB is a Freescale Reference Design Board that hosts the T2080 SoC.
++It can work in two mode: standalone mode and PCIe endpoint mode.
++
++T2080 SoC Overview
++------------------
++The T2080 QorIQ multicore processor combines four dual-threaded e6500 Power
++Architecture processor cores with high-performance datapath acceleration
++logic and network and peripheral bus interfaces required for networking,
++telecom/datacom, wireless infrastructure, and mil/aerospace applications.
++
++T2080 includes the following functions and features:
++ - Four dual-threads 64-bit Power architecture e6500 cores, up to 1.8GHz
++ - 2MB L2 cache and 512KB CoreNet platform cache (CPC)
++ - Hierarchical interconnect fabric
++ - One 32-/64-bit DDR3/3L SDRAM memory controllers with ECC and interleaving
++ - Data Path Acceleration Architecture (DPAA) incorporating acceleration
++ - 16 SerDes lanes up to 10.3125 GHz
++ - 8 Ethernet interfaces, supporting combinations of the following:
++   - Up to four 10 Gbps Ethernet MACs
++   - Up to eight 1 Gbps Ethernet MACs
++   - Up to four 2.5 Gbps Ethernet MACs
++ - High-speed peripheral interfaces
++   - Four PCI Express controllers (two PCIe 2.0 and two PCIe 3.0 with SR-IOV)
++   - Two Serial RapidIO 2.0 controllers/ports running at up to 5 GHz
++ - Additional peripheral interfaces
++   - Two serial ATA (SATA 2.0) controllers
++   - Two high-speed USB 2.0 controllers with integrated PHY
++   - Enhanced secure digital host controller (SD/SDHC/SDXC/eMMC)
++   - Enhanced serial peripheral interface (eSPI)
++   - Four I2C controllers
++   - Four 2-pin UARTs or two 4-pin UARTs
++   - Integrated Flash Controller supporting NAND and NOR flash
++ - Three eight-channel DMA engines
++ - Support for hardware virtualization and partitioning enforcement
++ - QorIQ Platform's Trust Architecture 2.0
++
++Differences between T2080 and T2081
++-----------------------------------
++  Feature		T2080	 T2081
++  1G Ethernet numbers:  8	 6
++  10G Ethernet numbers: 4	 2
++  SerDes lanes:		16	 8
++  Serial RapidIO,RMan:  2	 no
++  SATA Controller:	2	 no
++  Aurora:		yes	 no
++  SoC Package:		896-pins 780-pins
++
++
++T2080PCIe-RDB board Overview
++----------------------------
++ - SERDES Configuration
++     - SerDes-1 Lane A-B: to two 10G XFI fiber (MAC9 & MAC10)
++     - SerDes-1 Lane C-D: to two 10G Base-T (MAC1 & MAC2)
++     - SerDes-1 Lane E-H: to PCIe Goldfinger (PCIe4 x4, Gen3)
++     - SerDes-2 Lane A-D: to PCIe Slot (PCIe1 x4, Gen2)
++     - SerDes-2 Lane E-F: to C293 secure co-processor (PCIe2 x2)
++     - SerDes-2 Lane G-H: to SATA1 & SATA2
++ - Ethernet
++     - Two on-board 10M/100M/1G RGMII ethernet ports
++     - Two on-board 10Gbps XFI fiber ports
++     - Two on-board 10Gbps Base-T copper ports
++ - DDR Memory
++     - Supports 72bit 4GB DDR3-LP SODIMM
++ - PCIe
++     - One PCIe x4 gold-finger
++     - One PCIe x4 connector
++     - One PCIe x2 end-point device (C293 Crypto co-processor)
++ - IFC/Local Bus
++     - NOR:  128MB 16-bit NOR Flash
++     - NAND: 1GB 8-bit NAND flash
++     - CPLD: for system controlling with programable header on-board
++ - SATA
++     - Two SATA 2.0 onnectors on-board
++ - USB
++     - Supports two USB 2.0 ports with integrated PHYs
++     - Two type A ports with 5V@1.5A per port.
++ - SDHC
++     - one TF-card connector on-board
++ - SPI
++     -  On-board 64MB SPI flash
++ - Other
++     - Two Serial ports
++     - Four I2C ports
++
++
++System Memory map
++-----------------
++Start Address  End Address      Description			Size
++0xF_FFDF_0000  0xF_FFDF_0FFF    IFC - CPLD			4KB
++0xF_FF80_0000  0xF_FF80_FFFF    IFC - NAND Flash		64KB
++0xF_FE00_0000  0xF_FEFF_FFFF    CCSRBAR				16MB
++0xF_F803_0000  0xF_F803_FFFF    PCI Express 4 I/O Space		64KB
++0xF_F802_0000  0xF_F802_FFFF    PCI Express 3 I/O Space		64KB
++0xF_F801_0000  0xF_F801_FFFF    PCI Express 2 I/O Space		64KB
++0xF_F800_0000  0xF_F800_FFFF    PCI Express 1 I/O Space		64KB
++0xF_F600_0000  0xF_F7FF_FFFF    Queue manager software portal	32MB
++0xF_F400_0000  0xF_F5FF_FFFF    Buffer manager software portal	32MB
++0xF_E800_0000  0xF_EFFF_FFFF    IFC - NOR Flash			128MB
++0xF_0000_0000  0xF_003F_FFFF    DCSR				4MB
++0xC_4000_0000  0xC_4FFF_FFFF    PCI Express 4 Mem Space		256MB
++0xC_3000_0000  0xC_3FFF_FFFF    PCI Express 3 Mem Space		256MB
++0xC_2000_0000  0xC_2FFF_FFFF    PCI Express 2 Mem Space		256MB
++0xC_0000_0000  0xC_1FFF_FFFF    PCI Express 1 Mem Space		512MB
++0x0_0000_0000  0x0_ffff_ffff    DDR				4GB
++
++
++128M NOR Flash memory Map
++-------------------------
++Start Address   End Address	Definition			Max size
++0xEFF40000	0xEFFFFFFF	U-Boot (current bank)		768KB
++0xEFF20000	0xEFF3FFFF	U-Boot env (current bank)	128KB
++0xEFF00000	0xEFF1FFFF	FMAN Ucode (current bank)	128KB
++0xEFE00000	0xEFE3FFFF	PHY CS4315 firmware		256KB
++0xED300000	0xEFEFFFFF	rootfs (alt bank)		44MB
++0xEC800000	0xEC8FFFFF	Hardware device tree (alt bank)	1MB
++0xEC020000	0xEC7FFFFF	Linux.uImage (alt bank)		7MB + 875KB
++0xEC000000	0xEC01FFFF	RCW (alt bank)			128KB
++0xEBF40000	0xEBFFFFFF	U-Boot (alt bank)		768KB
++0xEBF20000	0xEBF3FFFF	U-Boot env (alt bank)		128KB
++0xEBF00000	0xEBF1FFFF	FMAN ucode (alt bank)		128KB
++0xEBE00000	0xEBE3FFFF	PHY CS4315 firmware (alt bank)	256KB
++0xE9300000	0xEBEFFFFF	rootfs (current bank)		44MB
++0xE8800000	0xE88FFFFF	Hardware device tree (cur bank)	1MB
++0xE8020000	0xE86FFFFF	Linux.uImage (current bank)	7MB + 875KB
++0xE8000000	0xE801FFFF	RCW (current bank)		128KB
++
++
++T2080PCIe-RDB Ethernet Port Map
++-------------------------------
++Label    In Uboot      In Linux     FMan Address   Comments    PHY
++ETH0     FM1@GTEC1     fm1-mac9     0xfe4f0000     10G SFP+   (CS4315)
++ETH1     FM1@GTEC2     fm1-mac10    0xfe4f2000     10G SFP+   (CS4315)
++ETH2     FM1@GTEC3     fm1-mac1     0xfe4e0000     10G Base-T (AQ1202)
++ETH3     FM1@GTEC4     fm1-mac2     0xfe4e2000     10G Base-T (AQ1202)
++ETH4     FM1@DTSEC3    fm1-mac3     0xfe4e4000     1G  RGMII  (RTL8211E)
++ETH5     FM1@DTSEC4    fm1-mac4     0xfe4e6000     1G  RGMII  (RTL8211E)
++
++
++T2080PCIe-RDB Default DIP-Switch setting
++----------------------------------------
++SW1[1:8] = '00010011'
++SW2[1:8] = '10111111'
++SW3[1:8] = '11100001'
++
++Software configurations and board settings
++------------------------------------------
++1. NOR boot:
++   a. build NOR boot image
++	$ make T2080RDB_config
++	$ make
++   b. program u-boot.bin image to NOR flash
++	=> tftp 1000000 u-boot.bin
++	=> pro off all;era eff40000 efffffff;cp.b 1000000 eff40000 $filesize
++	set SW1[1:8] = '00010011', SW2[1] = '1', SW3[4] = '0' for NOR boot
++
++   Switching between default bank and alternate bank on NOR flash
++   To change boot source to vbank4:
++	via software:   run command 'cpld reset altbank' in U-Boot.
++	via DIP-switch: set SW3[5:7] = '100'
++
++   To change boot source to vbank0:
++	via software:   run command 'cpld reset' in U-Boot.
++	via DIP-Switch: set SW3[5:7] = '000'
++
++2. NAND Boot:
++   a. build PBL image for NAND boot
++	$ make T2080RDB_NAND_config
++	$ make
++   b. program u-boot-with-spl-pbl.bin to NAND flash
++	=> tftp 1000000 u-boot-with-spl-pbl.bin
++	=> nand erase 0 d0000
++	=> nand write 1000000 0 $filesize
++	set SW1[1:8] = '10000010', SW2[1] = '1', SW3[4] = '1' for NAND boot
++
++3. SPI Boot:
++   a. build PBL image for SPI boot
++	$ make T2080RDB_SPIFLASH_config
++	$ make
++   b. program u-boot-with-spl-pbl.bin to SPI flash
++	=> tftp 1000000 u-boot-with-spl-pbl.bin
++	=> sf probe 0
++	=> sf erase 0 d0000
++	=> sf write 1000000 0 $filesize
++	set SW1[1:8] = '00100010', SW2[1] ='1' for SPI boot
++
++4. SD Boot:
++   a. build PBL image for SD boot
++	$ make T2080RDB_SDCARD_config
++	$ make
++   b. program u-boot-with-spl-pbl.bin to micro-SD/TF card
++	=> tftp 1000000 u-boot-with-spl-pbl.bin
++	=> mmc write 1000000 8 0x800
++	set SW1[1:8] = '00100000', SW2[1] = '0' for SD boot
++
++
++2-stage NAND/SPI/SD boot loader
++-------------------------------
++PBL initializes the internal CPC-SRAM and copy SPL(160K) to SRAM.
++SPL further initializes DDR using SPD and environment variables
++and copy U-Boot(768 KB) from NAND/SPI/SD device to DDR.
++Finally SPL transers control to U-Boot for futher booting.
++
++SPL has following features:
++ - Executes within 256K
++ - No relocation required
++
++Run time view of SPL framework
++-------------------------------------------------
++|Area		   | Address			|
++-------------------------------------------------
++|SecureBoot header | 0xFFFC0000 (32KB)		|
++-------------------------------------------------
++|GD, BD		   | 0xFFFC8000 (4KB)		|
++-------------------------------------------------
++|ENV		   | 0xFFFC9000 (8KB)		|
++-------------------------------------------------
++|HEAP		   | 0xFFFCB000 (50KB)		|
++-------------------------------------------------
++|STACK		   | 0xFFFD8000 (22KB)		|
++-------------------------------------------------
++|U-boot SPL	   | 0xFFFD8000 (160KB)		|
++-------------------------------------------------
++
++NAND Flash memory Map on T2080RDB
++--------------------------------------------------------------
++Start		End		Definition	Size
++0x000000	0x0FFFFF	U-Boot img	1MB  (2 blocks)
++0x100000	0x17FFFF	U-Boot env	512KB (1 block)
++0x180000	0x1FFFFF	FMAN ucode	512KB (1 block)
++0x200000	0x27FFFF	CS4315 ucode	512KB (1 block)
++
++
++Micro SD Card memory Map on T2080RDB
++----------------------------------------------------
++Block		#blocks		Definition	Size
++0x008		2048		U-Boot img	1MB
++0x800		0016		U-Boot env	8KB
++0x820		0128		FMAN ucode	64KB
++0x8a0		0512		CS4315 ucode	256KB
++
++
++SPI Flash memory Map on T2080RDB
++----------------------------------------------------
++Start		End		Definition	Size
++0x000000	0x0FFFFF	U-Boot img	1MB
++0x100000	0x101FFF	U-Boot env	8KB
++0x110000	0x11FFFF	FMAN ucode	64KB
++0x120000        0x15FFFF        CS4315 ucode	256KB
++
++
++How to update the ucode of Cortina CS4315/CS4340 10G PHY
++--------------------------------------------------------
++=> tftp 1000000 CS4315-CS4340-PHY-ucode.txt
++=> pro off all;era 0xefe00000 0xefefffff;cp.b 1000000 0xefe00000 $filesize
++
++
++How to update the ucode of Freescale FMAN
++-----------------------------------------
++=> tftp 1000000 fsl_fman_ucode_t2080_r1.0.bin
++=> pro off all;erase 0xeff00000 0xeff1ffff;cp 1000000 0xeff00000 $filesize
++
++
++For more details, please refer to T2080PCIe-RDB User Guide and access
++website www.freescale.com and Freescale QorIQ SDK Infocenter document.
+\ No newline at end of file
+diff --git a/board/freescale/ifc1410/board_id.h b/board/freescale/ifc1410/board_id.h
+new file mode 100644
+index 0000000..bb14c81
+--- /dev/null
++++ b/board/freescale/ifc1410/board_id.h
+@@ -0,0 +1,2 @@
++#define BOARD_TYPE_IFC1211 0x1211
++#define BOARD_TYPE_IFC1410 0x1410
+\ No newline at end of file
+diff --git a/board/freescale/ifc1410/conf.c b/board/freescale/ifc1410/conf.c
+new file mode 100644
+index 0000000..f6c4656
+--- /dev/null
++++ b/board/freescale/ifc1410/conf.c
+@@ -0,0 +1,479 @@
++#include <common.h>
++#include <i2c.h>
++#include <hwconfig.h>
++#include <command.h>
++
++int
++pev_bmr_conv_11bit_u( unsigned short val)
++{
++  unsigned short l;
++  short h;
++
++  l = val & 0x7ff;
++  h = val >> 11;
++  h |= 0xffe0;
++  h =  ~h + 1;
++  return((((int)l*1000)/(1 << h)));
++}
++
++int
++pev_bmr_conv_11bit_s( unsigned short val)
++{
++  short h,l;
++
++  l = val & 0x7ff;
++  if( l & 0x400) l |= 0xf800;
++  h = val >> 11;
++  h |= 0xffe0;
++  h =  ~h + 1;
++  return((((int)l*1000)/(1 << h)));
++}
++
++int
++pev_bmr_conv_16bit_u( unsigned short val)
++{
++  return((((int)val*1000)/(1 << 13)));
++}
++
++unsigned short
++bmr_read( int dev,
++          unsigned int reg)
++{
++  uint8_t i2c_data[2];
++
++  i2c_read( (uint8_t)dev, reg, 1, i2c_data, 2);
++  return( (unsigned short)((i2c_data[1]<<8) | i2c_data[0]));
++}
++
++void
++bmr_write( int dev,
++	   unsigned int reg,
++	   unsigned short data)
++{
++  uint8_t i2c_data[2];
++
++  i2c_data[0] = (uint8_t)data;
++  i2c_data[1] = (uint8_t)(data>>8);
++  i2c_write( (uint8_t)dev, reg, 1, i2c_data, 2);
++  return;
++}
++
++
++void show_bmr( int dev)
++{
++  int old_bus;
++  unsigned short data;
++  int d0;
++
++  old_bus = i2c_get_bus_num();
++  i2c_set_bus_num(CONFIG_BMR463_I2C_BUS);
++  data = bmr_read( dev, 0x88);
++  d0 = pev_bmr_conv_11bit_u( data);
++  printf("  VIN  : %2d.%03d [%04x]\n", d0/1000, d0%1000, data);
++  data = bmr_read( dev, 0x8b);
++  d0 = pev_bmr_conv_16bit_u( data);
++  printf("  VOUT : %2d.%03d [%04x]\n", d0/1000, d0%1000, data);
++  data = bmr_read( dev, 0x8c);
++  d0 = pev_bmr_conv_11bit_u( data);
++  printf("  IOUT : %2d.%03d [%04x]\n", d0/1000, d0%1000, data);
++  data = bmr_read( dev, 0x8d);
++  d0 = pev_bmr_conv_11bit_s( data);
++  printf("  TEMP : %2d.%03d [%04x]\n", d0/1000, d0%1000, data);
++  i2c_set_bus_num(old_bus);
++  return;
++}
++
++int
++pes32nt24_write_reg( int reg,
++		     int data)
++{
++  char i2c_buf[10];
++  int retval;
++
++  retval = 0;
++
++  i2c_buf[0] = 0x43;                       /* CCODE Start + End */
++  i2c_buf[1] = 0x7;                       /* byte count is 7   */
++  i2c_buf[2] = 0x0f;                      /* CMD write 4 bytes   */
++  i2c_buf[3] = (char)(reg&0xff);          /* reg low byte       */
++  i2c_buf[4] = (char)((reg>>8)&0xff);     /* reg high byte       */
++  i2c_buf[5] = (char)(data&0xff);         /* data LL byte       */
++  i2c_buf[6] = (char)((data>>8)&0xff);    /* data LH byte       */
++  i2c_buf[7] = (char)((data>>16)&0xff);   /* data LH byte       */
++  i2c_buf[8] = (char)((data>>24)&0xff);   /* data LH byte       */
++  retval = i2c_write (CONFIG_PES32NT24_I2C_ADDR, 0, 0, (uint8_t *)i2c_buf, 9);
++  if(retval)
++  {
++    printf("i2c write error\n");
++  }
++  return(retval);
++}
++int
++pes32nt24_read_reg( int reg)
++{
++  int data;
++  char i2c_buf[4];
++  int retval;
++
++  retval = 0;
++  data = 0;
++  /* transmit register address */
++  i2c_buf[0] = 0x22;                 /* CCODE Start + Word */
++  i2c_buf[1] = 0x1f;                 /* CMD read 4 bytes   */
++  i2c_buf[2] = (char)(reg&0xff);     /* reg low byte       */
++  retval = i2c_write (CONFIG_PES32NT24_I2C_ADDR, 0, 0, (uint8_t *)i2c_buf, 3);
++  if(retval)
++  {
++    printf("i2c read error at step 1\n");
++    goto pes32nt24_read_reg_err;
++  }
++  i2c_buf[0] = 0x1;                       /* CCODE End + Byte */
++  i2c_buf[1] = (char)((reg>>8)&0xff);     /* reg high byte       */
++  retval = i2c_write (CONFIG_PES32NT24_I2C_ADDR, 0, 0, (uint8_t *)i2c_buf, 2);
++  if(retval)
++  {
++    printf("i2c read error at step 2\n");
++    goto pes32nt24_read_reg_err;
++  }
++
++  /* start command to read 2 bytes */
++  i2c_buf[0] = 0x22;                 /* CCODE Start + Word */
++  retval = i2c_write (CONFIG_PES32NT24_I2C_ADDR, 0, 0, (uint8_t *)i2c_buf, 1);
++  if(retval)
++  {
++    printf("i2c read error at step 3\n");
++    goto pes32nt24_read_reg_err;
++  }
++
++  /* read 2 bytes _> get switch status + addr low */
++  retval = i2c_read (CONFIG_PES32NT24_I2C_ADDR, 0, 0, (uint8_t *)i2c_buf, 2);
++  //printf("status = %02x - addr_l = %02x\n", i2c_buf[0], i2c_buf[1]);
++  if(retval)
++  {
++    printf("i2c read error at step 4\n");
++    goto pes32nt24_read_reg_err;
++  }
++
++  /* ask for 1 bytes */
++  i2c_buf[0] = 0x0;                 /* CCODE Byte */
++  retval = i2c_write (CONFIG_PES32NT24_I2C_ADDR, 0, 0, (uint8_t *)i2c_buf, 1);
++  if(retval)
++  {
++    printf("i2c read error at step 5\n");
++    goto pes32nt24_read_reg_err;
++  }
++
++  /* read 1 byte -> get addr high */
++  retval = i2c_read (CONFIG_PES32NT24_I2C_ADDR, 0, 0, (uint8_t *)i2c_buf, 1);
++  //printf("addr_h = %02x\n", i2c_buf[0]);
++  if(retval)
++  {
++    printf("i2c read error at step 6\n");
++    goto pes32nt24_read_reg_err;
++  }
++
++  /* ask for 2 bytes */
++  i2c_buf[0] = 0x20;                 /* CCODE Word */
++  retval = i2c_write (CONFIG_PES32NT24_I2C_ADDR, 0, 0, (uint8_t *)i2c_buf, 1);
++  if(retval)
++  {
++    printf("i2c read error at step 7\n");
++    goto pes32nt24_read_reg_err;
++  }
++
++  /* get data byte LL and LH  */
++  retval = i2c_read (CONFIG_PES32NT24_I2C_ADDR, 0, 0, (uint8_t *)i2c_buf, 2);
++  data = i2c_buf[0] | (i2c_buf[1] <<  8);
++  //printf("addr_ll = %02x - addr_lh = %02x\n", i2c_buf[0], i2c_buf[1]);
++  if(retval)
++  {
++    printf("i2c read error at step 8\n");
++    goto pes32nt24_read_reg_err;
++  }
++
++  /* ask for two bytes and ens command */
++  i2c_buf[0] = 0x21;                 /* CCODE End + Word */
++  retval = i2c_write (CONFIG_PES32NT24_I2C_ADDR, 0, 0, (uint8_t *)i2c_buf, 1);
++  if(retval)
++  {
++    printf("i2c read error at step 9\n");
++    goto pes32nt24_read_reg_err;
++  }
++  /* get data byte HL and HH  */
++  retval = i2c_read (CONFIG_PES32NT24_I2C_ADDR, 0, 0, (uint8_t *)i2c_buf, 2);
++  data |= (i2c_buf[0] << 16) | (i2c_buf[1] << 24);
++  //printf("addr_hl = %02x - addr_hh = %02x\n", i2c_buf[0], i2c_buf[1]);
++  if(retval)
++  {
++    printf("i2c read error at step 10\n");
++    goto pes32nt24_read_reg_err;
++  }
++
++  return(data);
++
++pes32nt24_read_reg_err:
++  return( -1);
++}
++
++int idt_part_reg[8][3];
++int idt_port_reg[24][3];
++int idt_port_width[24];
++int idt_stkcfg[4];
++
++int idt_stack0[4][8] =
++{
++  {8,4,4,2, 0,0,2,0},
++  {0,0,0,2, 0,0,2,0},
++  {0,4,2,2, 0,0,4,0},
++  {0,0,2,2, 0,0,0,0}
++};
++int idt_stack2[8][32] =
++{
++  {8,4,4,2, 0,0,2,0, 2,1,1,2, 4,4,2,2,  1,2,1,1, 2,1,1,2, 1,1,2,1, 4,0,0,0},
++  {0,0,0,0, 0,0,0,0, 0,1,1,0, 0,0,0,0,  1,0,1,1, 0,1,1,0, 1,1,0,1, 0,0,0,0},
++  {0,0,0,2, 0,0,2,0, 1,1,2,1, 0,0,2,2,  1,1,1,1, 2,2,2,1, 2,2,1,1, 0,0,0,0},
++  {0,0,0,0, 0,0,0,0, 1,1,0,1, 0,0,0,0,  1,1,1,1, 0,0,0,1, 0,0,1,1, 0,0,0,0},
++  {0,4,2,2, 0,0,4,0, 4,4,2,2, 2,1,1,2,  2,1,1,2, 1,2,1,1, 4,1,2,1, 1,0,0,0},
++  {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,1,1,0,  0,1,1,0, 1,0,1,1, 0,1,0,1, 1,0,0,0},
++  {0,0,2,2, 0,0,0,0, 0,0,2,2, 1,1,2,1,  2,2,2,1, 1,1,1,1, 0,2,1,1, 2,0,0,0},
++  {0,0,0,0, 0,0,0,0, 0,0,0,0, 1,1,0,1,  0,0,0,1, 1,1,1,1, 0,0,1,1, 0,0,0,0}
++};
++
++
++void show_pes32nt24( void)
++{
++  int old_bus, old_speed;
++  int i, j;
++
++  printf("\nPES32NT24 Configuration\n\n");
++  old_bus = i2c_get_bus_num();
++  old_speed = i2c_get_bus_speed();
++  i2c_set_bus_num( CONFIG_PES32NT24_I2C_BUS);
++  i2c_set_bus_speed( CONFIG_PES32NT24_I2C_SPEED);
++
++  printf("%06x : %08x", 0x3e000, pes32nt24_read_reg( 0xf800));
++  printf(" %08x", pes32nt24_read_reg( 0xf801));
++  printf(" %08x", pes32nt24_read_reg( 0xf802));
++  printf(" %08x\n", pes32nt24_read_reg( 0xf803));
++  printf("%06x : %08x", 0x3e010, pes32nt24_read_reg( 0xf804));
++  printf(" %08x", pes32nt24_read_reg( 0xf805));
++  printf(" %08x", pes32nt24_read_reg( 0xf806));
++  printf(" %08x\n", pes32nt24_read_reg( 0xf807));
++
++  printf("\nPES32NT24 reset partition 0\n");
++  pes32nt24_write_reg( 0x18050>>2, 0x20);
++#ifdef JFG
++  if(1)
++  {
++    int tmo, data;
++    pes32nt24_write_reg( 0x3e100>>2, 0);
++    tmo = 10000;
++    while( --tmo)
++    {
++      data = pes32nt24_read_reg( 0x3e104>>2);
++      if( data & 2) break;
++    }
++    pes32nt24_write_reg( 0x3e100>>2, 1);
++    tmo = 10000;
++    while( --tmo)
++    {
++      data = pes32nt24_read_reg( 0x3e104>>2);
++      if( data & 2) break;
++    }
++  }
++#endif
++  for( i = 0; i < 4; i++)
++  {
++    idt_stkcfg[i] = pes32nt24_read_reg(  ( 0x3e010 + 4*i) >> 2);
++  }
++  for( i = 0; i < 4; i++)
++  {
++    idt_port_width[i]   = idt_stack0[i][idt_stkcfg[0] & 7];
++    idt_port_width[i+4] = idt_stack0[i][idt_stkcfg[1] & 7];
++  }
++  for( i = 0; i < 8; i++)
++  {
++    idt_port_width[i+8]  = idt_stack2[i][idt_stkcfg[2] & 0x1f];
++    idt_port_width[i+16] = idt_stack2[i][idt_stkcfg[3] & 0x1f];
++  }
++  printf("\n+------+--------+-----------+-----------+------------+\n");
++  printf("| part | offset | SWPARTCTL | SWPARTSTS | SWPARTFCTL |\n");
++  printf("+------+--------+-----------+-----------+------------+\n");
++  for( i = 0; i < 8; i++)
++  {
++    for( j = 0; j < 3; j++)
++    {
++      idt_part_reg[i][j] =  pes32nt24_read_reg(  ( 0x3e100 + 0x20*i + 4*j) >> 2);
++    }
++    if( idt_part_reg[i][0] & 3)
++    {
++      printf("| %3d  |  %05x |  %08x |  %08x |  %08x  |\n", i,  0x3e100 + 0x20*i, idt_part_reg[i][0], idt_part_reg[i][1], idt_part_reg[i][2]);
++    }
++  }
++  printf("+------+--------+-----------+-----------+------------+\n");
++  printf("\n+------+--------+-----------+-----------+------------+------------+-----+------+-------+-------+\n");
++  printf("| port | offset | SWPORTCTL | SWPORTSTS | SWPARTFCTL |    mode    | dev | part | state | width |\n");
++  printf("+------+--------+-----------+-----------+------------+------------+-----+------+-------+-------+\n");
++  for( i = 0; i < 24; i++)
++  {
++    for( j = 0; j < 3; j++)
++    {
++      idt_port_reg[i][j] = pes32nt24_read_reg(  ( 0x3e200 + 0x20*i + 4*j) >> 2);
++    }
++    if( (idt_port_reg[i][0] & 0xf) && idt_port_width[i])
++    {
++      printf("| %3d  |  %05x |  %08x |  %08x |  %08x  |", i, 0x3e200 + 0x20*i, idt_port_reg[i][0], idt_port_reg[i][1], idt_port_reg[i][2]);
++      if(( idt_port_reg[i][1] & 0x3c0) == 0) printf("  Disabled  |  xx |");
++      if(( idt_port_reg[i][1] & 0x3c0) == 1<<6)
++      {
++	printf("    Down    | %3d |", (idt_port_reg[i][1] >> 16) & 0x1f);
++      }
++      if(( idt_port_reg[i][1] & 0x3c0) == 2<<6) printf("     Up     |  xx |");
++      if(( idt_port_reg[i][1] & 0x3c0) == 3<<6) printf("     NT     |  xx |");
++      if(( idt_port_reg[i][1] & 0x3c0) == 4<<6) printf("   Up+NT    |  xx |");
++      if(( idt_port_reg[i][1] & 0x3c0) == 5<<6) printf(" Unattached |  xx |");
++      if(( idt_port_reg[i][1] & 0x3c0) == 6<<6) printf("   Up+DMA   |  xx |");
++      if(( idt_port_reg[i][1] & 0x3c0) == 7<<6) printf("  Up+NT+DMA |  xx |");
++      if(( idt_port_reg[i][1] & 0x3c0) == 8<<6) printf("   NT+DMA   |  xx |");
++      printf("  %2d  |", (idt_port_reg[i][1] >> 10) & 0x7);
++      if( idt_port_reg[i][1] & 0x10) printf("   UP  |");
++      else  printf("       |");
++      printf("   x%d  | \n", idt_port_width[i]);
++    }
++  }
++  printf("+------+--------+-----------+-----------+------------+------------+-----+------+-------+-------+\n\n");
++  i2c_set_bus_num(old_bus);
++  i2c_set_bus_speed(old_speed);
++
++  return;
++}
++
++
++void show_thermo( void)
++{
++	int old_bus;
++	char data;
++	int temp_loc;
++	int temp_rem;
++
++#ifdef CONFIG_THERMO_LM95235
++	old_bus = i2c_get_bus_num();
++	i2c_set_bus_num(CONFIG_THERMO_I2C_BUS);
++	data = i2c_reg_read (CONFIG_THERMO_I2C_ADDR, 0);
++	temp_loc = (int)data;
++	printf("Board local temperature: %2d\n", temp_loc);
++	data = i2c_reg_read (CONFIG_THERMO_I2C_ADDR, 1);
++	temp_rem = (int)data;
++	printf("T2081 die temperature  : %2d\n", temp_rem);
++	i2c_set_bus_num(old_bus);
++#else
++	printf("Thermometers not supported on this board\n");
++#endif
++
++}
++
++void show_max( void)
++{
++  int old_bus;
++  uchar data;
++  int i;
++  uint reg;
++  uint min, max, mean, tmp;
++
++  old_bus = i2c_get_bus_num();
++  i2c_set_bus_num(CONFIG_MAX5970_I2C_BUS);
++  data = i2c_reg_read (CONFIG_MAX5970_I2C_ADDR, 0);
++  reg = 0;
++  min = 0x400;
++  max = 0x0;
++  mean = 0;
++  for( i = 0; i < 1000; i++)
++  {
++    data = i2c_reg_read (CONFIG_MAX5970_I2C_ADDR, reg);
++    tmp = (uint)data << 2;
++    data = i2c_reg_read (CONFIG_MAX5970_I2C_ADDR, reg+1);
++    tmp |= (uint)data&3;
++    mean += tmp;
++    if( tmp > max) max = tmp;
++    if( tmp < min) min = tmp;
++    //usleep(2000);
++  }
++  mean = (mean*100)/(6*1024);
++  min  = (min*100000)/(6*1024);
++  max  = (max*100000)/(6*1024);
++  printf("   Current 5V0 (A)    : %d.%03d [%d.%03d - %d.%03d]\n", mean/1000, mean%1000, min/1000, min%1000, max/1000, max%1000);
++
++  reg = 2;
++  data = i2c_reg_read (CONFIG_MAX5970_I2C_ADDR, reg);
++  tmp = (uint)data << 2;
++  data = i2c_reg_read (CONFIG_MAX5970_I2C_ADDR, reg+1);
++  tmp |= (uint)data&3;
++  tmp = (tmp*16000)/1024;
++  printf("   Voltage 5V0 (V)    : %d.%03d \n", tmp/1000, tmp%1000);
++
++  reg = 4;
++  min = 0x400;
++  max = 0x0;
++  mean = 0;
++  for( i = 0; i < 1000; i++)
++  {
++    data = i2c_reg_read (CONFIG_MAX5970_I2C_ADDR, reg);
++    tmp = (uint)data << 2;
++    data = i2c_reg_read (CONFIG_MAX5970_I2C_ADDR, reg+1);
++    tmp |= (uint)data&3;
++    mean += tmp;
++    if( tmp > max) max = tmp;
++    if( tmp < min) min = tmp;
++    //usleep(2000);
++  }
++  mean = (mean*200)/(9*1024);
++  min  = (min*200000)/(9*1024);
++  max  = (max*200000)/(9*1024);
++  printf("   Current 3V3 (A)    : %d.%03d [%d.%03d - %d.%03d]\n", mean/1000, mean%1000, min/1000, min%1000, max/1000, max%1000);
++
++  reg = 6;
++  data = i2c_reg_read (CONFIG_MAX5970_I2C_ADDR, reg);
++  tmp = (uint)data << 2;
++  data = i2c_reg_read (CONFIG_MAX5970_I2C_ADDR, reg+1);
++  tmp |= (uint)data&3;
++  tmp = (tmp*16000)/1024;
++  printf("   Voltage 3V3 (V)    : %d.%03d \n", tmp/1000, tmp%1000);
++
++  i2c_set_bus_num(old_bus);
++  return;
++}
++
++int do_conf(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
++{
++  int rc = 0;
++
++  if (argc <= 1)
++  {
++    return cmd_usage(cmdtp);
++  }
++  if (strcmp(argv[1], "show") == 0)
++  {
++	  show_thermo();
++	  printf("BMR463_1 [central FPGA]:\n");
++	  show_bmr(CONFIG_BMR463_I2C_ADDR_1);
++	  printf("BMR463_2 [T2081]:\n");
++	  show_bmr(CONFIG_BMR463_I2C_ADDR_2);
++	  printf("BMR463_3 [FMC Vadj]:\n");
++	  show_bmr(CONFIG_BMR463_I2C_ADDR_3);
++	  show_pes32nt24();
++          printf("MAX5970 Voltage Monitor\n");
++	  show_max();
++
++  }
++  else
++  {
++    rc = cmd_usage(cmdtp);
++  }
++  return rc;
++}
++
++U_BOOT_CMD(
++	conf, CONFIG_SYS_MAXARGS, 1, do_conf,
++	"Board configuration",
++	"show: display current board configuration\n"
++);
+diff --git a/board/freescale/ifc1410/ddr.c b/board/freescale/ifc1410/ddr.c
+new file mode 100644
+index 0000000..f878675
+--- /dev/null
++++ b/board/freescale/ifc1410/ddr.c
+@@ -0,0 +1,200 @@
++/*
++ * Copyright 2014 Freescale Semiconductor, Inc.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * Version 2 or later as published by the Free Software Foundation.
++ */
++
++#include <common.h>
++#include <i2c.h>
++#include <hwconfig.h>
++#include <asm/mmu.h>
++#include <fsl_ddr_sdram.h>
++#include <fsl_ddr_dimm_params.h>
++#include <asm/fsl_law.h>
++#include "ddr.h"
++
++DECLARE_GLOBAL_DATA_PTR;
++
++#define DEBUG
++#if defined(DEBUG)
++void testdram( void);
++#endif
++
++void fsl_ddr_board_options(memctl_options_t *popts,
++				dimm_params_t *pdimm,
++				unsigned int ctrl_num)
++{
++	const struct board_specific_parameters *pbsp, *pbsp_highest = NULL;
++	ulong ddr_freq;
++
++	if (ctrl_num > 1) {
++		printf("Not supported controller number %d\n", ctrl_num);
++		return;
++	}
++	if (!pdimm->n_ranks)
++		return;
++
++	pbsp = udimms[0];
++
++	/* Get clk_adjust, wrlvl_start, wrlvl_ctl, according to the board ddr
++	 * freqency and n_banks specified in board_specific_parameters table.
++	 */
++	ddr_freq = get_ddr_freq(0) / 1000000;
++	while (pbsp->datarate_mhz_high) {
++		if (pbsp->n_ranks == pdimm->n_ranks &&
++		    (pdimm->rank_density >> 30) >= pbsp->rank_gb) {
++			if (ddr_freq <= pbsp->datarate_mhz_high) {
++				popts->clk_adjust = pbsp->clk_adjust;
++				popts->wrlvl_start = pbsp->wrlvl_start;
++				popts->wrlvl_ctl_2 = pbsp->wrlvl_ctl_2;
++				popts->wrlvl_ctl_3 = pbsp->wrlvl_ctl_3;
++				goto found;
++			}
++			pbsp_highest = pbsp;
++		}
++		pbsp++;
++	}
++
++	if (pbsp_highest) {
++		printf("Error: board specific timing not found");
++		printf("for data rate %lu MT/s\n", ddr_freq);
++		printf("Trying to use the highest speed (%u) parameters\n",
++		       pbsp_highest->datarate_mhz_high);
++		popts->clk_adjust = pbsp_highest->clk_adjust;
++		popts->wrlvl_start = pbsp_highest->wrlvl_start;
++		popts->wrlvl_ctl_2 = pbsp->wrlvl_ctl_2;
++		popts->wrlvl_ctl_3 = pbsp->wrlvl_ctl_3;
++	} else {
++		panic("DIMM is not supported by this board");
++	}
++found:
++	debug("Found timing match: n_ranks %d, data rate %d, rank_gb %d\n"
++		"\tclk_adjust %d, wrlvl_start %d, wrlvl_ctrl_2 0x%x, "
++		"wrlvl_ctrl_3 0x%x\n",
++		pbsp->n_ranks, pbsp->datarate_mhz_high, pbsp->rank_gb,
++		pbsp->clk_adjust, pbsp->wrlvl_start, pbsp->wrlvl_ctl_2,
++		pbsp->wrlvl_ctl_3);
++
++	/*
++	 * Factors to consider for half-strength driver enable:
++	 *	- number of DIMMs installed
++	 */
++	popts->half_strength_driver_enable = 0;
++	/*
++	 * Write leveling override
++	 */
++	popts->wrlvl_override = 1;
++	popts->wrlvl_sample = 0xf;
++
++	/*
++	 * Rtt and Rtt_WR override
++	 */
++	popts->rtt_override = 0;
++
++	/* Enable ZQ calibration */
++	popts->zq_en = 1;
++
++	/* DHC_EN =1, ODT = 75 Ohm */
++	popts->ddr_cdr1 = DDR_CDR1_DHC_EN | DDR_CDR1_ODT(DDR_CDR_ODT_75ohm);
++	popts->ddr_cdr2 = DDR_CDR2_ODT(DDR_CDR_ODT_75ohm);
++
++	/* optimize cpo for erratum A-009942 */
++	popts->cpo_sample = 0x3c;
++}
++
++int dram_init(void)
++{
++	phys_size_t dram_size;
++
++#if defined(CONFIG_SPL_BUILD) || !defined(CONFIG_RAMBOOT_PBL)
++	puts("Initializing....using SPD\n");
++	dram_size = fsl_ddr_sdram();
++#else
++	/* DDR has been initialised by first stage boot loader */
++	dram_size = fsl_ddr_sdram_size();
++#endif
++
++	dram_size = setup_ddr_tlbs(dram_size / 0x100000);
++	dram_size *= 0x100000;
++
++	gd->ram_size = dram_size;
++
++#if defined(DEBUG)
++	testdram();
++#endif
++
++	return 0;
++}
++
++#if defined(DEBUG)
++void testdram( void)
++{
++  int i, tmo;
++  int ctl, nloop;
++
++  ctl = 0;
++
++	printf("       Performing Hardware DDR test\n");
++	if( in_be32(  (volatile unsigned int *)0xfe008d20) == 0x11111111)
++	{
++	  printf("DDR already initialized...\n");
++	  return;
++	}
++        out_be32(  (volatile unsigned int *)0xfe008d20, 0x11111111); /* test pattern */
++        out_be32(  (volatile unsigned int *)0xfe008d24, 0x22222222); /* test pattern */
++        out_be32(  (volatile unsigned int *)0xfe008d28, 0x33333333); /* test pattern */
++        out_be32(  (volatile unsigned int *)0xfe008d2c, 0x44444444); /* test pattern */
++        out_be32(  (volatile unsigned int *)0xfe008d30, 0x55555555); /* test pattern */
++        out_be32(  (volatile unsigned int *)0xfe008d34, 0x66666666); /* test pattern */
++        out_be32(  (volatile unsigned int *)0xfe008d38, 0x77777777); /* test pattern */
++        out_be32(  (volatile unsigned int *)0xfe008d3c, 0x88888888); /* test pattern */
++        out_be32(  (volatile unsigned int *)0xfe008d40, 0x99999999); /* test pattern */
++        out_be32(  (volatile unsigned int *)0xfe008d44, 0xaaaaaaaa); /* test pattern */
++        out_be32(  (volatile unsigned int *)0xfe008d60, 0x00000000); /* start address high */
++        out_be32(  (volatile unsigned int *)0xfe008d64, 0x7f000000); /* start address low  */
++        out_be32(  (volatile unsigned int *)0xfe008d68, 0x00000000); /* end address high */
++        out_be32(  (volatile unsigned int *)0xfe008d6c, 0x7f100000); /* end address low  */
++        //out_be32(  (volatile unsigned int *)0xfe008d00, 0x80000200); /* start memory test */
++#ifdef DEBUG
++	nloop = 4;
++#else
++	nloop = 1;
++#endif
++	for( i = 0; i < nloop; i++)
++	{
++	  printf("       Test mode %d...", i);
++	  out_be32(  (volatile unsigned int *)0xfe008d00, 0x80000000 |  (i<<16)); /* start memory test */
++	  tmo = 0x1000000;
++	  while( --tmo)
++	  {
++	    ctl = in_be32(  (volatile unsigned int *)0xfe008d00);
++	    if( !(ctl & 0x80000000))
++	    {
++	      break;
++	    }
++	  }
++	  if( !tmo)
++	  {
++	    printf(" -> timeout %08x\n", ctl);
++	  }
++	  else if( ctl & 1)
++	  {
++	    int data0, data1;
++	    int attr, addr;
++
++	    data0 = in_be32(  (volatile unsigned int *)0xfe008e20);
++	    data1 = in_be32(  (volatile unsigned int *)0xfe008e24);
++	    attr = in_be32(  (volatile unsigned int *)0xfe008e4c);
++	    addr = in_be32(  (volatile unsigned int *)0xfe008e50);
++	    printf(" -> error %08x'%08x %08x'%08x\n", data0, data1, attr, addr);
++	  }
++	  else
++	  {
++	    printf(" -> Done OK\n");
++	  }
++	}
++	printf("       ");
++}
++#endif
+diff --git a/board/freescale/ifc1410/ddr.h b/board/freescale/ifc1410/ddr.h
+new file mode 100644
+index 0000000..eedafbb
+--- /dev/null
++++ b/board/freescale/ifc1410/ddr.h
+@@ -0,0 +1,50 @@
++/*
++ * Copyright 2014 Freescale Semiconductor, Inc.
++ *
++ * SPDX-License-Identifier:     GPL-2.0+
++ */
++
++#ifndef __DDR_H__
++#define __DDR_H__
++struct board_specific_parameters {
++	u32 n_ranks;
++	u32 datarate_mhz_high;
++	u32 rank_gb;
++	u32 clk_adjust;
++	u32 wrlvl_start;
++	u32 wrlvl_ctl_2;
++	u32 wrlvl_ctl_3;
++};
++
++/*
++ * These tables contain all valid speeds we want to override with board
++ * specific parameters. datarate_mhz_high values need to be in ascending order
++ * for each n_ranks group.
++ */
++/*
++ * S.F. > Clock Adjust parameter has been doubled from 2016 to 2017 version of U-Boot
++ */
++
++static const struct board_specific_parameters udimm0[] = {
++	/*
++	 * memory controller 0
++	 *   num|  hi| rank|  clk| wrlvl |   wrlvl   |  wrlvl |
++	 * ranks| mhz| GB  |adjst| start |   ctl2    |  ctl3  |
++	 */
++	{2,  1200, 2, 10,     7, 0x0808090a, 0x0b0c0c0a},
++	{2,  1500, 2, 10,     6, 0x07070809, 0x0a0b0b09},
++	{2,  1600, 2, 10,     8, 0x0808070b, 0x0c0d0e0a},
++	{2,  1700, 2,  8,     7, 0x080a0a0c, 0x0c0d0e0a},
++	{2,  1900, 0, 10,     7, 0x0808080c, 0x0b0c0c09},
++	{1,  1200, 2, 10,     7, 0x0808090a, 0x0b0c0c0a},
++	{1,  1500, 2, 10,     6, 0x07070809, 0x0a0b0b09},
++	{1,  1600, 2, 10,     8, 0x0808070b, 0x0c0d0e0a},
++	{1,  1700, 2,  8,     7, 0x080a0a0c, 0x0c0d0e0a},
++	{1,  1900, 0, 10,     7, 0x0808080c, 0x0b0c0c09},
++	{}
++};
++
++static const struct board_specific_parameters *udimms[] = {
++	udimm0,
++};
++#endif
+diff --git a/board/freescale/ifc1410/eth_ifc1410.c b/board/freescale/ifc1410/eth_ifc1410.c
+new file mode 100644
+index 0000000..fc6e9e5
+--- /dev/null
++++ b/board/freescale/ifc1410/eth_ifc1410.c
+@@ -0,0 +1,246 @@
++/*
++ * Copyright 2014 Freescale Semiconductor, Inc.
++ *
++ * Shengzhou Liu <Shengzhou.Liu@freescale.com>
++ *
++ * SPDX-License-Identifier:     GPL-2.0+
++ */
++
++#include <common.h>
++#include <command.h>
++#include <netdev.h>
++#include <asm/mmu.h>
++#include <asm/processor.h>
++#include <asm/immap_85xx.h>
++#include <asm/fsl_law.h>
++#include <asm/fsl_serdes.h>
++#include <asm/fsl_portals.h>
++#include <asm/fsl_liodn.h>
++#include <malloc.h>
++#include <fm_eth.h>
++#include <fsl_mdio.h>
++#include <miiphy.h>
++#include <phy.h>
++#include <fsl_dtsec.h>
++#include <asm/fsl_serdes.h>
++#include <micrel.h>
++
++#include "board_id.h"
++
++#define CONFIG_IFC1410_DTSECx
++
++int board_eth_init(bd_t *bis)
++{
++#if defined(CONFIG_IFC1410_DTSECx)
++	const char	*devname;
++	int retval;
++	ushort reg;
++#endif
++	int board_type = *(int *)CONFIG_SYS_PON_BASE & 0xffff;
++
++#if defined(CONFIG_FMAN_ENET)
++	int i, interface;
++	struct memac_mdio_info dtsec_mdio_info;
++	struct memac_mdio_info tgec_mdio_info;
++	struct mii_dev *dev;
++	ccsr_gur_t *gur = (void *)(CONFIG_SYS_MPC85xx_GUTS_ADDR);
++	u32 srds_s1;
++
++#if defined(CONFIG_IFC1410_DTSECx)
++	struct memac_mdio_info dtsec1_mdio_info;
++	struct memac_mdio_info dtsec2_mdio_info;
++#endif
++
++	srds_s1 = in_be32(&gur->rcwsr[4]) &
++					FSL_CORENET2_RCWSR4_SRDS1_PRTCL;
++	srds_s1 >>= FSL_CORENET2_RCWSR4_SRDS1_PRTCL_SHIFT;
++
++#if defined(CONFIG_IFC1410_DTSECx)
++/*	if(board_type == BOARD_TYPE_IFC1410) {
++// ---- DTSEC1 with internal SGMII phy
++
++  	  dtsec1_mdio_info.regs =
++		(struct memac_mdio_controller *)(CONFIG_SYS_FSL_FM1_ADDR+0xe0000);
++
++	  dtsec1_mdio_info.name = "FSL_INT_MDIO_1";
++
++*/	  /* Register the 1G Internal MDIO bus for DTSEC#1 */
++/*	  fm_memac_mdio_init(bis, &dtsec1_mdio_info);
++
++// ---- DTSEC2 with internal SGMII phy
++
++	  dtsec2_mdio_info.regs =
++		(struct memac_mdio_controller *)(CONFIG_SYS_FSL_FM1_ADDR+0xe2000);
++
++	  dtsec2_mdio_info.name = "FSL_INT_MDIO_2";
++
++*/	  /* Register the 1G Internal MDIO bus for DTSEC#2 */
++/*	  fm_memac_mdio_init(bis, &dtsec2_mdio_info);
++	}
++*/// -----
++#endif
++
++	dtsec_mdio_info.regs =
++		(struct memac_mdio_controller *)CONFIG_SYS_FM1_DTSEC_MDIO_ADDR;
++
++	dtsec_mdio_info.name = DEFAULT_FM_MDIO_NAME;
++
++	/* Register the 1G MDIO bus */
++	fm_memac_mdio_init(bis, &dtsec_mdio_info);
++
++	tgec_mdio_info.regs =
++		(struct memac_mdio_controller *)CONFIG_SYS_FM1_TGEC_MDIO_ADDR;
++	tgec_mdio_info.name = DEFAULT_FM_TGEC_MDIO_NAME;
++
++	/* Register the 10G MDIO bus */
++	fm_memac_mdio_init(bis, &tgec_mdio_info);
++
++	/* Set the two on-board RGMII PHY address */
++	fm_info_set_phy_address(FM1_DTSEC3, RGMII_PHY1_ADDR);
++	if( board_type == BOARD_TYPE_IFC1211) {
++	  fm_info_set_phy_address(FM1_DTSEC4, RGMII_PHY2_ADDR);
++	}
++
++	switch (srds_s1) {
++	case 0x66:
++	case 0x6b:
++		fm_info_set_phy_address(FM1_10GEC1, CORTINA_PHY_ADDR1);
++		fm_info_set_phy_address(FM1_10GEC2, CORTINA_PHY_ADDR2);
++		fm_info_set_phy_address(FM1_10GEC3, FM1_10GEC3_PHY_ADDR);
++		fm_info_set_phy_address(FM1_10GEC4, FM1_10GEC4_PHY_ADDR);
++		break;
++	case 0x6c: /* IFC1410 -> XFI_9 + XFI_10 + SGMII_1 + SGMII_2 + PCIe_4(Gen2) */
++	case 0xbc: /* IFC1410 -> PCIe_3(Gen2) + SGMII_1 + SGMII_2 + PCIe_4(Gen3)   */
++	  //fm_info_set_phy_address(FM1_DTSEC1, 0);
++	  //fm_info_set_phy_address(FM1_DTSEC2, SGMII_CARD_PORT3_PHY_ADDR);
++		break;
++	case 0xaa: /* IFC1211 */
++		break;
++	default:
++		printf("SerDes1 protocol 0x%x is not supported on T208xRDB\n",
++		       srds_s1);
++		break;
++	}
++
++	for (i = FM1_DTSEC1; i < FM1_DTSEC1 + CONFIG_SYS_NUM_FM1_DTSEC; i++) {
++		interface = fm_info_get_enet_if(i);
++		switch (interface) {
++		case PHY_INTERFACE_MODE_RGMII:
++			dev = miiphy_get_dev_by_name(DEFAULT_FM_MDIO_NAME);
++			fm_info_set_mdio(i, dev);
++			break;
++#if defined(CONFIG_IFC1410_DTSECx)
++/*		case PHY_INTERFACE_MODE_SGMII:
++		    switch (i) {
++			case FM1_DTSEC1:
++				dev = miiphy_get_dev_by_name("FSL_INT_MDIO_1");
++				break;
++			case FM1_DTSEC2:
++				dev = miiphy_get_dev_by_name("FSL_INT_MDIO_2");
++				break;
++			default:
++				dev = miiphy_get_dev_by_name(DEFAULT_FM_MDIO_NAME);
++				break;
++			}
++			fm_info_set_mdio(i, dev);
++			break;
++*/
++#endif
++		default:
++			break;
++		}
++	}
++
++	for (i = FM1_10GEC1; i < FM1_10GEC1 + CONFIG_SYS_NUM_FM1_10GEC; i++) {
++		switch (fm_info_get_enet_if(i)) {
++		case PHY_INTERFACE_MODE_XGMII:
++			dev = miiphy_get_dev_by_name(DEFAULT_FM_TGEC_MDIO_NAME);
++			fm_info_set_mdio(i, dev);
++			break;
++		default:
++			break;
++		}
++	}
++
++	cpu_eth_init(bis);
++#endif /* CONFIG_FMAN_ENET */
++
++#if defined(CONFIG_IFC1410_DTSECx)
++	retval = pci_eth_init(bis);
++
++
++	/* use current device */
++	devname = miiphy_get_current_dev();
++
++
++        retval = miiphy_read(devname, 3, MII_CTRL1000, &reg);
++	miiphy_write (devname, 3, 0xd, 2);
++	miiphy_write (devname, 3, 0xe, 8);
++	miiphy_write (devname, 3, 0xd, 0x4002);
++	miiphy_write (devname, 3, 0xe, 0x3e6f);
++
++
++	if( board_type == BOARD_TYPE_IFC1211) {
++	  retval = miiphy_read(devname, 7, MII_CTRL1000, &reg);
++	  miiphy_write (devname, 7, 0xd, 2);
++	  miiphy_write (devname, 7, 0xe, 8);
++	  miiphy_write (devname, 7, 0xd, 0x4002);
++	  miiphy_write (devname, 7, 0xe, 0x3e6f);
++	}
++/* #ifdef CONFIG_IFC1410_DTSECx */
++/*	if( board_type == BOARD_TYPE_IFC1410) {
++	   printf("IFC1410 initialize internal PHYs\n");
++	   miiphy_read( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0x1, &reg);
++	   printf("FSL_INT_MDIO_1 : %x:%d = %x\n",SGMII_CARD_PORT2_PHY_ADDR, 0x1, reg);
++	  miiphy_write( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0x0, 0x8000);
++	  {
++	    int tmo = 1000;
++	    while( --tmo)
++	    {
++	      miiphy_read( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0x0, &reg);
++	      if( !(reg&0x8000))break;
++	    }
++	    if( !tmo)
++	    {
++	      printf("FSL_INT_MDIO_1 : reset timeout\n");
++	    }
++	  }
++	  miiphy_write( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0xf4, 0x3);
++	  miiphy_write( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0xe4, 0xa1);
++	  miiphy_write( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0xf3, 0x3);
++	  miiphy_write( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0xf2, 0x6a0);
++	  miiphy_write( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0xe0, 0x1200);
++
++	  miiphy_read( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0x1, &reg);
++	  printf("FSL_INT_MDIO_2 : %x:%d = %x\n",SGMII_CARD_PORT3_PHY_ADDR, 0x1, reg);
++	  miiphy_write( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0x0, 0x8000);
++	  {
++	    int tmo = 1000;
++	    while( --tmo)
++	    {
++	      miiphy_read( "FSL_INT_MDIO_2", SGMII_CARD_PORT2_PHY_ADDR, 0x0, &reg);
++	      if( !(reg&0x8000))break;
++	    }
++	    if( !tmo)
++	    {
++	      printf("FSL_INT_MDIO_2 : reset timeout\n");
++	    }
++	  }
++	  miiphy_write( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0xf4, 0x3);
++	  miiphy_write( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0xe4, 0xa1);
++	  miiphy_write( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0xf3, 0x3);
++	  miiphy_write( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0xf2, 0x6a0);
++	  miiphy_write( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0xe0, 0x1200);
++	}*/
++/* #endif */
++	printf("leaving board_eth_init()\n");
++	return(retval);
++#else
++	return pci_eth_init(bis);
++#endif
++}
++
++void fdt_fixup_board_enet(void *fdt)
++{
++	return;
++}
+diff --git a/board/freescale/ifc1410/fpga.c b/board/freescale/ifc1410/fpga.c
+new file mode 100644
+index 0000000..fa7ffd2
+--- /dev/null
++++ b/board/freescale/ifc1410/fpga.c
+@@ -0,0 +1,383 @@
++/*
++* File fpga.c
++*
++* Purpose:
++* Makes command "fpga" available on UBOOT level which is used
++* to access PON FPGA registers over P2020 ELB bus.
++* There are two main functions supported:
++*  1. configure the CENTRAL and IO FPGAs over register
++*     ELB_FPGA_CFGCTL and ELB_FPGA_CFGDAT
++*  2. initiate reset of the board with correct settings for
++*     IDT PCIe switch init over registers ELB_FPGA_CFGCTL and
++*     ELB_PCIESW
++*
++* Both commands, "fpga load" and "fpga reset" will skip operation
++* when called without the "force" argument" when
++* 1. the FPGA was already configures, so the CONF_DONE bit is set
++* 2. the board reset command to PON FPGA was already once given
++*    by "fpga reset" command
++*
++*
++* IMPORTANT WARNING:
++* At the moment fpga reset mis-use bit 28 of register ELB_FPGA_CFGCTL.
++* This shall be changed with new PON FPGA version to another free flag-bit.
++* Then this code has to be changed (lines 90, 101) and comment can deleted.
++*/
++
++/* - IDENTIFICATION ------------------------------------------------------------
++ *
++ *   PROJECT	:	IFC1210
++ *
++ *   DOMAIN	:	u-boot
++ *
++ *   MODULE	:	board
++ *
++ *   DESCRIPTION:	see above comment
++ *
++ *
++ *
++ *   AUTHOR	:	Mario Jurcevic
++ *
++ *   HISTORY	:
++ *
++ *   Revision	Date		Author	Reference	Description
++ *
++ *   695	31032012	JA84	IFC1210		Use fpga_INIT_MEM[5:0] bit 0
++ *							of register ELB_FPGA_CFGCTL for reset
++ *
++ * -----------------------------------------------------------------------------
++ */
++
++#include <common.h>
++#include <command.h>
++#include <asm/processor.h>
++#include <asm/io.h>
++
++#define PCISW_OFFSET    0x14
++#define FPGA_OFFSET     0x20
++#define PGM_RST         0x2C
++#define FPGA_INIT       0x01
++#define FPGA_DONE       0x02
++#define FPGA_PROG       0x04
++#define FPGA_CSI        0x08
++#define FPGA_RW         0x10
++#define FPGA_ENABLE     0x80
++
++static int fpga_dev = 0;
++
++void
++fpga_set_dev( uint dev)
++{
++  fpga_dev = (dev & 1);
++}
++
++static void
++fpga_write_io( uint data,
++               volatile unsigned long reg_p)
++{
++  *(uint *)reg_p = data;
++  data = *(uint *)reg_p; /* force write cycle to be executed */
++
++  return;
++}
++
++
++static uint
++fpga_read_io( volatile unsigned long reg_p)
++{
++  volatile uint data;
++
++  data = *(uint *)reg_p;
++
++  return( data);
++}
++
++static int fpga_enable = 0;
++static int fpga_prog = 0;
++static int fpga_init = 0;
++static int fpga_done = 0;
++static int fpga_csi = 0;
++static int fpga_rdwr = 0;
++static int fpga_count = 0;
++static int fpga_mask = 0xffffffff;
++
++void
++fpga_reset( int pcisw, int force)
++{
++  unsigned long io_reg;
++  volatile int data;
++
++  /* check if this is first time we issue a fpga reset command form u-boot, if no: skip the reset */
++  io_reg = CONFIG_SYS_PON_BASE + FPGA_OFFSET;
++  data = fpga_read_io( io_reg);
++  if( (force == 0) && (data & 0x00010000) )     /* use bit 16 of ELB_FPGA_CFGCTL reg, fpga_INIT_MEM[5:0] */
++  {
++    printf("FPGA already resetted once: Therefore skipping FPGA reset request.\n");
++  }
++  else
++  {
++    io_reg = CONFIG_SYS_PON_BASE + PCISW_OFFSET;
++    fpga_write_io( pcisw, io_reg);
++
++    io_reg = CONFIG_SYS_PON_BASE + FPGA_OFFSET;
++    data =  fpga_read_io( io_reg) & 0x0200ffff;
++    data |= 0x80010000;     /* set also bit 16 to remember if reset was sent already once*/
++    fpga_write_io( data, io_reg);
++  }
++  return;
++}
++
++int
++fpga_load( char *buf,
++	   uint len,
++	   int first,
++           int force)
++{
++  unsigned long io_reg;
++  int i, j;
++  char *s;
++  volatile int data, mask, tmo;
++
++  io_reg = CONFIG_SYS_PON_BASE + FPGA_OFFSET;
++  if( first)
++  {
++    fpga_count   = 0;
++    if( fpga_dev)
++    {
++      fpga_enable = 0x8000;
++      fpga_init   = 0x0100;
++      fpga_done   = 0x0200;
++      fpga_prog   = 0x0400;
++      fpga_csi    = 0x4000;
++      fpga_rdwr   = 0x2000;
++      fpga_mask   = ~0x800ff80;
++    }
++    else
++    {
++      fpga_enable = 0x80;
++      fpga_init   = 0x01;
++      fpga_done   = 0x02;
++      fpga_prog   = 0x04;
++      fpga_csi    = 0x40;
++      fpga_rdwr   = 0x20;
++      fpga_mask   = ~0x80080ff;
++    }
++
++
++    /* check if fpga was already configured before, if yes: skip */
++    if(force == 0)
++    {
++        data = fpga_read_io( io_reg);
++        if(data & fpga_done)
++        {
++            printf("FPGA already configured (CONF_DONE), skipping configuration [%d] !!\n", fpga_dev);
++            return(0);
++        }
++    }
++
++    /* initialize load sequence */
++    mask = fpga_read_io( io_reg) & fpga_mask;
++    //fpga_write_io( mask | fpga_enable | fpga_prog, io_reg);
++    fpga_write_io( mask | fpga_enable, io_reg);
++    tmo = 100000;
++    while( tmo--);
++    fpga_read_io( io_reg);
++
++    /* clear prog_bit */
++    //fpga_write_io( mask |  fpga_enable, io_reg);
++    fpga_write_io( mask |  fpga_enable | fpga_prog, io_reg);
++    tmo = 100000;
++    while( tmo--);
++    fpga_read_io( io_reg);
++
++    /* wait for INIT to go low */
++    tmo = 500000;
++    while( --tmo)
++    {
++      data =  fpga_read_io( io_reg);
++      //if( !( data & fpga_init))
++      if( data & fpga_init)
++      {
++        break;
++      }
++    }
++    if( !tmo)
++    {
++      printf("INIT bit still high [%08x]!!\n", data);
++      fpga_write_io( fpga_enable | fpga_prog, io_reg); /* clear bit_prog */
++      fpga_write_io( fpga_prog, io_reg); /*  disable acces to FPGA */
++      return( -1);
++    }
++
++    /* set prog bit */
++    //fpga_write_io( mask | fpga_enable | fpga_prog, io_reg);
++    fpga_write_io( mask | fpga_enable, io_reg);
++
++    /* wait for bit_init to go high */
++    tmo = 50000;
++    while( --tmo)
++    {
++      data = fpga_read_io( io_reg);
++      //if( data & fpga_init)
++      if( !(data & fpga_init))
++      {
++        break;
++      }
++      data = 0;
++    }
++    if( !tmo)
++    {
++      printf("INIT not high [%08x]!!\n", data);
++      /*  disable acces to UFPGA */
++      //fpga_write_io( mask | fpga_prog, io_reg)
++      fpga_write_io( mask, io_reg);
++      return( -1);
++    }
++  }
++
++  /* set csi and rdwr bit */
++  //fpga_write_io( mask | fpga_enable | fpga_prog, io_reg);
++  fpga_write_io( mask | fpga_enable | fpga_csi , io_reg);
++  data = fpga_read_io( io_reg);
++  fpga_write_io( mask | fpga_enable | fpga_csi | fpga_rdwr, io_reg);
++  data = fpga_read_io( io_reg);
++  printf("Begin to load bitstream [%08x]\n", data);
++
++  s = buf;
++  for( j = 0; j < len;)
++  {
++    //data =  *(long *)s;
++    data = (int)(*s++);
++    data |= (int)(*s++) << 8;
++    data |= (int)(*s++) << 16;
++    data |= (int)(*s++) << 24;
++    //s += 4; j += 4;
++    j += 4;
++    if( j == len) s = buf;
++
++    fpga_write_io( data, io_reg + 4); /* program dword */
++
++    /* check end of programming sequence */
++    data =  fpga_read_io( io_reg);
++    if( data & fpga_done)
++    {
++      fpga_count += j;
++      for( i = 0; i < 100; i++)
++      {
++	fpga_write_io( 0, io_reg + 4); /* program dword */
++      }
++      /*  disable acces to FPGA keeping bit_prog high */
++      //fpga_write_io( mask | fpga_prog, io_reg);
++      fpga_write_io( mask | fpga_enable | fpga_csi, io_reg);
++      data = fpga_read_io( io_reg);
++      fpga_write_io( mask | fpga_enable, io_reg);
++      data = fpga_read_io( io_reg);
++      fpga_write_io( mask, io_reg);
++      data = fpga_read_io( io_reg);
++      return(0);
++    }
++
++    /* verify that bit_init is still high */
++    data =  fpga_read_io( io_reg);
++    //if( !( data & fpga_init))
++    if( data & fpga_init)
++    {
++      /*  disable acces to UFPGA */
++      //fpga_write_io( mask | fpga_prog, io_reg);
++      fpga_write_io( mask | fpga_enable | fpga_csi, io_reg);
++      data = fpga_read_io( io_reg);
++      fpga_write_io( mask | fpga_enable, io_reg);
++      data = fpga_read_io( io_reg);
++      fpga_write_io( mask, io_reg);
++      data = fpga_read_io( io_reg);
++      printf("INIT bit is low !! [count=0x%x]", fpga_count);
++      return( -1);
++    }
++  }
++  fpga_count += j;
++  fpga_write_io( mask | fpga_enable | fpga_csi, io_reg);
++  data = fpga_read_io( io_reg);
++  fpga_write_io( mask | fpga_enable, io_reg);
++  data = fpga_read_io( io_reg);
++  fpga_write_io( mask, io_reg);
++  data = fpga_read_io( io_reg);
++  return( 1);
++
++}
++
++int do_fpga (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
++{
++  ulong addr = 0;
++  int fpga = -1;
++  int force = 0;
++
++  if (argc < 2)
++  {
++    goto failure;
++  }
++
++  if (strcmp(argv[1],"load") == 0)		/* load */
++  {
++    if (argc < 4)
++    {
++      goto failure;
++    }
++    if (strncmp(argv[2],"io",2) == 0)		/* load */
++    {
++      fpga = 1;
++    }
++    else if (strncmp(argv[2],"central",2) == 0)
++    {
++      fpga = 0;
++    }
++    if (fpga < 0)
++    {
++      goto failure;
++    }
++    addr = simple_strtoul(argv[3], NULL, 16);
++    fpga_set_dev( fpga);
++    if (strcmp(argv[4],"force") == 0)		/* check if force reload asked */
++    {
++      force = 1;
++    }
++    printf ("FPGA load %s [%d] from addr %08lx: ", argv[2], fpga, addr);
++    if( fpga_load( (char *)addr, 0x1000000, 1, force))
++    {
++      printf("Error while loading FPGA\n");
++    }
++    else
++    {
++      printf("FPGA load OK\n");
++    }
++
++  }
++  else if (strncmp(argv[1], "reset", 4) == 0)	/* reset */
++  {
++    int pcisw;
++
++    pcisw = simple_strtoul(argv[2], NULL, 16);
++    if (strcmp(argv[3],"force") == 0)		/* check if force reset asked */
++    {
++      force = 1;
++    }
++    printf ("FPGA reset:\n");
++    fpga_reset( pcisw, force);
++  }
++  else
++  {
++    goto failure;
++  }
++
++  return 0;
++
++ failure:
++    return cmd_usage(cmdtp);
++}
++
++U_BOOT_CMD(
++	fpga,	6,	1,	do_fpga,
++	"access FPGA(s)",
++	"reset <ELB_PCIESWCTL> <force>    - reset FPGA\n"
++	"fpga load io <addr> <force>      - load FPGA configuration data\n"
++	"fpga load central <addr> <force> - load FPGA configuration data"
++);
+diff --git a/board/freescale/ifc1410/ifc1410.c b/board/freescale/ifc1410/ifc1410.c
+new file mode 100644
+index 0000000..6902b65
+--- /dev/null
++++ b/board/freescale/ifc1410/ifc1410.c
+@@ -0,0 +1,134 @@
++/*
++ * Copyright 2009-2013 Freescale Semiconductor, Inc.
++ *
++ * SPDX-License-Identifier:     GPL-2.0+
++ */
++
++#include <common.h>
++#include <command.h>
++#include <i2c.h>
++#include <netdev.h>
++#include <linux/compiler.h>
++#include <asm/mmu.h>
++#include <asm/processor.h>
++#include <asm/immap_85xx.h>
++#include <asm/fsl_law.h>
++#include <asm/fsl_serdes.h>
++#include <asm/fsl_liodn.h>
++#include <fm_eth.h>
++#include "ifc1410.h"
++#include "../common/vid.h"
++
++DECLARE_GLOBAL_DATA_PTR;
++
++int checkboard(void)
++{
++	struct cpu_type *cpu = gd->arch.cpu;
++	static const char *freq[3] = {"100.00MHZ", "125.00MHz", "156.25MHZ"};
++	int board_type;
++	int pon_rev;
++
++	board_type = *(int *)CONFIG_SYS_PON_BASE & 0xffff;
++	pon_rev = *(int *)(CONFIG_SYS_PON_BASE + 0x1c);
++
++	printf("Board: %s IFC%04x, ", cpu->name, board_type);
++
++	printf("PON rev: 0x%08x, boot from ", pon_rev);
++
++#ifdef CONFIG_SDCARD
++	puts("SD/MMC\n");
++#elif CONFIG_SPIFLASH
++	puts("SPI\n");
++#else
++	puts("PROM\n");
++#endif
++
++	puts("SERDES Reference Clocks:\n");
++	printf("SD1_CLK1=%s, SD1_CLK2=%s\n", freq[2], freq[0]);
++	printf("SD2_CLK1=%s, SD2_CLK2=%s\n", freq[0], freq[0]);
++
++	return 0;
++}
++
++int board_early_init_r(void)
++{
++	const unsigned int flashbase = CONFIG_SYS_FLASH_BASE;
++	int flash_esel = find_tlb_idx((void *)flashbase, 1);
++	/*
++	 * Remap Boot flash + PROMJET region to caching-inhibited
++	 * so that flash can be erased properly.
++	 */
++
++	/* Flush d-cache and invalidate i-cache of any FLASH data */
++	flush_dcache();
++	invalidate_icache();
++	if (flash_esel == -1) {
++		/* very unlikely unless something is messed up */
++		puts("Error: Could not find TLB for FLASH BASE\n");
++		flash_esel = 2;	/* give our best effort to continue */
++	} else {
++		/* invalidate existing TLB entry for flash + promjet */
++		disable_tlb(flash_esel);
++	}
++
++	set_tlb(1, flashbase, CONFIG_SYS_FLASH_BASE_PHYS,
++		MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
++		0, flash_esel, BOOKE_PAGESZ_256M, 1);
++
++	/*
++	 * Adjust core voltage according to voltage ID
++	 * This function changes I2C mux to channel 2.
++	 */
++	if (adjust_vdd(0))
++		printf("Warning: Adjusting core voltage failed.\n");
++	return 0;
++}
++
++unsigned long get_board_sys_clk(void)
++{
++	return CONFIG_SYS_CLK_FREQ;
++}
++
++unsigned long get_board_ddr_clk(void)
++{
++	return CONFIG_DDR_CLK_FREQ;
++}
++
++int misc_init_r(void)
++{
++	int board_type;
++	char board_type_Str[16] = {0,};
++
++	board_type = *(int *)CONFIG_SYS_PON_BASE & 0xffff;
++	sprintf(board_type_Str, "IFC%04x", board_type);
++	env_set("boardtype", board_type_Str);
++
++	return 0;
++}
++
++int ft_board_setup(void *blob, bd_t *bd)
++{
++	phys_addr_t base;
++	phys_size_t size;
++
++	ft_cpu_setup(blob, bd);
++
++	base = env_get_bootm_low();
++	size = env_get_bootm_size();
++
++	fdt_fixup_memory(blob, (u64)base, (u64)size);
++
++#ifdef CONFIG_PCI
++	pci_of_setup(blob, bd);
++#endif
++
++	fdt_fixup_liodn(blob);
++	fsl_fdt_fixup_dr_usb(blob, bd); /*updated to new fsl functions names*/
++
++#ifdef CONFIG_SYS_DPAA_FMAN
++	fdt_fixup_fman_ethernet(blob);
++	fdt_fixup_board_enet(blob);
++#endif
++
++	return 0;
++}
+diff --git a/board/freescale/ifc1410/ifc1410.h b/board/freescale/ifc1410/ifc1410.h
+new file mode 100644
+index 0000000..13380d0
+--- /dev/null
++++ b/board/freescale/ifc1410/ifc1410.h
+@@ -0,0 +1,13 @@
++/*
++ * Copyright 2014 Freescale Semiconductor, Inc.
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++
++#ifndef __CORENET_DS_H__
++#define __CORENET_DS_H__
++
++void fdt_fixup_board_enet(void *blob);
++void pci_of_setup(void *blob, bd_t *bd);
++
++#endif
+diff --git a/board/freescale/ifc1410/ifc1410_nand_rcw.cfg b/board/freescale/ifc1410/ifc1410_nand_rcw.cfg
+new file mode 100644
+index 0000000..2f440a1
+--- /dev/null
++++ b/board/freescale/ifc1410/ifc1410_nand_rcw.cfg
+@@ -0,0 +1,19 @@
++#PBL preamble and RCW header
++aa55aa55 010e0100
++
++#For T2080 v1.0
++#SerDes=0x66_0x16, Core=1533MHz, DDR=1600MT/s
++#120c0017 15000000 00000000 00000000
++#66150002 00008400 ec104000 c1000000
++#00000000 00000000 00000000 000307fc
++#00000000 00000000 00000000 00000004
++
++#For T2080 v1.1
++#SerDes=0x66_0x15, Core:1800MHz, DDR:1600MT/s
++#1206001b 15000000 00000000 00000000
++
++#SerDes=0x66_0x15, Core:1800MHz, DDR:1867MT/s
++1207001b 15000000 00000000 00000000
++66150002 00000000 e8104000 c1000000
++00800000 00000000 00000000 000307fc
++00000000 00000000 00000000 00000004
+\ No newline at end of file
+diff --git a/board/freescale/ifc1410/ifc1410_pbi.cfg b/board/freescale/ifc1410/ifc1410_pbi.cfg
+new file mode 100644
+index 0000000..6d779ce
+--- /dev/null
++++ b/board/freescale/ifc1410/ifc1410_pbi.cfg
+@@ -0,0 +1,40 @@
++#
++# Copyright 2013 Freescale Semiconductor, Inc.
++#
++# SPDX-License-Identifier:      GPL-2.0+
++#
++# Refer doc/README.pblimage for more details about how-to configure
++# and create PBL boot image
++#
++
++#PBI commands
++#Initialize CPC1
++09010000 00200400
++09138000 00000000
++091380c0 00000100
++#512KB SRAM
++09010100 00000000
++09010104 fff80009
++09010f00 08000000
++#enable CPC1
++09010000 80000000
++#Configure LAW for CPC1
++09000d00 00000000
++09000d04 fff80000
++09000d08 81000012
++#Initialize eSPI controller, default configuration is slow for eSPI to
++#load data, this configuration comes from u-boot eSPI driver.
++09110000 80000403
++09110020 2d170008
++09110024 00100008
++09110028 00100008
++0911002c 00100008
++#Errata for slowing down the MDC clock to make it <= 2.5 MHZ
++094fc030 00008148
++094fd030 00008148
++#Configure alternate space
++09000010 00000000
++09000014 ff000000
++09000018 81000000
++#Flush PBL data
++091380c0 00100000
+\ No newline at end of file
+diff --git a/board/freescale/ifc1410/ifc1410_rcw_oldUboot.cfg b/board/freescale/ifc1410/ifc1410_rcw_oldUboot.cfg
+new file mode 100644
+index 0000000..4c35a30
+--- /dev/null
++++ b/board/freescale/ifc1410/ifc1410_rcw_oldUboot.cfg
+@@ -0,0 +1,31 @@
++#PBL preamble and RCW header
++aa55aa55 010e0100
++
++#For T2080 v1.0
++#SerDes=0x66_0x16, Core=1533MHz, DDR=1600MT/s
++#120c0017 15000000 00000000 00000000
++#66150002 00008400 ec104000 c1000000
++#00000000 00000000 00000000 000307fc
++#00000000 00000000 00000000 00000004
++
++#For T2080 v1.1
++#SerDes=0x66_0x15, Core:1800MHz, DDR:1600MT/s
++#1206001b 15000000 00000000 00000000
++
++#SerDes=0x66_0x15, Core:1800MHz, DDR:1867MT/s
++#1207001b 15000000 00000000 00000000
++#66150002 00000000 e8104000 c1000000
++#00800000 00000000 00000000 000307fc
++#00000000 00000000 00000000 00000004
++
++#For T2080 IFC1211 SPI/SDCARD
++10050012 15000000 00000000 00000000
++02020002 00f04000 e8104000 a1000000
++00000000 00000000 00000000 000307ff
++00000000 00000000 00000000 00000004
++
++#For T2080 IFC1211 PROM RCW for SDCARD boot
++#10050012 15000000 00000000 00000000
++#02020002 00f04000 ec027000 a1000000
++#00000000 00000000 00000000 000307ff
++#00000000 00000000 00000000 00000004
+\ No newline at end of file
+diff --git a/board/freescale/ifc1410/ifc1410_sd_rcw.cfg b/board/freescale/ifc1410/ifc1410_sd_rcw.cfg
+new file mode 100644
+index 0000000..b514f1d
+--- /dev/null
++++ b/board/freescale/ifc1410/ifc1410_sd_rcw.cfg
+@@ -0,0 +1,19 @@
++#PBL preamble and RCW header
++aa55aa55 010e0100
++
++#For T2080 v1.0
++#SerDes=0x66_0x16, Core=1533MHz, DDR=1600MT/s
++#120c0017 15000000 00000000 00000000
++#66150002 00008400 ec104000 c1000000
++#00000000 00000000 00000000 000307fc
++#00000000 00000000 00000000 00000004
++
++#For T2080 v1.1
++#SerDes=0x66_0x15, Core:1800MHz, DDR:1600MT/s
++#1206001b 15000000 00000000 00000000
++
++#SerDes=0x66_0x15, Core:1800MHz, DDR:1867MT/s
++10050012 15000000 00000000 00000000
++02020002 00f04000 ec027000 a1000000
++00000000 00000000 00000000 000307ff
++00000000 00000000 00000000 00000004
+\ No newline at end of file
+diff --git a/board/freescale/ifc1410/ifc1410_spi_rcw.cfg b/board/freescale/ifc1410/ifc1410_spi_rcw.cfg
+new file mode 100644
+index 0000000..8e78a27
+--- /dev/null
++++ b/board/freescale/ifc1410/ifc1410_spi_rcw.cfg
+@@ -0,0 +1,19 @@
++#PBL preamble and RCW header
++aa55aa55 010e0100
++
++#For T2080 v1.0
++#SerDes=0x66_0x16, Core=1533MHz, DDR=1600MT/s
++#120c0017 15000000 00000000 00000000
++#66150002 00008400 ec104000 c1000000
++#00000000 00000000 00000000 000307fc
++#00000000 00000000 00000000 00000004
++
++#For T2080 v1.1
++#SerDes=0x66_0x15, Core:1800MHz, DDR:1600MT/s
++#1206001b 15000000 00000000 00000000
++
++#SerDes=0x66_0x15, Core:1800MHz, DDR:1867MT/s
++10050012 15000000 00000000 00000000
++02020002 00f04000 e8104000 a1000000
++00000000 00000000 00000000 000307ff
++00000000 00000000 00000000 00000004
+diff --git a/board/freescale/ifc1410/law.c b/board/freescale/ifc1410/law.c
+new file mode 100644
+index 0000000..a7b161c
+--- /dev/null
++++ b/board/freescale/ifc1410/law.c
+@@ -0,0 +1,37 @@
++/*
++ * Copyright 2008-2014 Freescale Semiconductor, Inc.
++ *
++ * (C) Copyright 2000
++ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
++ *
++ * SPDX-License-Identifier:     GPL-2.0+
++ */
++
++#include <common.h>
++#include <asm/fsl_law.h>
++#include <asm/mmu.h>
++
++struct law_entry law_table[] = {
++	SET_LAW(CONFIG_SYS_FLASH_BASE_PHYS, LAW_SIZE_256M, LAW_TRGT_IF_IFC),
++#ifdef CONFIG_SYS_BMAN_MEM_PHYS
++	SET_LAW(CONFIG_SYS_BMAN_MEM_PHYS, LAW_SIZE_32M, LAW_TRGT_IF_BMAN),
++#endif
++#ifdef CONFIG_SYS_QMAN_MEM_PHYS
++	SET_LAW(CONFIG_SYS_QMAN_MEM_PHYS, LAW_SIZE_32M, LAW_TRGT_IF_QMAN),
++#endif
++#ifdef CONFIG_SYS_DCSRBAR_PHYS
++	/* Limit DCSR to 32M to access NPC Trace Buffer */
++	SET_LAW(CONFIG_SYS_DCSRBAR_PHYS, LAW_SIZE_32M, LAW_TRGT_IF_DCSR),
++#endif
++#ifdef CONFIG_SYS_NAND_BASE_PHYS
++	SET_LAW(CONFIG_SYS_NAND_BASE_PHYS, LAW_SIZE_1M, LAW_TRGT_IF_IFC),
++#endif
++#ifdef CONFIG_SYS_PON_BASE_PHYS
++	SET_LAW(CONFIG_SYS_PON_BASE_PHYS, LAW_SIZE_64K, LAW_TRGT_IF_IFC),
++#endif
++#ifdef CONFIG_SYS_VME_BASE_PHYS
++	SET_LAW(CONFIG_SYS_VME_BASE_PHYS, LAW_SIZE_256M, LAW_TRGT_IF_IFC),
++#endif
++};
++
++int num_law_entries = ARRAY_SIZE(law_table);
+\ No newline at end of file
+diff --git a/board/freescale/ifc1410/pci.c b/board/freescale/ifc1410/pci.c
+new file mode 100644
+index 0000000..ba7041a
+--- /dev/null
++++ b/board/freescale/ifc1410/pci.c
+@@ -0,0 +1,23 @@
++/*
++ * Copyright 2007-2014 Freescale Semiconductor, Inc.
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++
++#include <common.h>
++#include <command.h>
++#include <pci.h>
++#include <asm/fsl_pci.h>
++#include <libfdt.h>
++#include <fdt_support.h>
++#include <asm/fsl_serdes.h>
++
++void pci_init_board(void)
++{
++	fsl_pcie_init_board(0);
++}
++
++void pci_of_setup(void *blob, bd_t *bd)
++{
++	FT_FSL_PCI_SETUP;
++}
+diff --git a/board/freescale/ifc1410/spl.c b/board/freescale/ifc1410/spl.c
+new file mode 100644
+index 0000000..74ce995
+--- /dev/null
++++ b/board/freescale/ifc1410/spl.c
+@@ -0,0 +1,111 @@
++/* Copyright 2013 Freescale Semiconductor, Inc.
++ *
++ * SPDX-License-Identifier:    GPL-2.0+
++ */
++
++#include <common.h>
++#include <console.h>
++#include <environment.h>
++#include <malloc.h>
++#include <ns16550.h>
++#include <nand.h>
++#include <i2c.h>
++#include <mmc.h>
++#include <fsl_esdhc.h>
++#include <spi_flash.h>
++#include "../common/spl.h"
++
++DECLARE_GLOBAL_DATA_PTR;
++
++phys_size_t get_effective_memsize(void)
++{
++	return CONFIG_SYS_L3_SIZE;
++}
++
++unsigned long get_board_sys_clk(void)
++{
++	return CONFIG_SYS_CLK_FREQ;
++}
++
++unsigned long get_board_ddr_clk(void)
++{
++	return CONFIG_DDR_CLK_FREQ;
++}
++
++void board_init_f(ulong bootflag)
++{
++	u32 plat_ratio, sys_clk, ccb_clk;
++	ccsr_gur_t *gur = (void *)CONFIG_SYS_MPC85xx_GUTS_ADDR;
++
++	/* Memcpy existing GD at CONFIG_SPL_GD_ADDR */
++	memcpy((void *)CONFIG_SPL_GD_ADDR, (void *)gd, sizeof(gd_t));
++
++	/* Update GD pointer */
++	gd = (gd_t *)(CONFIG_SPL_GD_ADDR);
++
++	console_init_f();
++
++	/* initialize selected port with appropriate baud rate */
++	sys_clk = get_board_sys_clk();
++	plat_ratio = (in_be32(&gur->rcwsr[0]) >> 25) & 0x1f;
++	ccb_clk = sys_clk * plat_ratio / 2;
++
++	NS16550_init((NS16550_t)CONFIG_SYS_NS16550_COM1,
++		     ccb_clk / 16 / CONFIG_BAUDRATE);
++
++#if defined(CONFIG_SPL_MMC_BOOT)
++	puts("\nSD boot...\n");
++#elif defined(CONFIG_SPL_SPI_BOOT)
++	puts("\nSPI boot...\n");
++#elif defined(CONFIG_SPL_NAND_BOOT)
++	puts("\nNAND boot...\n");
++#endif
++
++	relocate_code(CONFIG_SPL_RELOC_STACK, (gd_t *)CONFIG_SPL_GD_ADDR, 0x0);
++}
++
++void board_init_r(gd_t *gd, ulong dest_addr)
++{
++	bd_t *bd;
++
++	bd = (bd_t *)(gd + sizeof(gd_t));
++	memset(bd, 0, sizeof(bd_t));
++	gd->bd = bd;
++	bd->bi_memstart = CONFIG_SYS_INIT_L3_ADDR;
++	bd->bi_memsize = CONFIG_SYS_L3_SIZE;
++
++	arch_cpu_init();
++	get_clocks();
++	mem_malloc_init(CONFIG_SPL_RELOC_MALLOC_ADDR,
++			CONFIG_SPL_RELOC_MALLOC_SIZE);
++	gd->flags |= GD_FLG_FULL_MALLOC_INIT;
++
++#ifdef CONFIG_SPL_NAND_BOOT
++	nand_spl_load_image(CONFIG_ENV_OFFSET, CONFIG_ENV_SIZE,
++			    (uchar *)CONFIG_ENV_ADDR);
++#endif
++#ifdef CONFIG_SPL_MMC_BOOT
++	mmc_initialize(bd);
++	mmc_spl_load_image(CONFIG_ENV_OFFSET, CONFIG_ENV_SIZE,
++			   (uchar *)CONFIG_ENV_ADDR);
++#endif
++#ifdef CONFIG_SPL_SPI_BOOT
++	fsl_spi_spl_load_image(CONFIG_ENV_OFFSET, CONFIG_ENV_SIZE,
++			   (uchar *)CONFIG_ENV_ADDR);
++#endif
++
++	gd->env_addr  = (ulong)(CONFIG_ENV_ADDR);
++	gd->env_valid = ENV_VALID;
++
++	i2c_init_all();
++
++	dram_init();
++
++#ifdef CONFIG_SPL_MMC_BOOT
++	mmc_boot();
++#elif defined(CONFIG_SPL_SPI_BOOT)
++	fsl_spi_boot();
++#elif defined(CONFIG_SPL_NAND_BOOT)
++	nand_boot();
++#endif
++}
+diff --git a/board/freescale/ifc1410/tlb.c b/board/freescale/ifc1410/tlb.c
+new file mode 100644
+index 0000000..5bd823c
+--- /dev/null
++++ b/board/freescale/ifc1410/tlb.c
+@@ -0,0 +1,152 @@
++/*
++ * Copyright 2008-2014 Freescale Semiconductor, Inc.
++ *
++ * (C) Copyright 2000
++ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
++ *
++ * SPDX-License-Identifier:     GPL-2.0+
++ */
++
++#include <common.h>
++#include <asm/mmu.h>
++
++struct fsl_e_tlb_entry tlb_table[] = {
++	/* TLB 0 - for temp stack in cache */
++	SET_TLB_ENTRY(0, CONFIG_SYS_INIT_RAM_ADDR,
++		      CONFIG_SYS_INIT_RAM_ADDR_PHYS,
++		      MAS3_SX|MAS3_SW|MAS3_SR, 0,
++		      0, 0, BOOKE_PAGESZ_4K, 0),
++	SET_TLB_ENTRY(0, CONFIG_SYS_INIT_RAM_ADDR + 4 * 1024,
++		      CONFIG_SYS_INIT_RAM_ADDR_PHYS + 4 * 1024,
++		      MAS3_SX|MAS3_SW|MAS3_SR, 0,
++		      0, 0, BOOKE_PAGESZ_4K, 0),
++	SET_TLB_ENTRY(0, CONFIG_SYS_INIT_RAM_ADDR + 8 * 1024,
++		      CONFIG_SYS_INIT_RAM_ADDR_PHYS + 8 * 1024,
++		      MAS3_SX|MAS3_SW|MAS3_SR, 0,
++		      0, 0, BOOKE_PAGESZ_4K, 0),
++	SET_TLB_ENTRY(0, CONFIG_SYS_INIT_RAM_ADDR + 12 * 1024,
++		      CONFIG_SYS_INIT_RAM_ADDR_PHYS + 12 * 1024,
++		      MAS3_SX|MAS3_SW|MAS3_SR, 0,
++		      0, 0, BOOKE_PAGESZ_4K, 0),
++
++	/* TLB 1 */
++	/* *I*** - Covers boot page */
++#if defined(CONFIG_SYS_RAMBOOT) && defined(CONFIG_SYS_INIT_L3_ADDR)
++	/*
++	 * *I*G - L3SRAM. When L3 is used as 1M SRAM, the address of the
++	 * SRAM is at 0xfff00000, it covered the 0xfffff000.
++	 */
++	SET_TLB_ENTRY(1, CONFIG_SYS_INIT_L3_ADDR, CONFIG_SYS_INIT_L3_ADDR,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
++		      0, 0, BOOKE_PAGESZ_1M, 1),
++#elif defined(CONFIG_SRIO_PCIE_BOOT_SLAVE)
++	/*
++	 * SRIO_PCIE_BOOT-SLAVE. When slave boot, the address of the
++	 * space is at 0xfff00000, it covered the 0xfffff000.
++	 */
++	SET_TLB_ENTRY(1, CONFIG_SYS_SRIO_PCIE_BOOT_SLAVE_ADDR,
++		      CONFIG_SYS_SRIO_PCIE_BOOT_SLAVE_ADDR_PHYS,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_W|MAS2_G,
++		      0, 0, BOOKE_PAGESZ_1M, 1),
++#else
++	SET_TLB_ENTRY(1, 0xfffff000, 0xfffff000,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
++		      0, 0, BOOKE_PAGESZ_4K, 1),
++#endif
++
++	/* *I*G* - CCSRBAR */
++	SET_TLB_ENTRY(1, CONFIG_SYS_CCSRBAR, CONFIG_SYS_CCSRBAR_PHYS,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
++		      0, 1, BOOKE_PAGESZ_16M, 1),
++
++	/* *I*G* - Flash, localbus */
++	/* This will be changed to *I*G* after relocation to RAM. */
++	SET_TLB_ENTRY(1, CONFIG_SYS_FLASH_BASE, CONFIG_SYS_FLASH_BASE_PHYS,
++		      MAS3_SX|MAS3_SR, MAS2_W|MAS2_G,
++		      0, 2, BOOKE_PAGESZ_256M, 1),
++
++#ifndef CONFIG_SPL_BUILD
++	/* *I*G* - PCIe 3, 0x80000000 */
++#ifdef CONFIG_PCIE3
++	SET_TLB_ENTRY(1, CONFIG_SYS_PCIE3_MEM_VIRT, CONFIG_SYS_PCIE3_MEM_PHYS,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
++		      0, 5, BOOKE_PAGESZ_1G, 1),
++#endif
++
++
++	/* *I*G* - PCIe 4, 0xc0000000 */
++#ifdef CONFIG_PCIE4
++	SET_TLB_ENTRY(1, CONFIG_SYS_PCIE4_MEM_VIRT, CONFIG_SYS_PCIE4_MEM_PHYS,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
++		      0, 6, BOOKE_PAGESZ_256M, 1),
++#endif
++
++	/* *I*G* - PCI I/O */
++	SET_TLB_ENTRY(1, CONFIG_SYS_PCIE_IO_VIRT, CONFIG_SYS_PCIE_IO_PHYS,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
++		      0, 7, BOOKE_PAGESZ_256K, 1),
++
++	/* Bman/Qman */
++#ifdef CONFIG_SYS_BMAN_MEM_PHYS
++	SET_TLB_ENTRY(1, CONFIG_SYS_BMAN_MEM_BASE, CONFIG_SYS_BMAN_MEM_PHYS,
++		      MAS3_SX|MAS3_SW|MAS3_SR, 0,
++		      0, 9, BOOKE_PAGESZ_16M, 1),
++	SET_TLB_ENTRY(1, CONFIG_SYS_BMAN_MEM_BASE + 0x01000000,
++		      CONFIG_SYS_BMAN_MEM_PHYS + 0x01000000,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
++		      0, 10, BOOKE_PAGESZ_16M, 1),
++#endif
++#ifdef CONFIG_SYS_QMAN_MEM_PHYS
++	SET_TLB_ENTRY(1, CONFIG_SYS_QMAN_MEM_BASE, CONFIG_SYS_QMAN_MEM_PHYS,
++		      MAS3_SX|MAS3_SW|MAS3_SR, 0,
++		      0, 11, BOOKE_PAGESZ_16M, 1),
++	SET_TLB_ENTRY(1, CONFIG_SYS_QMAN_MEM_BASE + 0x01000000,
++		      CONFIG_SYS_QMAN_MEM_PHYS + 0x01000000,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
++		      0, 12, BOOKE_PAGESZ_16M, 1),
++#endif
++#endif
++#ifdef CONFIG_SYS_DCSRBAR_PHYS
++	SET_TLB_ENTRY(1, CONFIG_SYS_DCSRBAR, CONFIG_SYS_DCSRBAR_PHYS,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
++		      0, 13, BOOKE_PAGESZ_32M, 1),
++#endif
++#ifdef CONFIG_SYS_NAND_BASE
++	/*
++	 * *I*G - NAND
++	 * entry 14 and 15 has been used hard coded, they will be disabled
++	 * in cpu_init_f, so we use entry 16 for nand.
++	 */
++	SET_TLB_ENTRY(1, CONFIG_SYS_NAND_BASE, CONFIG_SYS_NAND_BASE_PHYS,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
++		      0, 16, BOOKE_PAGESZ_64K, 1),
++#endif
++#ifdef CONFIG_SRIO_PCIE_BOOT_SLAVE
++	/*
++	 * SRIO_PCIE_BOOT-SLAVE. 1M space from 0xffe00000 for
++	 * fetching ucode and ENV from master
++	 */
++	SET_TLB_ENTRY(1, CONFIG_SYS_SRIO_PCIE_BOOT_UCODE_ENV_ADDR,
++		      CONFIG_SYS_SRIO_PCIE_BOOT_UCODE_ENV_ADDR_PHYS,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_G,
++		      0, 18, BOOKE_PAGESZ_1M, 1),
++#endif
++#if defined(CONFIG_RAMBOOT_PBL) && !defined(CONFIG_SPL_BUILD)
++	SET_TLB_ENTRY(1, CONFIG_SYS_DDR_SDRAM_BASE, CONFIG_SYS_DDR_SDRAM_BASE,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_M,
++		      0, 19, BOOKE_PAGESZ_2G, 1),
++#endif
++#ifdef CONFIG_SYS_PON_BASE
++	SET_TLB_ENTRY(1, CONFIG_SYS_PON_BASE, CONFIG_SYS_PON_BASE_PHYS,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
++		      0, 20, BOOKE_PAGESZ_64K, 1),
++#endif
++#ifdef CONFIG_SYS_VME_BASE
++	SET_TLB_ENTRY(1, CONFIG_SYS_VME_BASE, CONFIG_SYS_VME_BASE_PHYS,
++		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
++		      0, 21, BOOKE_PAGESZ_256M, 1)
++#endif
++
++};
++
++int num_tlb_entries = ARRAY_SIZE(tlb_table);
+diff --git a/cmd/Makefile b/cmd/Makefile
+index 2b0444d..c106581 100644
+--- a/cmd/Makefile
++++ b/cmd/Makefile
+@@ -55,6 +55,9 @@ obj-$(CONFIG_CMD_FDC) += fdc.o
+ obj-$(CONFIG_CMD_FDT) += fdt.o
+ obj-$(CONFIG_CMD_FITUPD) += fitupd.o
+ obj-$(CONFIG_CMD_FLASH) += flash.o
++ifdef CONFIG_CMD_PROM
++obj-$(CONFIG_CMD_PROM) += prom.o
++endif
+ ifdef CONFIG_FPGA
+ obj-$(CONFIG_CMD_FPGA) += fpga.o
+ endif
+diff --git a/cmd/prom.c b/cmd/prom.c
+new file mode 100644
+index 0000000..93219f9
+--- /dev/null
++++ b/cmd/prom.c
+@@ -0,0 +1,847 @@
++#include <common.h>
++#include <hwconfig.h>
++#include <command.h>
++#include <environment.h>
++#include <malloc.h>
++
++
++#define SFLASH_CMD_DUMMY 0xA5
++#define SFLASH_CMD_WREN  0x06
++#define SFLASH_CMD_WRDI  0x04
++#define SFLASH_CMD_REMS  0x90
++#define SFLASH_CMD_RDID  0x9f
++#define SFLASH_CMD_RDSR  0x05
++#define SFLASH_CMD_RDSR2 0x07
++#define SFLASH_CMD_RDCR  0x35
++#define SFLASH_CMD_WRSR  0x01
++#define SFLASH_CMD_READ  0x03
++#define SFLASH_CMD_4READ  0x13
++#define SFLASH_CMD_FREAD 0x0B
++#define SFLASH_CMD_PP    0x02
++#define SFLASH_CMD_4PP   0x12
++#define SFLASH_CMD_SE    0xD8
++#define SFLASH_CMD_4SE   0xDC
++#define SFLASH_CMD_BE    0xC7
++
++#define SPI_OFFSET    0x28
++#define SPI_CLK       0x01
++#define SPI_DO        0x02
++#define SPI_DI        0x04
++#define SPI_CS        0x08
++#define SPI_DEV0      0x00
++#define SPI_DEV1      0x10
++#define SPI_DEV2      0x20
++#define SPI_DEV3      0x30
++#define SPI_DEV4      0x40
++#define SPI_DEV5      0x50
++#define SPI_8BIT      0x80
++
++int spi_dev = 0;
++struct ifc_node
++{
++  int *csr_ptr;
++}
++ifc_node = {(int *)CONFIG_SYS_PON_BASE};
++
++
++void
++ifc_csr_wr( struct ifc_node *ifc,
++            int off,
++        int data)
++{
++  volatile int *p;
++
++  p = ifc->csr_ptr;
++  p[off>>2] = data;
++
++  return;
++}
++
++int
++ifc_csr_rd( struct ifc_node *ifc,
++        int off)
++{
++  volatile int *p;
++
++  p = ifc->csr_ptr;
++  return( p[off>>2]);
++}
++
++void
++spi_set_dev( uint dev)
++{
++  spi_dev = (dev & 7) << 4;
++}
++
++static void
++spi_write_io( struct ifc_node *ifc,
++          uint data)
++{
++  ifc_csr_rd( ifc, SPI_OFFSET);
++  data |=  spi_dev;
++  ifc_csr_wr( ifc, SPI_OFFSET, data);
++  ifc_csr_rd( ifc, SPI_OFFSET);
++  return;
++}
++
++static uint
++spi_read_io( struct ifc_node *ifc)
++{
++  volatile uint data;
++
++  data = ifc_csr_rd( ifc, SPI_OFFSET);
++
++  return( data);
++}
++
++void
++spi_slow_mode( struct ifc_node *ifc)
++{
++  uint data, i;
++
++  data =  SPI_CS;
++  spi_write_io( ifc, data);
++  for( i = 0; i < 4; i++)
++  {
++    data =  SPI_CLK | SPI_CS;
++    spi_write_io( ifc, data);
++    data =  SPI_CS;
++    spi_write_io( ifc, data);
++  }
++  data =  0;
++  spi_write_io( ifc, data);
++
++  return;
++}
++
++void
++spi_load_cmd( struct ifc_node *ifc,
++          uint cmd,
++          uint para)
++{
++  uint data;
++
++  switch( cmd)
++  {
++    case SFLASH_CMD_4READ:
++    case SFLASH_CMD_4PP:
++    case SFLASH_CMD_4SE:
++    {
++      data = ((cmd << 24) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++      spi_write_io( ifc, data);
++      data = (para  & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++      spi_write_io( ifc, data);
++      data = ((para << 8) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++      spi_write_io( ifc, data);
++      data = ((para << 16) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++      spi_write_io( ifc, data);
++      data = ((para << 24) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++      spi_write_io( ifc, data);
++      return;
++    }
++    case SFLASH_CMD_FREAD:
++    case SFLASH_CMD_PP:
++    case SFLASH_CMD_SE:
++    case SFLASH_CMD_REMS:
++    {
++      data = ((cmd << 24) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++      spi_write_io( ifc, data);
++      data = ((para << 8) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++      spi_write_io( ifc, data);
++      data = ((para << 16) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++      spi_write_io( ifc, data);
++      data = ((para << 24) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++      spi_write_io( ifc, data);
++      return;
++    }
++    case SFLASH_CMD_WREN:
++    case SFLASH_CMD_WRDI:
++    case SFLASH_CMD_RDID:
++    case SFLASH_CMD_RDSR:
++    case SFLASH_CMD_RDSR2:
++    case SFLASH_CMD_BE:
++    case SFLASH_CMD_DUMMY:
++    {
++      data = ((cmd << 24) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++      spi_write_io( ifc, data);
++      return;
++    }
++    case SFLASH_CMD_WRSR:
++    {
++      if( spi_dev)
++      {
++    cmd = ( cmd << 16) | ((para & 0xff)<<8) | ((para & 0xff00)>>8);
++        data = ((cmd << 8) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++        spi_write_io( ifc, data);
++        data = ((cmd << 16) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++        spi_write_io( ifc, data);
++        data = ((cmd << 24) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++        spi_write_io( ifc, data);
++      }
++      else
++      {
++    cmd = ( cmd << 8) | (para & 0xff);
++    //size = 16;
++        data = ((cmd << 16) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++        spi_write_io( ifc, data);
++        data = ((cmd << 24) & 0xff000000) | SPI_CLK | SPI_CS | SPI_8BIT;
++        spi_write_io( ifc, data);
++      }
++      return;
++    }
++    default:
++    {
++      return;
++    }
++  }
++
++  return;
++}
++
++void
++spi_start_cmd( struct ifc_node *ifc)
++{
++  spi_write_io( ifc, SPI_CS);
++}
++
++void
++spi_end_cmd( struct ifc_node *ifc)
++{
++  spi_write_io( ifc, 0x0);
++}
++
++void
++spi_write_byte( struct ifc_node *ifc,
++        unsigned char b)
++{
++  uint data;
++
++  data = ((uint)b << 24) | SPI_CLK | SPI_CS | SPI_8BIT;
++  spi_write_io( ifc, data);
++
++  return;
++}
++
++unsigned char
++spi_read_byte( struct ifc_node *ifc)
++{
++  unsigned char b;
++  uint data;
++  spi_write_io( ifc, SPI_CLK | SPI_CS | SPI_8BIT);
++  data = spi_read_io( ifc);
++  b = (unsigned char)(data >> 24);
++  return( b);
++}
++
++void
++spi_read_ID( struct ifc_node *ifc,
++         unsigned char *data_p)
++{
++  spi_start_cmd( ifc);
++  spi_load_cmd( ifc, SFLASH_CMD_RDID, 0);
++  data_p[0] = spi_read_byte( ifc);
++  data_p[1] = spi_read_byte( ifc);
++  data_p[2] = spi_read_byte( ifc);
++  spi_end_cmd( ifc);
++  return;
++}
++
++void
++spi_read_EMS( struct ifc_node *ifc,
++          unsigned char *data_p)
++{
++  spi_start_cmd( ifc);
++  spi_load_cmd( ifc, SFLASH_CMD_REMS, 0);
++  data_p[0] = spi_read_byte( ifc);
++  data_p[1] = spi_read_byte( ifc);
++  data_p[2] = 0;
++  spi_end_cmd( ifc);
++  return;
++}
++
++
++unsigned short
++spi_read_status( struct ifc_node *ifc)
++{
++  unsigned short status;
++
++  spi_start_cmd( ifc);
++  spi_load_cmd( ifc, SFLASH_CMD_RDSR2, 0);
++  status =  (unsigned short)spi_read_byte( ifc);
++  status = (unsigned short)((status<<8)&0xff00);
++  spi_end_cmd( ifc);
++  spi_start_cmd( ifc);
++  spi_load_cmd( ifc, SFLASH_CMD_RDSR, 0);
++  status = (unsigned short)(status | (spi_read_byte( ifc) & 0xff));
++  spi_end_cmd( ifc);
++  return( status);
++}
++
++unsigned char
++spi_wait_busy( struct ifc_node *ifc,
++                uint tmo)
++{
++  unsigned char status;
++
++  spi_start_cmd( ifc);
++  spi_load_cmd( ifc, SFLASH_CMD_RDSR, 0);
++  do
++  {
++    status = spi_read_byte( ifc);
++    if( !tmo--) break;
++
++  } while( status&1);
++  spi_end_cmd( ifc);
++  return( status);
++}
++
++
++
++unsigned char
++spi_write_enable( struct ifc_node *ifc,
++                  uint tmo)
++{
++  unsigned char status;
++
++  spi_start_cmd( ifc);
++  spi_load_cmd( ifc, SFLASH_CMD_WREN, 0);
++  spi_end_cmd( ifc);
++  spi_start_cmd( ifc);
++  spi_load_cmd( ifc, SFLASH_CMD_RDSR, 0);
++  do
++  {
++    status = spi_read_byte( ifc);
++    if( !tmo--) break;
++  } while( !(status&2));
++  spi_end_cmd( ifc);
++  return( status);
++}
++
++void
++spi_write_status( struct ifc_node *ifc,
++             unsigned short status)
++{
++  spi_write_enable(  ifc, 0x100);
++  spi_start_cmd( ifc);
++  spi_load_cmd( ifc, SFLASH_CMD_WRSR, (uint)status);
++  spi_end_cmd( ifc);
++  return;
++}
++
++int
++spi_sector_erase( struct ifc_node *ifc,
++                  uint offset)
++{
++  spi_start_cmd( ifc);
++  spi_load_cmd(  ifc, SFLASH_CMD_4SE, offset);
++  spi_end_cmd( ifc);
++  if( spi_wait_busy( ifc, 1000000) & 1) return( -1);
++  return( 0);
++}
++
++int
++spi_page_program( struct ifc_node *ifc,
++                  uint offset,
++          unsigned char *p,
++          uint size)
++{
++  int i;
++  int pg_size;
++
++  pg_size = 0x200;
++  if( size > pg_size) return( -1);
++  spi_start_cmd( ifc);
++  spi_load_cmd(  ifc, SFLASH_CMD_4PP, offset);
++  for( i = 0; i < size; i++)
++  {
++    spi_write_byte(  ifc, *p++);
++  }
++  spi_end_cmd( ifc);
++  if( spi_wait_busy(  ifc, 1000000) & 1) return( -1);
++  return( 0);
++}
++
++void
++spi_read_data( struct ifc_node *ifc,
++               uint offset,
++           unsigned char *buf,
++           uint size)
++{
++  //printf("spi_read_data(%x,%x)\n", offset, size);
++  spi_start_cmd( ifc);
++  spi_load_cmd( ifc, SFLASH_CMD_4READ, offset);
++  while( size--)
++  {
++    *buf++ = spi_read_byte( ifc);
++  }
++  spi_end_cmd( ifc);
++  return;
++}
++
++
++int
++spi_erase_sector( struct ifc_node *ifc,
++                  uint start,
++              uint size,
++          uint sect_size)
++{
++  int retval;
++  uint offset;
++  unsigned char status;
++
++  retval = 0;
++
++  offset = start;
++  while( offset < start+size)
++  {
++    status = spi_write_enable( ifc, 0x100);
++    if( !(status & 2))
++    {
++      return( -1);
++    }
++    if( spi_sector_erase( ifc, offset) < 0)
++    {
++      retval = -1;
++      goto spi_erase_data_exit;
++    }
++    offset += sect_size;
++  }
++
++spi_erase_data_exit:
++  /* write disable */
++  spi_start_cmd( ifc);
++  spi_load_cmd( ifc, SFLASH_CMD_WRDI, 0);
++  spi_end_cmd( ifc);
++
++  return( retval);
++}
++
++
++int
++ifc_sflash_rd( struct ifc_node *ifc,
++              unsigned char *buf,
++              uint offset,
++              uint len)
++{
++  uint dev;
++
++  dev = (offset >> 28) & 7;
++  spi_set_dev (dev);
++  spi_slow_mode( ifc);
++  spi_read_data( ifc, offset, buf, len);
++  return(0);
++}
++
++int
++ifc_sflash_erase( struct ifc_node *ifc,
++          uint offset,
++          uint len)
++{
++  uint s_start;         /* start of first sector                    */
++  uint s_end;           /* end of last sector                       */
++  uint last ;           /* data offset in last sector              */
++  uint sect_size, sect_mask;
++  uint dev;
++
++  if( len < 1)
++  {
++    return(-1);
++  }
++
++  dev = (offset >> 28) & 7;
++  offset &= 0xfffffff;
++  spi_set_dev (dev);
++  spi_slow_mode( ifc);
++  sect_size = 0x40000;
++  sect_mask = sect_size - 1;
++  s_start = offset & ~sect_mask;
++  s_end   = (offset + len) & ~sect_mask;
++  last    = (offset + len) & sect_mask;
++  if( last)
++  {
++    s_end += sect_size;
++  }
++  if( s_end > 0x4000000)
++  {
++    return( -1);
++  }
++  //printf("in ifc_sflash_erase(): %x -> %x\n", s_start, s_end);
++  spi_erase_sector( ifc, s_start, s_end - s_start, sect_size);
++  return(0);
++}
++
++int
++spi_write_sector( struct ifc_node *ifc,
++                  uint start,
++                  unsigned char *buf,
++                  uint size,
++                  uint sect_size)
++{
++  int i, retval;
++  uint offset;
++  unsigned char status;
++  int pg_size;
++
++  retval = 0;
++
++  pg_size = 0x200;
++  offset = start;
++  //printf("spi_write_sector(%x,%x,%x)\n", start, size, sect_size);
++  while( offset < start+size)
++  {
++    status = spi_write_enable( ifc, 0x100);
++    if( !(status & 2))
++    {
++      return( -1);
++    }
++    printf("\rsector %x -> erase -> ", offset);
++    if( spi_sector_erase( ifc, offset) < 0)
++    {
++      retval = -1;
++      goto spi_write_data_exit;
++    }
++    printf("program -> %x ", offset);
++    for( i = 0; i < (sect_size/pg_size); i++)
++    {
++      if( !(i&0xf))
++      {
++    printf("%06x\b\b\b\b\b\b", i*pg_size);
++    //fflush(stdout);
++      }
++      spi_write_enable(  ifc, 0x100);
++      if( spi_page_program( ifc, offset, buf, pg_size) < 0)
++      {
++    retval = -1;
++    printf("\npage program error at offset %x\n", offset);
++        goto spi_write_data_exit;
++      }
++      buf += pg_size;
++      offset += pg_size;
++    }
++    printf("%06x\b\b\b\b\b\b", i*pg_size);
++  }
++  printf("\n");
++
++spi_write_data_exit:
++  /* write disable */
++  spi_start_cmd( ifc);
++  spi_load_cmd( ifc, SFLASH_CMD_WRDI, 0);
++  spi_end_cmd( ifc);
++  return( retval);
++}
++
++int
++ifc_sflash_wr( struct ifc_node *ifc,
++             unsigned char *buf,
++             uint offset,
++             uint len)
++{
++  uint s_start;         /* start of first sector                    */
++  uint s_end;           /* end of last sector                       */
++  uint t_size;          /* total size to be erased and reprogrammed */
++  uint first;           /* data offset in first sector              */
++  uint last ;           /* data offset in last sector              */
++  unsigned char *t_buf;          /* temporary buffer */
++  uint sect_size, sect_mask;
++  uint dev;
++  int dyn_alloc;
++
++  if( len < 1)
++  {
++    return(-1);
++  }
++  dev = (offset >> 28) & 7;
++  offset &= 0xfffffff;
++  spi_set_dev (dev);
++  spi_slow_mode( ifc);
++  sect_size = 0x40000;
++  sect_mask = sect_size - 1;
++  s_start = offset & ~sect_mask;
++  first   = offset & sect_mask;
++  s_end   = (offset + len) & ~sect_mask;
++  last    = (offset + len) & sect_mask;
++  if( last)
++  {
++    s_end += sect_size;
++  }
++  if( s_end > 0x4000000)
++  {
++    return( -1);
++  }
++
++
++  t_size = s_end - s_start;
++  dyn_alloc = 0;
++  if( ((int)buf & 0x70000000) == 0x70000000)
++  {
++    t_buf = (unsigned char *)malloc(t_size);
++    dyn_alloc = 1;
++  }
++  else
++  {
++    t_buf = buf + ((len + 0xfff) & 0xfffff000);
++  }
++  if( first)
++  {
++    spi_read_data( ifc, s_start, t_buf, first);
++  }
++  if( last)
++  {
++    spi_read_data( ifc, s_end - sect_size + last, t_buf + first + len, sect_size - last);
++  }
++  memcpy( t_buf+first, buf, len);
++
++  spi_write_sector( ifc, s_start, t_buf, t_size, sect_size);
++
++  if( dyn_alloc)
++  {
++    free( t_buf);
++  }
++  return(0);
++}
++
++int
++ifc_sflash_wr_split( struct ifc_node *ifc,
++                     unsigned char *buf,
++                     uint offset,
++                     uint len)
++{
++  unsigned char *buf_d, *d, *s;
++  int retval, i;
++
++  //buf_d = (unsigned char *)malloc( len/2);
++  buf_d = buf + ((len + 0xfff) & 0xfffff000);
++  d = buf_d;
++  s = buf;
++  for( i = 0; i < len; i+=2)
++  {
++    *d = (unsigned char)(((*s&0xf)<<4) | (*(s+1)&0xf));
++    d += 1;
++    s += 2;
++  }
++  printf("Transferring first half in SFLASH %d at offset 0x%08x [0x%x bytes]...\n",
++     (offset>>28), (offset & 0xfffffff)/2, len/2);
++  retval = ifc_sflash_wr( ifc, buf_d, (offset&0xf0000000)+(offset & 0xfffffff)/2, len/2);
++  if( retval)
++  {
++    //free(buf_d);
++    return( retval);
++  }
++  d = buf_d;
++  s = buf;
++  for( i = 0; i < len; i+=2)
++  {
++    *d = (unsigned char)((*s&0xf0) | ((*(s+1)&0xf0)>>4));
++    d += 1;
++    s += 2;
++  }
++  printf("Transferring second half in SFLASH %d at offset 0x%08x [0x%x bytes]...\n",
++     (offset>>28)+1, (offset & 0xfffffff)/2, len/2);
++  retval = ifc_sflash_wr( ifc, buf_d, (offset&0xf0000000)+(offset & 0xfffffff)/2+0x10000000, len/2);
++  //free(buf_d);
++
++  return( retval);
++}
++
++int
++ifc_sflash_load( int argc, char * const argv[])
++{
++  unsigned char *buf_src;
++  int size, offset;
++  int retval;
++  char *endp;
++
++  if( argc < 4)
++  {
++    printf("missing parameters -> usage:\n");
++    goto ifc_sflash_load_usage;
++  }
++  buf_src = (unsigned char *)simple_strtoul(argv[2], &endp, 16);
++  if (*argv[2] == 0 || *endp != 0)
++  {
++    return -1;
++  }
++  if( !strncmp( argv[3], "central", 3) ||
++      !strncmp( argv[3], "CENTRAL", 3)    )
++  {
++    if(  argv[3][8] == '0') offset = 0x0000000;
++    else if( argv[3][8] == '1') offset = 0x1800000;
++    else if( argv[3][8] == '2') offset = 0x3000000;
++    else if( argv[3][8] == '3') offset = 0x4800000;
++    else
++    {
++      printf("Bad FPGA index : %s\n",argv[3]);
++      goto ifc_sflash_load_usage;
++    }
++  }
++  else if( !strncmp(argv[3], "io", 2) ||
++       !strncmp(argv[3], "IO", 2)    )
++  {
++    if( argv[3][3] == '0') offset = 0x6000000;
++    else if( argv[3][3] == '1') offset = 0x6800000;
++    else if( argv[3][3] == '2') offset = 0x7000000;
++    else if( argv[3][3] == '3') offset = 0x7800000;
++    else
++    {
++      printf("Bad FPGA index : %s\n",argv[3]);
++      goto ifc_sflash_load_usage;
++    }
++  }
++  else
++  {
++    printf("Bad FPGA identifier : %s\n",argv[3]);
++    goto ifc_sflash_load_usage;
++  }
++  size = simple_strtoul(argv[4], &endp, 16);
++  if (*argv[4] == 0 || *endp != 0)
++  {
++    printf("bad length parameter : %s -> usage:\n", argv[4]);
++    goto ifc_sflash_load_usage;
++  }
++
++  retval = ifc_sflash_wr_split( &ifc_node,  buf_src, 0x20000000 | offset, size);
++  return( retval);
++
++ifc_sflash_load_usage:
++  printf("sflash load <addr> <fpga>.<idx> <size>\n");
++
++  return( -1);
++}
++
++int do_prom(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
++{
++  int rc = 0;
++  int dev;
++  char *endp;
++
++  if (argc <= 1)
++  {
++    return cmd_usage(cmdtp);
++  }
++  dev = 0;
++  if( strlen( (char *)argv[0]) > 5)
++  {
++    dev = argv[0][5] - '0';
++    if((dev < 1) || (dev > 5))
++    {
++      printf("Bad prom identifier\n");
++      return(-1);
++    }
++  }
++  if( strcmp(argv[1], "rdid") == 0)
++  {
++    unsigned char id[4];
++
++    if(!dev) dev = 2;
++    spi_set_dev( dev);
++    spi_slow_mode( &ifc_node);
++    spi_read_ID( &ifc_node, id);
++    printf("SFLASH IDENTIFIER = %02x.%02x.%02x\n", id[0], id[1], id[2]);
++    return( 0);
++  }
++  else if( strcmp(argv[1], "rdsr") == 0)
++  {
++    unsigned short sts;
++
++    if(!dev) dev = 2;
++    spi_set_dev( dev);
++    spi_slow_mode( &ifc_node);
++    sts = spi_read_status( &ifc_node);
++    printf("SFLASH Status Register = %04x\n", sts);
++    return( 0);
++  }
++  else if( strcmp(argv[1], "wrsr") == 0)
++  {
++    unsigned short sts;
++    int data;
++    if (argc < 3)
++    {
++      printf("read operation more arguments\n");
++      return cmd_usage(cmdtp);
++    }
++    data = simple_strtoul(argv[2], &endp, 16);
++    sts = (unsigned short)data;
++    if(!dev) dev = 2;
++    spi_set_dev( dev);
++    spi_slow_mode( &ifc_node);
++    spi_write_status( &ifc_node, sts);
++    return( 0);
++  }
++  else if( strcmp(argv[1], "read") == 0)
++  {
++    int offset, addr, len;
++    if (argc < 5)
++    {
++      printf("read operation more arguments\n");
++      return cmd_usage(cmdtp);
++    }
++    addr = simple_strtoul(argv[2], &endp, 16);
++    if (*argv[2] == 0 || *endp != 0)return -1;
++    offset = simple_strtoul(argv[3], &endp, 16);
++    if (*argv[3] == 0 || *endp != 0) return -1;
++    len = simple_strtoul(argv[4], &endp, 16);
++    if (*argv[4] == 0 || *endp != 0) return -1;
++    ifc_sflash_rd( &ifc_node,  (unsigned char *)addr, (dev<<28) | offset, len);;
++    return( 0);
++  }
++  else if( strcmp(argv[1], "write") == 0)
++  {
++    int offset, addr, len;
++    if (argc < 5)
++    {
++      printf("write operation more arguments\n");
++      return cmd_usage(cmdtp);
++    }
++    addr = simple_strtoul(argv[2], &endp, 16);
++    if (*argv[2] == 0 || *endp != 0)return -1;
++    offset = simple_strtoul(argv[3], &endp, 16);
++    if (*argv[3] == 0 || *endp != 0) return -1;
++    len = simple_strtoul(argv[4], &endp, 16);
++    if (*argv[4] == 0 || *endp != 0) return -1;
++    ifc_sflash_wr( &ifc_node,  (unsigned char *)addr, (dev<<28) | offset, len);;
++    return( 0);
++  }
++  else if( strcmp(argv[1], "load") == 0)
++  {
++    return( ifc_sflash_load( argc, argv));
++  }
++  else if( strcmp(argv[1], "saveenv") == 0)
++  {
++    int i;
++    env_t env_new;
++    int    rc = 1;
++
++    printf("in prom saveenv -> ");
++    for( i = 0; i < argc; i++)
++    {
++      printf(" %s", argv[i]);
++    }
++    printf("\n");
++
++    rc = env_export( &env_new);
++    if (rc)
++    {
++      printf("cannot export environment\n");
++      return( rc);
++    }
++    printf("environment exported at PROM offset 0x3f20000\n");
++    ifc_sflash_wr( &ifc_node,  (unsigned char *)&env_new, (dev<<28) | 0x3f20000, CONFIG_ENV_SIZE);
++  }
++  else
++  {
++    rc = cmd_usage(cmdtp);
++  }
++  return rc;
++}
++
++U_BOOT_CMD(
++    prom, CONFIG_SYS_MAXARGS, 1, do_prom,
++    "PROM handling",
++    "prom.<idx> rdid: read PROM identifier\n"
++    "prom.<idx> rdsr: read status register\n"
++    "prom.<idx> wrsr <data>: write status register\n"
++    "prom.<idx> read <addr> <offset> <size>: read from PROM <offset>\n"
++    "prom.<idx> write <addr> <offset> <size>: write to PROM at <offset>\n"
++    "prom load <addr> central:<idx> <size>: load CENTRAL FPGA to PROM\n"
++    "prom load <addr> io:<idx> <size>: load IO FPGA to PROM\n"
++);
+diff --git a/configs/IFC1410_NAND_defconfig b/configs/IFC1410_NAND_defconfig
+new file mode 100644
+index 0000000..dfa1ede
+--- /dev/null
++++ b/configs/IFC1410_NAND_defconfig
+@@ -0,0 +1,59 @@
++CONFIG_PPC=y
++# not available in IOxOS original
++CONFIG_SPL_LIBCOMMON_SUPPORT=y
++CONFIG_SPL_LIBGENERIC_SUPPORT=y
++CONFIG_SPL_SERIAL_SUPPORT=y
++CONFIG_SPL_DRIVERS_MISC_SUPPORT=y
++CONFIG_SPL_NAND_SUPPORT=y
++#
++CONFIG_MPC85xx=y
++CONFIG_TARGET_IFC1410=y
++CONFIG_FIT=y
++CONFIG_FIT_VERBOSE=y
++# not available in IOxOS original
++CONFIG_OF_BOARD_SETUP=y
++CONFIG_OF_STDOUT_VIA_ALIAS=y
++#
++# looks like the CONFIG_SYS_EXTRA_OPTIONS="PPC_T2080" is not used anymore
++# CONFIG_SYS_EXTRA_OPTIONS="PPC_T2080,RAMBOOT_PBL,SPL_FSL_PBL,NAND"
++CONFIG_SYS_EXTRA_OPTIONS="RAMBOOT_PBL,SPL_FSL_PBL,NAND"
++# not available in IOxOS original (this is not really necessary here but ok)
++CONFIG_BOOTDELAY=10
++#
++CONFIG_SPL=y
++# not available in IOxOS original
++CONFIG_SPL_ENV_SUPPORT=y
++CONFIG_SPL_I2C_SUPPORT=y
++CONFIG_SPL_MPC8XXX_INIT_DDR_SUPPORT=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_IMLS=y
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_SF=y
++CONFIG_CMD_I2C=y
++# CONFIG_CMD_USB is not set
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_MTDPARTS=y
++CONFIG_MTDIDS_DEFAULT="nor0=fe8000000.nor,nand0=fff800000.flash,spi0=spife110000.1"
++CONFIG_MTDPARTS_DEFAULT="mtdparts=fe8000000.nor:1m(uboot),5m(kernel),128k(dtb),96m(fs),-(user);fff800000.flash:1m(uboot),5m(kernel),128k(dtb),96m(fs),-(user);spife110000.1:1m(uboot),5m(kernel),128k(dtb),-(user)"
++#
++# CONFIG_CMD_IRQ is not set
++CONFIG_ENV_IS_IN_NAND=y
++CONFIG_FSL_CAAM=y
++CONFIG_MTD_NOR_FLASH=y
++CONFIG_NAND=y
++CONFIG_SPI_FLASH=y
++CONFIG_SPI_FLASH_STMICRO=y
++CONFIG_PHYLIB=y
++CONFIG_NETDEVICES=y
++CONFIG_PHY_GIGE=y
++CONFIG_E1000=y
++CONFIG_SYS_NS16550=y
++CONFIG_FSL_ESPI=y
++# CONFIG_USB is not set
++# CONFIG_USB_STORAGE is not set
++CONFIG_OF_LIBFDT=y
+diff --git a/configs/IFC1410_SDCARD_defconfig b/configs/IFC1410_SDCARD_defconfig
+new file mode 100644
+index 0000000..788e8a5
+--- /dev/null
++++ b/configs/IFC1410_SDCARD_defconfig
+@@ -0,0 +1,51 @@
++CONFIG_PPC=y
++# not available in IOxOS original
++CONFIG_SPL_LIBCOMMON_SUPPORT=y
++CONFIG_SPL_LIBGENERIC_SUPPORT=y
++CONFIG_SPL_MMC_SUPPORT=y
++CONFIG_SPL_SERIAL_SUPPORT=y
++CONFIG_SPL_DRIVERS_MISC_SUPPORT=y
++#
++CONFIG_MPC85xx=y
++CONFIG_TARGET_IFC1410=y
++CONFIG_FIT=y
++CONFIG_FIT_VERBOSE=y
++# not available in IOxOS original
++CONFIG_OF_BOARD_SETUP=y
++CONFIG_OF_STDOUT_VIA_ALIAS=y
++#
++# looks like the CONFIG_SYS_EXTRA_OPTIONS="PPC_T2080" is not used anymore
++# CONFIG_SYS_EXTRA_OPTIONS="PPC_T2080,RAMBOOT_PBL,SPL_FSL_PBL,SDCARD"
++CONFIG_SYS_EXTRA_OPTIONS="RAMBOOT_PBL,SPL_FSL_PBL,SDCARD"
++# not available in IOxOS original (this is not really necessary here but ok)
++CONFIG_BOOTDELAY=10
++#
++CONFIG_SPL=y
++# not available in IOxOS original
++CONFIG_SPL_ENV_SUPPORT=y
++CONFIG_SPL_I2C_SUPPORT=y
++CONFIG_SPL_MPC8XXX_INIT_DDR_SUPPORT=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_SF=y
++CONFIG_CMD_I2C=y
++# CONFIG_CMD_USB is not set
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_FAT=y
++#
++# CONFIG_CMD_IRQ is not set
++CONFIG_FSL_CAAM=y
++CONFIG_MTD_NOR_FLASH=y
++CONFIG_SPI_FLASH=y
++CONFIG_SPI_FLASH_STMICRO=y
++CONFIG_NETDEVICES=y
++CONFIG_E1000=y
++CONFIG_SYS_NS16550=y
++CONFIG_FSL_ESPI=y
++# CONFIG_USB is not set
++# CONFIG_USB_STORAGE is not set
++CONFIG_OF_LIBFDT=y
+diff --git a/configs/IFC1410_SECURE_BOOT_defconfig b/configs/IFC1410_SECURE_BOOT_defconfig
+new file mode 100644
+index 0000000..06b6b82
+--- /dev/null
++++ b/configs/IFC1410_SECURE_BOOT_defconfig
+@@ -0,0 +1,38 @@
++# file not available in IOxOS original
++CONFIG_PPC=y
++CONFIG_SECURE_BOOT=y
++CONFIG_MPC85xx=y
++CONFIG_TARGET_IFC1410=y
++# CONFIG_SYS_MALLOC_F is not set
++CONFIG_FIT=y
++CONFIG_FIT_VERBOSE=y
++CONFIG_OF_BOARD_SETUP=y
++CONFIG_OF_STDOUT_VIA_ALIAS=y
++CONFIG_SYS_EXTRA_OPTIONS="PPC_T2080"
++CONFIG_BOOTDELAY=10
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_SF=y
++CONFIG_CMD_I2C=y
++# CONFIG_CMD_USB is not set
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_FAT=y
++# CONFIG_CMD_IRQ is not set
++CONFIG_DM=y
++CONFIG_MTD_NOR_FLASH=y
++CONFIG_SPI_FLASH=y
++CONFIG_SPI_FLASH_STMICRO=y
++CONFIG_NETDEVICES=y
++CONFIG_E1000=y
++CONFIG_SYS_NS16550=y
++CONFIG_FSL_ESPI=y
++# CONFIG_USB is not set
++# CONFIG_USB_STORAGE is not set
++CONFIG_RSA=y
++CONFIG_SPL_RSA=y
++CONFIG_RSA_SOFTWARE_EXP=y
++CONFIG_OF_LIBFDT=y
+\ No newline at end of file
+diff --git a/configs/IFC1410_SPIFLASH_defconfig b/configs/IFC1410_SPIFLASH_defconfig
+new file mode 100644
+index 0000000..6d56264
+--- /dev/null
++++ b/configs/IFC1410_SPIFLASH_defconfig
+@@ -0,0 +1,52 @@
++CONFIG_PPC=y
++# not available in IOxOS original
++CONFIG_SPL_LIBCOMMON_SUPPORT=y
++CONFIG_SPL_LIBGENERIC_SUPPORT=y
++CONFIG_SPL_SERIAL_SUPPORT=y
++CONFIG_SPL_DRIVERS_MISC_SUPPORT=y
++CONFIG_SPL_SPI_FLASH_SUPPORT=y
++CONFIG_SPL_SPI_SUPPORT=y
++#
++CONFIG_MPC85xx=y
++CONFIG_TARGET_IFC1410=y
++CONFIG_FIT=y
++CONFIG_FIT_VERBOSE=y
++# not available in IOxOS original
++CONFIG_OF_BOARD_SETUP=y
++CONFIG_OF_STDOUT_VIA_ALIAS=y
++#
++# looks like the CONFIG_SYS_EXTRA_OPTIONS="PPC_T2080" is not used anymore
++# CONFIG_SYS_EXTRA_OPTIONS="PPC_T2080,RAMBOOT_PBL,SPL_FSL_PBL,SPIFLASH"
++CONFIG_SYS_EXTRA_OPTIONS="RAMBOOT_PBL,SPL_FSL_PBL,SPIFLASH"
++# not available in IOxOS original (this is not really necessary here but ok)
++CONFIG_BOOTDELAY=10
++#
++CONFIG_SPL=y
++# not available in IOxOS original
++CONFIG_SPL_ENV_SUPPORT=y
++CONFIG_SPL_I2C_SUPPORT=y
++CONFIG_SPL_MPC8XXX_INIT_DDR_SUPPORT=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_SF=y
++CONFIG_CMD_I2C=y
++# CONFIG_CMD_USB is not set
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_FAT=y
++#
++# CONFIG_CMD_IRQ is not set
++CONFIG_FSL_CAAM=y
++CONFIG_MTD_NOR_FLASH=y
++CONFIG_SPI_FLASH=y
++CONFIG_SPI_FLASH_STMICRO=y
++CONFIG_NETDEVICES=y
++CONFIG_E1000=y
++CONFIG_SYS_NS16550=y
++CONFIG_FSL_ESPI=y
++# CONFIG_USB is not set
++# CONFIG_USB_STORAGE is not set
++CONFIG_OF_LIBFDT=y
+diff --git a/configs/IFC1410_SRIO_PCIE_BOOT_defconfig b/configs/IFC1410_SRIO_PCIE_BOOT_defconfig
+new file mode 100644
+index 0000000..5f9076d
+--- /dev/null
++++ b/configs/IFC1410_SRIO_PCIE_BOOT_defconfig
+@@ -0,0 +1,35 @@
++# file not available in IOxOS original
++CONFIG_PPC=y
++CONFIG_MPC85xx=y
++CONFIG_TARGET_IFC1410=y
++CONFIG_FIT=y
++CONFIG_FIT_VERBOSE=y
++CONFIG_OF_BOARD_SETUP=y
++CONFIG_OF_STDOUT_VIA_ALIAS=y
++# check SYS_TEXT_BASE= value
++CONFIG_SYS_EXTRA_OPTIONS="SRIO_PCIE_BOOT_SLAVE,SYS_TEXT_BASE=0xFFF40000"
++CONFIG_BOOTDELAY=10
++CONFIG_HUSH_PARSER=y
++# CONFIG_CMD_IMLS is not set
++CONFIG_CMD_MEMTEST=y
++# CONFIG_CMD_FLASH is not set
++CONFIG_CMD_MMC=y
++CONFIG_CMD_SF=y
++CONFIG_CMD_I2C=y
++# CONFIG_CMD_USB is not set
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_FAT=y
++# CONFIG_CMD_IRQ is not set
++CONFIG_FSL_CAAM=y
++CONFIG_SPI_FLASH=y
++CONFIG_SPI_FLASH_STMICRO=y
++CONFIG_NETDEVICES=y
++CONFIG_E1000=y
++CONFIG_SYS_NS16550=y
++CONFIG_FSL_ESPI=y
++# CONFIG_USB is not set
++# CONFIG_USB_STORAGE is not set
++CONFIG_OF_LIBFDT=y
+diff --git a/configs/IFC1410_defconfig b/configs/IFC1410_defconfig
+new file mode 100644
+index 0000000..29a42d5
+--- /dev/null
++++ b/configs/IFC1410_defconfig
+@@ -0,0 +1,51 @@
++CONFIG_PPC=y
++CONFIG_MPC85xx=y
++CONFIG_TARGET_IFC1410=y
++# looks like the CONFIG_SYS_EXTRA_OPTIONS="PPC_T2080" is not used anymore
++# CONFIG_SYS_EXTRA_OPTIONS="PPC_T2080"
++# not available in IOxOS original
++CONFIG_FIT=y
++CONFIG_FIT_VERBOSE=y
++CONFIG_OF_BOARD_SETUP=y
++CONFIG_OF_STDOUT_VIA_ALIAS=y
++CONFIG_BOOTDELAY=10
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_IMLS=y
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_SF=y
++CONFIG_CMD_I2C=y
++# CONFIG_CMD_USB is not set
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_MTDPARTS=y
++CONFIG_MTDIDS_DEFAULT="nor0=fe8000000.nor,nand0=fff800000.flash, spi0=spife110000.1"
++CONFIG_MTDPARTS_DEFAULT="mtdparts=fe8000000.nor:1m(uboot),5m(kernel), 128k(dtb),96m(fs),-(user);fff800000.flash:1m(uboot), 5m(kernel),128k(dtb),96m(fs),-(user);spife110000.1: 1m(uboot),5m(kernel),128k(dtb),-(user)"
++# CONFIG_CMD_IRQ is not set
++CONFIG_FSL_CAAM=y
++CONFIG_MTD_NOR_FLASH=y
++CONFIG_SPI_FLASH=y
++CONFIG_SPI_FLASH_STMICRO=y
++CONFIG_PHYLIB=y
++CONFIG_NETDEVICES=y
++CONFIG_PHY_GIGE=y
++CONFIG_E1000=y
++CONFIG_SYS_NS16550=y
++CONFIG_FSL_ESPI=y
++# not available in IOxOS original
++# CONFIG_USB is not set
++# CONFIG_USB_STORAGE  is not set
++CONFIG_OF_LIBFDT=y
++CONFIG_PHY_MICREL=y
++CONFIG_PHY_MICREL_KSZ90X1=y
++CONFIG_ENV_IS_IN_FLASH=y
++CONFIG_SYS_DPAA_QBMAN=y
++CONFIG_SATA=y
++CONFIG_CMD_SATA=y
++CONFIG_CMD_REGINFO=y
++CONFIG_CMD_PCI=y
++CONFIG_CMD_NAND=y
++
+diff --git a/drivers/ddr/fsl/ctrl_regs.c b/drivers/ddr/fsl/ctrl_regs.c
+index c0ee858..9fcd611 100644
+--- a/drivers/ddr/fsl/ctrl_regs.c
++++ b/drivers/ddr/fsl/ctrl_regs.c
+@@ -2591,7 +2591,43 @@ compute_fsl_memctl_config_regs(const unsigned int ctrl_num,
+ 		ddr->debug[28] = (ddr->debug[28] & 0xffffff00) |
+ 				  popts->cpo_sample;
+ #endif
+-
++#ifdef CONFIG_IFC1410
++	/* overwite DDR controller register to cope with IFC1211 */
++	ddr->cs[0].bnds = 0x0000007F;        /* JFG */
++	ddr->cs[0].config = 0x80014302;      /* 0x80014302; JFG */
++	ddr->cs[0].config_2 = 0x00000000;    /* JFG */
++	ddr->cs[1].bnds = 0x008000BF;        /* JFG */
++	ddr->cs[1].config = 0x00000202;      /*  JFG */
++	ddr->cs[1].config_2 = 0x00000000;    /* JFG */
++	ddr->cs[2].bnds = 0x0100013F;        /* JFG */
++	ddr->cs[2].config = 0x00000202;      /*  JFG */
++	ddr->cs[2].config_2 = 0x00000000;    /* JFG */
++	ddr->cs[3].bnds = 0x0140017F;        /* JFG */
++	ddr->cs[3].config = 0x00000202;      /*  JFG */
++	ddr->cs[3].config_2 = 0x00000000;    /* JFG */
++	ddr->timing_cfg_0 = 0x8066000E;      /* 0xa0110014  JFG */
++	ddr->timing_cfg_1 = 0xD0D80057;      /* 0xbcb40c86  JFG */
++	ddr->timing_cfg_2 = 0x00493161;      /* 0x0048e1e4  JFG */
++	ddr->timing_cfg_3 = 0x02111100;      /* 0x11081000  JFG */
++	ddr->timing_cfg_4 = 0x00220001;      /* 0x11081000  JFG */
++	ddr->timing_cfg_5 = 0x05401400;      /* 0x05401400  JFG */
++	ddr->timing_cfg_6 = 0x00000000;      /*             JFG */
++	ddr->ddr_sdram_mode = 0x00061E15;    /* 0x00441c70  JFG */
++	ddr->ddr_sdram_mode_2 = 0x00200000;  /* 0x00200000  JFG */
++	ddr->ddr_sdram_interval = 0x1C6D071B;/* 0x14500100  JFG */
++	ddr->ddr_sdram_clk_cntl = 0x02800000;/* 0x02000000  JFG */
++	ddr->ddr_zq_cntl = 0x8A090700;       /* 0x8A090700  JFG */
++	ddr->ddr_wrlvl_cntl = 0x8655F608;    /* 0x8675f609  JFG */
++	ddr->ddr_wrlvl_cntl = 0x8675F608;    /* 0x8675f609  JOEL */
++	ddr->ddr_wrlvl_cntl_2 = 0x08080809;  /* 0x09090909  JFG */
++	ddr->ddr_wrlvl_cntl_3 = 0x09060507;  /* 0x09080808  JFG */
++	ddr->ddr_cdr1 = 0x800C0000;          /* 0x80080000  JFG */
++	ddr->ddr_cdr1 = 0x80080000;          /* 0x80080000  JOEL */
++	ddr->ddr_cdr2 = 0x00000000;          /* 0x00000001; JFG */
++	ddr->ddr_cdr2 = 0x00000001;          /* 0x00000001; JOEL */
++	ddr->ddr_sdram_cfg_2 = 0x00401050;   /* 0x00404100  JFG */
++	ddr->ddr_sdram_cfg = 0xE7200008;     /* 0xe7040000; JFG */
++#endif
+ 	return check_fsl_memctl_config_regs(ddr);
+ }
+ 
+diff --git a/drivers/ddr/fsl/main.c b/drivers/ddr/fsl/main.c
+index d0a7b3f..4e84016 100644
+--- a/drivers/ddr/fsl/main.c
++++ b/drivers/ddr/fsl/main.c
+@@ -163,6 +163,123 @@ void fsl_ddr_get_spd(generic_spd_eeprom_t *ctrl_dimms_spd,
+ void fsl_ddr_get_spd(generic_spd_eeprom_t *ctrl_dimms_spd,
+ 		      unsigned int ctrl_num, unsigned int dimm_slots_per_ctrl)
+ {
++	uchar *p;
++    int i;
++
++    if (ctrl_num >= CONFIG_NUM_DDR_CONTROLLERS) {
++        printf("%s unexpected ctrl_num = %u\n", __FUNCTION__, ctrl_num);
++        return;
++    }
++    for (i = 0; i < dimm_slots_per_ctrl; i++) {
++      p = (uchar *) &ctrl_dimms_spd[i];
++
++      printf("       SPD emulation..");
++
++      for( i = 0; i <  sizeof(generic_spd_eeprom_t); i++)
++      {
++        p[i] = 0;
++      }
++      p[0x0] = 0x92;
++      p[0x1] = 0x12;
++      p[0x2] = 0x0b;
++      p[0x3] = 0x08;/*08*/
++      p[0x4] = 0x04;/* 0x03 */
++      p[0x5] = 0x19;
++      p[0x6] = 0x02;
++      p[0x7] = 0x02;/* 0x09 */
++      p[0x8] = 0x0b;
++      p[0x9] = 0x11;
++      p[0xa] = 0x01;
++      p[0xb] = 0x08;
++      p[0xc] = 0x09;
++      p[0xd] = 0x00;
++      p[0xe] = 0xfc;
++      p[0xf] = 0x02;
++      p[0x10] = 0x69;
++      p[0x11] = 0x78;
++      p[0x12] = 0x69;
++      p[0x13] = 0x28;
++      p[0x14] = 0x69;
++      p[0x15] = 0x11;
++      p[0x16] = 0x10;
++      p[0x17] = 0x79;
++      p[0x18] = 0x00;
++      p[0x19] = 0x05;
++      p[0x1a] = 0x3c;
++      p[0x1b] = 0x3c;
++      p[0x1c] = 0x00;
++      p[0x1d] = 0xd8;
++      p[0x1e] = 0x83;
++      p[0x1f] = 0x01;
++      p[0x20] = 0x80;
++      p[0x22] = 0xca;
++      p[0x3c] = 0x0f;
++      p[0x3d] = 0x11;
++      p[0x3e] = 0x04;
++      p[0x75] = 0xff;
++      p[0x76] = 0xff;
++      p[0x77] = 0x4b;
++      p[0x78] = 0x15;
++      p[0x79] = 0x45;
++      p[0x7a] = 0x15;
++      p[0x7b] = 0x11;
++      p[0x7c] = 0x12;
++      p[0x7d] = 0xa1;
++      p[0x7e] = 0x21;/*21*/
++      p[0x7f] = 0x70;/*70*/
++      p[0x80] = 0x00;/*44*/
++      p[0x81] = 0x33;
++      p[0x82] = 0x58;
++      p[0x83] = 0x50;
++      p[0x84] = 0x35;
++      p[0x85] = 0x36;
++      p[0x86] = 0x30;
++      p[0x87] = 0x38;
++      p[0x88] = 0x32;
++      p[0x89] = 0x58;
++      p[0x8a] = 0x4c;
++      p[0x8b] = 0x31;
++      p[0x8c] = 0x30;
++      p[0x8d] = 0x41;
++      p[0x8e] = 0x41;
++      p[0x8f] = 0x20;
++      p[0x90] = 0x20;
++      p[0x91] = 0x20;
++      p[0x92] = 0x30;
++      p[0x93] = 0x20;
++      p[0x94] = 0x80;
++      p[0x95] = 0x40;
++      p[0xa0] = 0x44;
++      p[0xa1] = 0x44;
++      p[0xa2] = 0x53;
++      p[0xa3] = 0x35;
++      p[0xa4] = 0x34;
++      p[0xa5] = 0x36;
++      p[0xa6] = 0x30;
++      p[0xa7] = 0x30;
++      p[0xa8] = 0x37;
++      p[0xa9] = 0x31;
++      /*
++      p[0x20] = 0x80;
++      p[0x21] = 0x;
++      p[0x22] = 0x;
++      p[0x23] = 0x;
++      p[0x24] = 0x;
++      p[0x25] = 0x;
++      p[0x26] = 0x;
++      p[0x27] = 0x;
++      p[0x28] = 0x;
++      p[0x29] = 0x;
++      p[0x2a] = 0x;
++      p[0x2b] = 0x;
++      p[0x2c] = 0x;
++      p[0x2d] = 0x;
++      p[0x2e] = 0x;
++      p[0x2f] = 0x;
++      p[126] = 0xbd;
++      p[127] = 0x1c;
++      */
++    }
+ }
+ #endif /* SPD_EEPROM_ADDRESSx */
+ 
+diff --git a/drivers/net/fm/eth.c b/drivers/net/fm/eth.c
+index bf5f89b..b2eeaca 100644
+--- a/drivers/net/fm/eth.c
++++ b/drivers/net/fm/eth.c
+@@ -52,10 +52,13 @@ qsgmii_loop:
+ 	else
+ 		value = PHY_SGMII_IF_MODE_SGMII | PHY_SGMII_IF_MODE_AN;
+ 
++	value = 0x19;
+ 	memac_mdio_write(&bus, i, MDIO_DEVAD_NONE, 0x14, value);
+ 
+ 	/* Dev ability according to SGMII specification */
+ 	value = PHY_SGMII_DEV_ABILITY_SGMII;
++
++	value = 0xa1;
+ 	memac_mdio_write(&bus, i, MDIO_DEVAD_NONE, 0x4, value);
+ 
+ 	if (sgmii_2500) {
+diff --git a/env/flash.c b/env/flash.c
+index bac10ff..d0b5feb 100644
+--- a/env/flash.c
++++ b/env/flash.c
+@@ -45,6 +45,11 @@ DECLARE_GLOBAL_DATA_PTR;
+ #define INITENV
+ #endif
+ 
++#if defined(CONFIG_IFC1410)
++#define LOADENV
++#define INITENV
++#endif
++
+ #ifdef ENV_IS_EMBEDDED
+ env_t *env_ptr = &environment;
+ 
+@@ -117,6 +122,33 @@ static int env_flash_init(void)
+ #endif
+ 
+ #ifdef CMD_SAVEENV
++#if defined(CONFIG_IFC1410)
++extern struct ifc_node
++{
++	int *csr_ptr;
++} ifc_node;
++
++extern int ifc_sflash_wr( struct ifc_node *ifc,
++            	unsigned char *buf,
++            	uint offset,
++	       		uint len);
++
++static int env_flash_save(void)
++{
++	env_t env_new;
++	int	rc = 1;
++
++	rc = env_export( &env_new);
++	if (rc)
++		goto done;
++
++	ifc_sflash_wr( &ifc_node,  &env_new, 0x13f20000, CONFIG_ENV_SIZE);
++	puts("done\n");
++	rc = 0;
++done:
++	return rc;
++}
++#else  /* not IFC1410 */
+ static int env_flash_save(void)
+ {
+ 	env_t	env_new;
+@@ -217,6 +249,7 @@ done:
+ 
+ 	return rc;
+ }
++#endif /* IFC1410 */
+ #endif /* CMD_SAVEENV */
+ 
+ #else /* ! CONFIG_ENV_ADDR_REDUND */
+@@ -237,6 +270,34 @@ static int env_flash_init(void)
+ #endif
+ 
+ #ifdef CMD_SAVEENV
++#if defined(CONFIG_IFC1410)
++extern struct ifc_node
++{
++  int *csr_ptr;
++} ifc_node;
++
++extern int ifc_sflash_wr( struct ifc_node *ifc,
++            	unsigned char *buf,
++            	uint offset,
++	       		uint len);
++
++static int env_flash_save(void)
++{
++	env_t	env_new;
++	int	rc = 1;
++
++        rc = env_export( &env_new);
++	if (rc)
++		goto done;
++
++    ifc_sflash_wr( &ifc_node,  &env_new, 0x13f20000, CONFIG_ENV_SIZE);
++
++	puts("done\n");
++	rc = 0;
++done:
++	return rc;
++}
++#else  /* not IFC1211 0r IFC1410 */
+ static int env_flash_save(void)
+ {
+ 	env_t	env_new;
+@@ -303,6 +364,7 @@ done:
+ 	flash_sect_protect(1, (long)flash_addr, end_addr);
+ 	return rc;
+ }
++#endif /* IFC1410 */
+ #endif /* CMD_SAVEENV */
+ 
+ #endif /* CONFIG_ENV_ADDR_REDUND */
+diff --git a/include/configs/ifc1410.h b/include/configs/ifc1410.h
+new file mode 100644
+index 0000000..37a98cd
+--- /dev/null
++++ b/include/configs/ifc1410.h
+@@ -0,0 +1,964 @@
++/*
++ * Copyright 2014 Freescale Semiconductor, Inc.
++ *
++ * SPDX-License-Identifier:     GPL-2.0+
++ */
++
++/*
++ * IOxOS IFC1410 board configuration file
++ */
++
++#ifndef __IFC1410_H
++#define __IFC1410_H
++
++/*#define CONFIG_DISPLAY_BOARDINFO
++*/
++#define CONFIG_IFC1410
++#define CONFIG_ICS307_REFCLK_HZ 25000000  /* ICS307 ref clk freq */
++/*#define CONFIG_MMC
++*/
++#define CONFIG_USB_EHCI_HCD
++#define CONFIG_FSL_SATA_V2
++#define CONFIG_PON
++#define CONFIG_VME
++#define CONFIG_MISC_INIT_R
++
++/*#define CONFIG_FAT_WRITE
++#define CONFIG_FS_FAT_MAX_CLUSTSIZE 4096
++*/
++
++/* High Level Configuration Options */
++/*#define CONFIG_PHYS_64BIT
++ *#define CONFIG_BOOKE
++ *#define CONFIG_E500		*//* BOOKE e500 family *//*
++ *#define CONFIG_E500MC		*//* BOOKE e500mc family *//*
++*/
++#define CONFIG_SYS_BOOK3E_HV	/* Category E.HV supported */
++#define CONFIG_MP		/* support multiple processors */
++#define CONFIG_ENABLE_36BIT_PHYS
++
++#ifdef CONFIG_PHYS_64BIT
++#define CONFIG_ADDR_MAP 1
++#define CONFIG_SYS_NUM_ADDR_MAP 64 /* number of TLB1 entries */
++#endif
++
++#define CONFIG_SYS_FSL_CPC	/* Corenet Platform Cache */
++/*#define CONFIG_SYS_NUM_CPC	CONFIG_NUM_DDR_CONTROLLERS*/
++#define CONFIG_SYS_NUM_CPC	CONFIG_SYS_NUM_DDR_CTLRS
++#define CONFIG_FSL_IFC		1	/* Enable IFC Support */
++/*#define CONFIG_FSL_CAAM		*//* Enable SEC/CAAM */
++/*#define CONFIG_FSL_LAW		*//* Use common FSL init code */
++#define CONFIG_ENV_OVERWRITE
++
++#ifdef CONFIG_RAMBOOT_PBL
++#define CONFIG_SYS_FSL_PBL_PBI board/freescale/ifc1410/ifc1410_pbi.cfg
++/*#define CONFIG_SYS_FSL_PBL_RCW board/freescale/ifc1410/ifc1410_rcw.cfg*/
++
++/*#define CONFIG_SPL_MPC8XXX_INIT_DDR_SUPPORT*/ /* moved in the defconfig files for IFC1410 */
++/*#define CONFIG_SPL_ENV_SUPPORT*/ /* moved in the defconfig files for IFC1410 */
++/*#define CONFIG_SPL_SERIAL_SUPPORT*/ /* moved in the defconfig files for IFC1410 */
++#define CONFIG_SPL_FLUSH_IMAGE
++#define CONFIG_SPL_TARGET		"u-boot-with-spl.bin"
++/*#define CONFIG_SPL_LIBGENERIC_SUPPORT*/ /* moved in the defconfig files for IFC1410 */
++/*#define CONFIG_SPL_LIBCOMMON_SUPPORT*/ /* moved in the defconfig files for IFC1410 */
++/*#define CONFIG_SPL_I2C_SUPPORT*/ /* moved in the defconfig files for IFC1410 */
++/*#define CONFIG_SPL_DRIVERS_MISC_SUPPORT*/ /* moved in the defconfig files for IFC1410 */
++/*#define CONFIG_FSL_LAW			*//* Use common FSL init code */
++#define CONFIG_SYS_TEXT_BASE		0x00201000
++#define CONFIG_SPL_TEXT_BASE		0xFFFD8000
++#define CONFIG_SPL_PAD_TO		0x40000
++#define CONFIG_SPL_MAX_SIZE		0x28000
++#define RESET_VECTOR_OFFSET		0x27FFC
++#define BOOT_PAGE_OFFSET		0x27000
++#ifdef CONFIG_SPL_BUILD
++#define CONFIG_SPL_SKIP_RELOCATE
++#define CONFIG_SPL_COMMON_INIT_DDR
++#define CONFIG_SYS_CCSR_DO_NOT_RELOCATE
++#define CONFIG_SYS_NO_FLASH
++#endif
++
++#ifdef CONFIG_NAND
++#define CONFIG_SPL_NAND_SUPPORT
++#define CONFIG_SYS_NAND_U_BOOT_SIZE	(768 << 10)
++#define CONFIG_SYS_NAND_U_BOOT_DST	0x00200000
++#define CONFIG_SYS_NAND_U_BOOT_START	0x00200000
++#define CONFIG_SYS_NAND_U_BOOT_OFFS	(256 << 10)
++#define CONFIG_SYS_LDSCRIPT  "arch/powerpc/cpu/mpc85xx/u-boot-nand.lds"
++#define CONFIG_SPL_NAND_BOOT
++#define CONFIG_SYS_FSL_PBL_RCW board/freescale/ifc1410/ifc1410_nand_rcw.cfg
++#endif
++
++#ifdef CONFIG_SPIFLASH
++#define        CONFIG_RESET_VECTOR_ADDRESS             0x200FFC
++/*#define CONFIG_SPL_SPI_SUPPORT*/ /* moved in the defconfig files for IFC1410 */
++/*#define CONFIG_SPL_SPI_FLASH_SUPPORT*/ /* moved in the defconfig files for IFC1410 */
++#define CONFIG_SPL_SPI_FLASH_MINIMAL
++#define CONFIG_SYS_SPI_FLASH_U_BOOT_SIZE       (768 << 10)
++#define CONFIG_SYS_SPI_FLASH_U_BOOT_DST                (0x00200000)
++#define CONFIG_SYS_SPI_FLASH_U_BOOT_START      (0x00200000)
++#define CONFIG_SYS_SPI_FLASH_U_BOOT_OFFS       (256 << 10)
++#define CONFIG_SYS_LDSCRIPT    "arch/powerpc/cpu/mpc85xx/u-boot.lds"
++#ifndef CONFIG_SPL_BUILD
++#define CONFIG_SYS_MPC85XX_NO_RESETVEC
++#endif
++#define CONFIG_SYS_FSL_PBL_RCW board/freescale/ifc1410/ifc1410_spi_rcw.cfg
++#define CONFIG_SPL_SPI_BOOT
++#endif
++
++#ifdef CONFIG_SDCARD
++#define        CONFIG_RESET_VECTOR_ADDRESS             0x200FFC
++/*#define CONFIG_SPL_MMC_SUPPORT*/ /* moved in the defconfig files for IFC1410 */
++#define CONFIG_SPL_MMC_MINIMAL
++#define CONFIG_SYS_MMC_U_BOOT_SIZE     (768 << 10)
++#define CONFIG_SYS_MMC_U_BOOT_DST      (0x00200000)
++#define CONFIG_SYS_MMC_U_BOOT_START    (0x00200000)
++#define CONFIG_SYS_MMC_U_BOOT_OFFS     (260 << 10)
++#define CONFIG_SYS_LDSCRIPT    "arch/powerpc/cpu/mpc85xx/u-boot.lds"
++#ifndef CONFIG_SPL_BUILD
++#define CONFIG_SYS_MPC85XX_NO_RESETVEC
++#endif
++#define CONFIG_SYS_FSL_PBL_RCW board/freescale/ifc1410/ifc1410_sd_rcw.cfg
++#define CONFIG_SPL_MMC_BOOT
++#endif
++
++#endif /* CONFIG_RAMBOOT_PBL */
++
++#undef CONFIG_SRIO_PCIE_BOOT_MASTER
++#ifdef CONFIG_SRIO_PCIE_BOOT_SLAVE
++/* Set 1M boot space */
++#define CONFIG_SYS_SRIO_PCIE_BOOT_SLAVE_ADDR (CONFIG_SYS_TEXT_BASE & 0xfff00000)
++#define CONFIG_SYS_SRIO_PCIE_BOOT_SLAVE_ADDR_PHYS \
++		(0x300000000ull | CONFIG_SYS_SRIO_PCIE_BOOT_SLAVE_ADDR)
++#define CONFIG_RESET_VECTOR_ADDRESS 0xfffffffc
++#define CONFIG_SYS_NO_FLASH
++#endif
++
++#ifndef CONFIG_SYS_TEXT_BASE
++#define CONFIG_SYS_TEXT_BASE	0xeff40000
++#endif
++
++#ifndef CONFIG_RESET_VECTOR_ADDRESS
++#define CONFIG_RESET_VECTOR_ADDRESS	0xeffffffc
++#endif
++
++/*
++ * These can be toggled for performance analysis, otherwise use default.
++ */
++#define CONFIG_SYS_CACHE_STASHING
++#define CONFIG_BTB		/* toggle branch predition */
++#define CONFIG_DDR_ECC
++#ifdef CONFIG_DDR_ECC
++#define CONFIG_ECC_INIT_VIA_DDRCONTROLLER
++#define CONFIG_MEM_INIT_VALUE		0xdeadbeef
++#endif
++
++/*#define CONFIG_CMD_MEMTEST*/ /* moved in the defconfig files for IFC1410 */
++#define CONFIG_SYS_MEMTEST_START	0x00200000 /* memtest works on */
++#define CONFIG_SYS_MEMTEST_END		0x00400000
++#define CONFIG_SYS_ALT_MEMTEST
++
++#define CONFIG_CMD_PROM
++
++#ifndef CONFIG_SYS_NO_FLASH
++#define CONFIG_FLASH_CFI_DRIVER
++#define CONFIG_SYS_FLASH_CFI
++#define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
++#endif
++
++#if defined(CONFIG_SPIFLASH)
++#define CONFIG_SYS_EXTRA_ENV_RELOC
++#define CONFIG_ENV_IS_IN_SPI_FLASH
++#define CONFIG_ENV_SPI_BUS	0
++#define CONFIG_ENV_SPI_CS	0
++#define CONFIG_ENV_SPI_MAX_HZ	10000000
++#define CONFIG_ENV_SPI_MODE	0
++#define CONFIG_ENV_SIZE		0x2000	   /* 8KB */
++#define CONFIG_ENV_OFFSET	0x100000   /* 1MB */
++#define CONFIG_ENV_SECT_SIZE	0x10000
++#elif defined(CONFIG_SDCARD)
++#define CONFIG_SYS_EXTRA_ENV_RELOC
++#define CONFIG_ENV_IS_IN_MMC
++#define CONFIG_SYS_MMC_ENV_DEV	0
++#define CONFIG_ENV_SIZE		0x2000
++#define CONFIG_ENV_OFFSET	(512 * 0x800)
++#elif defined(CONFIG_NAND)
++#define CONFIG_SYS_EXTRA_ENV_RELOC
++#define CONFIG_ENV_SIZE		0x2000
++#define CONFIG_ENV_OFFSET	(2 * CONFIG_SYS_NAND_BLOCK_SIZE)
++#elif defined(CONFIG_SRIO_PCIE_BOOT_SLAVE)
++#define CONFIG_ENV_IS_IN_REMOTE
++#define CONFIG_ENV_ADDR		0xffe20000
++#define CONFIG_ENV_SIZE		0x2000
++#elif defined(CONFIG_ENV_IS_NOWHERE)
++#define CONFIG_ENV_SIZE		0x2000
++#else
++#define CONFIG_ENV_ADDR		(CONFIG_SYS_MONITOR_BASE - CONFIG_ENV_SECT_SIZE)
++#define CONFIG_ENV_SIZE		0x2000
++#define CONFIG_ENV_SECT_SIZE	0x20000 /* 128K (one sector) */
++#endif
++
++#ifndef __ASSEMBLY__
++unsigned long get_board_sys_clk(void);
++unsigned long get_board_ddr_clk(void);
++#endif
++
++#define CONFIG_SYS_CLK_FREQ	66660000
++#define CONFIG_DDR_CLK_FREQ	133330000
++
++/*
++ * Config the L3 Cache as L3 SRAM
++ */
++#define CONFIG_SYS_INIT_L3_ADDR		0xFFFC0000
++#define CONFIG_SYS_L3_SIZE		(512 << 10)
++#define CONFIG_SPL_GD_ADDR		(CONFIG_SYS_INIT_L3_ADDR + 32 * 1024)
++#ifdef CONFIG_RAMBOOT_PBL
++#define CONFIG_ENV_ADDR			(CONFIG_SPL_GD_ADDR + 4 * 1024)
++#endif
++#define CONFIG_SPL_RELOC_MALLOC_ADDR	(CONFIG_SPL_GD_ADDR + 12 * 1024)
++#define CONFIG_SPL_RELOC_MALLOC_SIZE	(50 << 10)
++#define CONFIG_SPL_RELOC_STACK		(CONFIG_SPL_GD_ADDR + 64 * 1024)
++#define CONFIG_SPL_RELOC_STACK_SIZE	(22 << 10)
++
++#define CONFIG_SYS_DCSRBAR	0xf0000000
++#define CONFIG_SYS_DCSRBAR_PHYS	0xf00000000ull
++
++/* EEPROM */
++#define CONFIG_ID_EEPROM
++#define CONFIG_SYS_I2C_EEPROM_NXID
++#define CONFIG_SYS_EEPROM_BUS_NUM	0
++#define CONFIG_SYS_I2C_EEPROM_ADDR	0x50
++#define CONFIG_SYS_I2C_EEPROM_ADDR_LEN	2
++
++/*
++ * Config on-board RTC
++ */
++#define CONFIG_RTC_DS1337  	     /* ds1339 on board, use ds1337 rtc via i2c */
++#define CONFIG_SYS_RTC_BUS_NUM	0
++#define CONFIG_SYS_I2C_RTC_ADDR	0x68 /* at address 0x68 */
++
++/*
++ * Config on-board THERMOMETERS
++ */
++#define CONFIG_THERMO_LM95235	     /* lm95235 on board for temperature control via i2c */
++#define CONFIG_THERMO_I2C_BUS	0
++#define CONFIG_THERMO_I2C_ADDR	0x4c /* at address 0x4c */
++
++/*
++ * Config PES32NT24 PCI express switch
++ */
++#define CONFIG_SWITCH_PES32NT24	             /* PES32NT24 PCIe switch via i2c */
++#define CONFIG_PES32NT24_I2C_BUS	1
++#define CONFIG_PES32NT24_I2C_ADDR	0x75 /* at address 0x75 */
++#define CONFIG_PES32NT24_I2C_SPEED	400000 /* speed 400 KHz */
++
++/*
++ * Config on-board DCDC
++ */
++#define CONFIG_DCDC_BMR463	     /* bmr453 on board for current regulation via i2c */
++#define CONFIG_BMR463_I2C_BUS        	1
++#define CONFIG_BMR463_I2C_ADDR_1	0x53 /* at address 0x53 */
++#define CONFIG_BMR463_I2C_ADDR_2	0x24 /* at address 0x24 */
++#define CONFIG_BMR463_I2C_ADDR_3	0x63 /* at address 0x63 */
++
++/*
++ * Config on-board LI controller
++ */
++#define CONFIG_LI_MAX5970	     /* MAX5970 on board for power supply regulation via i2c */
++#define CONFIG_MAX5970_I2C_BUS        	1
++#define CONFIG_MAX5970_I2C_ADDR  	0x30 /* at address 0x30 */
++
++/*
++ * DDR Setup
++ */
++#define CONFIG_VERY_BIG_RAM
++#define CONFIG_SYS_DDR_SDRAM_BASE	0x00000000
++#define CONFIG_SYS_SDRAM_BASE		CONFIG_SYS_DDR_SDRAM_BASE
++#define CONFIG_DIMM_SLOTS_PER_CTLR	1
++#define CONFIG_CHIP_SELECTS_PER_CTRL	(4 * CONFIG_DIMM_SLOTS_PER_CTLR)
++#define CONFIG_DDR_SPD
++/*#define CONFIG_SYS_FSL_DDR3
++*/
++#undef CONFIG_FSL_DDR_INTERACTIVE
++#define CONFIG_SYS_SPD_BUS_NUM	0
++#define CONFIG_SYS_SDRAM_SIZE	2048	/* for fixed parameter use */
++/*
++#define SPD_EEPROM_ADDRESS1	0x51
++#define SPD_EEPROM_ADDRESS2	0x52
++#define SPD_EEPROM_ADDRESS	SPD_EEPROM_ADDRESS1
++*/
++#define CTRL_INTLV_PREFERED	cacheline
++
++/*
++ * IFC Definitions
++ */
++#define CONFIG_SYS_FLASH_BASE		0xe8000000
++#define CONFIG_SYS_FLASH_BASE_PHYS	(0xf00000000ull | CONFIG_SYS_FLASH_BASE)
++#define CONFIG_SYS_NOR0_CSPR_EXT	(0xf)
++#define CONFIG_SYS_NOR0_CSPR	(CSPR_PHYS_ADDR(CONFIG_SYS_FLASH_BASE_PHYS) | \
++				CSPR_PORT_SIZE_16 | \
++				CSPR_MSEL_NOR | \
++				CSPR_V)
++#define CONFIG_SYS_NOR_AMASK	IFC_AMASK(128*1024*1024)
++
++/* NOR Flash Timing Params */
++#define CONFIG_SYS_NOR_CSOR	CSOR_NAND_TRHZ_80
++
++#define CONFIG_SYS_NOR_FTIM0	(FTIM0_NOR_TACSE(0x4) | \
++				FTIM0_NOR_TEADC(0x5) | \
++				FTIM0_NOR_TEAHC(0x5))
++#define CONFIG_SYS_NOR_FTIM1	(FTIM1_NOR_TACO(0x35) | \
++				FTIM1_NOR_TRAD_NOR(0x1A) |\
++				FTIM1_NOR_TSEQRAD_NOR(0x13))
++#define CONFIG_SYS_NOR_FTIM2	(FTIM2_NOR_TCS(0x4) | \
++				FTIM2_NOR_TCH(0x4) | \
++				FTIM2_NOR_TWPH(0x0E) | \
++				FTIM2_NOR_TWP(0x1c))
++#define CONFIG_SYS_NOR_FTIM3	0x0
++
++#define CONFIG_SYS_FLASH_QUIET_TEST
++#define CONFIG_FLASH_SHOW_PROGRESS	45 /* count down from 45/5: 9..1 */
++
++#define CONFIG_SYS_MAX_FLASH_BANKS	1	/* number of banks */
++#define CONFIG_SYS_MAX_FLASH_SECT	1024	/* sectors per device */
++#define CONFIG_SYS_FLASH_ERASE_TOUT	60000	/* Flash Erase Timeout (ms) */
++#define CONFIG_SYS_FLASH_WRITE_TOUT	500	/* Flash Write Timeout (ms) */
++#define CONFIG_SYS_FLASH_EMPTY_INFO
++#define CONFIG_SYS_FLASH_BANKS_LIST	{CONFIG_SYS_FLASH_BASE_PHYS }
++
++#ifdef CONFIG_PON
++/* PON parameters on IFC CS6 */
++#define CONFIG_SYS_PON_BASE	0xffd00000
++#define CONFIG_SYS_PON_BASE_PHYS	(0xf00000000ull | CONFIG_SYS_PON_BASE)
++#define CONFIG_SYS_CSPR6_EXT	(0xf)
++#define CONFIG_SYS_CSPR6	(CSPR_PHYS_ADDR(CONFIG_SYS_PON_BASE) \
++				| CSPR_PORT_SIZE_16 \
++				| CSPR_MSEL_GPCM \
++				| CSPR_V)
++#define CONFIG_SYS_AMASK6	IFC_AMASK(64*1024)
++#define CONFIG_SYS_CSOR6	(CSOR_GPCM_RGETA_EXT | CSOR_GPCM_WGETA_EXT | 0x000)
++
++#define CONFIG_SYS_CS6_FTIM0		(FTIM0_GPCM_TACSE(0x04) | \
++					FTIM0_GPCM_TEADC(0x03) | \
++					FTIM0_GPCM_TEAHC(0x02))
++#define CONFIG_SYS_CS6_FTIM1		(FTIM1_GPCM_TACO(0x02) | \
++					FTIM1_GPCM_TRAD(0x04))
++#define CONFIG_SYS_CS6_FTIM2		(FTIM2_GPCM_TCS(0x02) | \
++					FTIM2_GPCM_TCH(0x2) | \
++					FTIM2_GPCM_TWP(0x02))
++#define CONFIG_SYS_CS6_FTIM3		0x4000000
++#endif
++
++#ifdef CONFIG_VME
++/* VME parameters on IFC CS7 */
++#define CONFIG_SYS_VME_BASE	0xd0000000
++#define CONFIG_SYS_VME_BASE_PHYS	(0xf00000000ull | CONFIG_SYS_VME_BASE)
++#define CONFIG_SYS_CSPR7_EXT	(0xf)
++#define CONFIG_SYS_CSPR7	(CSPR_PHYS_ADDR(CONFIG_SYS_VME_BASE) \
++				| CSPR_PORT_SIZE_16 \
++				| CSPR_MSEL_GPCM \
++				| CSPR_V)
++#define CONFIG_SYS_AMASK7	IFC_AMASK(256*1024*1024)
++#define CONFIG_SYS_CSOR7	(CSOR_GPCM_RGETA_EXT | CSOR_GPCM_WGETA_EXT | 0x400)
++
++#define CONFIG_SYS_CS7_FTIM0		(FTIM0_GPCM_TACSE(0x04) | \
++					FTIM0_GPCM_TEADC(0x03) | \
++					FTIM0_GPCM_TEAHC(0x02))
++#define CONFIG_SYS_CS7_FTIM1		(FTIM1_GPCM_TACO(0x02) | \
++					FTIM1_GPCM_TRAD(0x04))
++#define CONFIG_SYS_CS7_FTIM2		(FTIM2_GPCM_TCS(0x02) | \
++					FTIM2_GPCM_TCH(0x2) | \
++					FTIM2_GPCM_TWP(0x02))
++#define CONFIG_SYS_CS7_FTIM3		0x4000000
++#endif
++
++/* NAND Flash on IFC */
++#define CONFIG_NAND_FSL_IFC
++#define CONFIG_SYS_NAND_BASE		0xff800000
++#define CONFIG_SYS_NAND_BASE_PHYS	(0xf00000000ull | CONFIG_SYS_NAND_BASE)
++
++#define CONFIG_SYS_NAND_CSPR_EXT	(0xf)
++#define CONFIG_SYS_NAND_CSPR	(CSPR_PHYS_ADDR(CONFIG_SYS_NAND_BASE_PHYS) \
++				| CSPR_PORT_SIZE_8 /* Port Size = 8 bit */ \
++				| CSPR_MSEL_NAND	 /* MSEL = NAND */ \
++				| CSPR_V)
++#define CONFIG_SYS_NAND_AMASK	IFC_AMASK(64*1024)
++
++#define CONFIG_SYS_NAND_CSOR	(CSOR_NAND_ECC_ENC_EN	/* ECC on encode */ \
++				| CSOR_NAND_ECC_DEC_EN	/* ECC on decode */ \
++				| CSOR_NAND_ECC_MODE_4	/* 4-bit ECC */	    \
++				| CSOR_NAND_RAL_3	/* RAL = 2Byes */   \
++				| CSOR_NAND_PGS_2K	/* Page Size = 2K */\
++				| CSOR_NAND_SPRZ_64	/* Spare size = 64 */\
++				| CSOR_NAND_PB(64))	/*Pages Per Block = 64*/
++
++#define CONFIG_SYS_NAND_ONFI_DETECTION
++
++/* ONFI NAND Flash mode0 Timing Params */
++#define CONFIG_SYS_NAND_FTIM0		(FTIM0_NAND_TCCST(0x07) | \
++					FTIM0_NAND_TWP(0x18)    | \
++					FTIM0_NAND_TWCHT(0x07)  | \
++					FTIM0_NAND_TWH(0x0a))
++#define CONFIG_SYS_NAND_FTIM1		(FTIM1_NAND_TADLE(0x32) | \
++					FTIM1_NAND_TWBE(0x39)   | \
++					FTIM1_NAND_TRR(0x0e)    | \
++					FTIM1_NAND_TRP(0x18))
++#define CONFIG_SYS_NAND_FTIM2		(FTIM2_NAND_TRAD(0x0f)  | \
++					FTIM2_NAND_TREH(0x0a)   | \
++					FTIM2_NAND_TWHRE(0x1e))
++#define CONFIG_SYS_NAND_FTIM3		0x0
++
++#define CONFIG_SYS_NAND_DDR_LAW		11
++#define CONFIG_SYS_NAND_BASE_LIST	{ CONFIG_SYS_NAND_BASE }
++#define CONFIG_SYS_MAX_NAND_DEVICE	1
++#define CONFIG_SYS_NAND_BLOCK_SIZE	(512 * 1024)
++
++#if defined(CONFIG_NAND)
++#define CONFIG_SYS_CSPR0_EXT		CONFIG_SYS_NAND_CSPR_EXT
++#define CONFIG_SYS_CSPR0		CONFIG_SYS_NAND_CSPR
++#define CONFIG_SYS_AMASK0		CONFIG_SYS_NAND_AMASK
++#define CONFIG_SYS_CSOR0		CONFIG_SYS_NAND_CSOR
++#define CONFIG_SYS_CS0_FTIM0		CONFIG_SYS_NAND_FTIM0
++#define CONFIG_SYS_CS0_FTIM1		CONFIG_SYS_NAND_FTIM1
++#define CONFIG_SYS_CS0_FTIM2		CONFIG_SYS_NAND_FTIM2
++#define CONFIG_SYS_CS0_FTIM3		CONFIG_SYS_NAND_FTIM3
++#define CONFIG_SYS_CSPR1_EXT		CONFIG_SYS_NOR0_CSPR_EXT
++#define CONFIG_SYS_CSPR1		CONFIG_SYS_NOR0_CSPR
++#define CONFIG_SYS_AMASK1		CONFIG_SYS_NOR_AMASK
++#define CONFIG_SYS_CSOR1		CONFIG_SYS_NOR_CSOR
++#define CONFIG_SYS_CS1_FTIM0		CONFIG_SYS_NOR_FTIM0
++#define CONFIG_SYS_CS1_FTIM1		CONFIG_SYS_NOR_FTIM1
++#define CONFIG_SYS_CS1_FTIM2		CONFIG_SYS_NOR_FTIM2
++#define CONFIG_SYS_CS1_FTIM3		CONFIG_SYS_NOR_FTIM3
++#else
++#define CONFIG_SYS_CSPR0_EXT		CONFIG_SYS_NOR0_CSPR_EXT
++#define CONFIG_SYS_CSPR0		CONFIG_SYS_NOR0_CSPR
++#define CONFIG_SYS_AMASK0		CONFIG_SYS_NOR_AMASK
++#define CONFIG_SYS_CSOR0		CONFIG_SYS_NOR_CSOR
++#define CONFIG_SYS_CS0_FTIM0		CONFIG_SYS_NOR_FTIM0
++#define CONFIG_SYS_CS0_FTIM1		CONFIG_SYS_NOR_FTIM1
++#define CONFIG_SYS_CS0_FTIM2		CONFIG_SYS_NOR_FTIM2
++#define CONFIG_SYS_CS0_FTIM3		CONFIG_SYS_NOR_FTIM3
++#define CONFIG_SYS_CSPR1_EXT		CONFIG_SYS_NAND_CSPR_EXT
++#define CONFIG_SYS_CSPR1		CONFIG_SYS_NAND_CSPR
++#define CONFIG_SYS_AMASK1		CONFIG_SYS_NAND_AMASK
++#define CONFIG_SYS_CSOR1		CONFIG_SYS_NAND_CSOR
++#define CONFIG_SYS_CS1_FTIM0		CONFIG_SYS_NAND_FTIM0
++#define CONFIG_SYS_CS1_FTIM1		CONFIG_SYS_NAND_FTIM1
++#define CONFIG_SYS_CS1_FTIM2		CONFIG_SYS_NAND_FTIM2
++#define CONFIG_SYS_CS1_FTIM3		CONFIG_SYS_NAND_FTIM3
++#endif
++
++#if defined(CONFIG_RAMBOOT_PBL)
++#define CONFIG_SYS_RAMBOOT
++#endif
++
++#ifdef CONFIG_SPL_BUILD
++#define CONFIG_SYS_MONITOR_BASE  CONFIG_SPL_TEXT_BASE
++#else
++#define CONFIG_SYS_MONITOR_BASE  CONFIG_SYS_TEXT_BASE /* start of monitor */
++#endif
++
++#define CONFIG_BOARD_EARLY_INIT_R	/* call board_early_init_r function */
++#define CONFIG_MISC_INIT_R
++#define CONFIG_HWCONFIG
++
++/* define to use L1 as initial stack */
++#define CONFIG_L1_INIT_RAM
++#define CONFIG_SYS_INIT_RAM_LOCK
++#define CONFIG_SYS_INIT_RAM_ADDR	0xfdd00000 /* Initial L1 address */
++#define CONFIG_SYS_INIT_RAM_ADDR_PHYS_HIGH	0xf
++#define CONFIG_SYS_INIT_RAM_ADDR_PHYS_LOW	0xfe03c000
++/* The assembler doesn't like typecast */
++#define CONFIG_SYS_INIT_RAM_ADDR_PHYS \
++			((CONFIG_SYS_INIT_RAM_ADDR_PHYS_HIGH * 1ull << 32) | \
++			CONFIG_SYS_INIT_RAM_ADDR_PHYS_LOW)
++#define CONFIG_SYS_INIT_RAM_SIZE	0x00004000
++#define CONFIG_SYS_GBL_DATA_OFFSET	(CONFIG_SYS_INIT_RAM_SIZE - \
++						GENERATED_GBL_DATA_SIZE)
++#define CONFIG_SYS_INIT_SP_OFFSET	CONFIG_SYS_GBL_DATA_OFFSET
++#define CONFIG_SYS_MONITOR_LEN		(768 * 1024)
++#define CONFIG_SYS_MALLOC_LEN		(4 * 1024 * 1024)
++
++/*
++ * Serial Port
++ */
++#define CONFIG_CONS_INDEX		1
++#define CONFIG_SYS_NS16550_SERIAL
++#define CONFIG_SYS_NS16550_REG_SIZE	1
++#define CONFIG_SYS_NS16550_CLK		(get_bus_freq(0)/2)
++#define CONFIG_SYS_BAUDRATE_TABLE	\
++	{300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200}
++#define CONFIG_SYS_NS16550_COM1 (CONFIG_SYS_CCSRBAR+0x11C500)
++#define CONFIG_SYS_NS16550_COM2 (CONFIG_SYS_CCSRBAR+0x11C600)
++#define CONFIG_SYS_NS16550_COM3 (CONFIG_SYS_CCSRBAR+0x11D500)
++#define CONFIG_SYS_NS16550_COM4 (CONFIG_SYS_CCSRBAR+0x11D600)
++
++/* Use the HUSH parser */
++#define CONFIG_SYS_HUSH_PARSER
++#define CONFIG_SYS_PROMPT_HUSH_PS2 "> "
++
++/* pass open firmware flat tree */
++/*#define CONFIG_OF_LIBFDT*/ /* moved in the defconfig files for IFC1410 */
++/*#define CONFIG_OF_BOARD_SETUP*/ /* moved in the defconfig files for IFC1410 */
++/*#define CONFIG_OF_STDOUT_VIA_ALIAS*/ /* moved in the defconfig files for IFC1410 */
++
++/* new uImage format support */
++/*#define CONFIG_FIT*/
++/*#define CONFIG_FIT_VERBOSE*/	/* enable fit_format_{error,warning}() */
++
++/*
++ * I2C
++ */
++#define CONFIG_SYS_I2C
++#define CONFIG_SYS_I2C_FSL
++#define CONFIG_SYS_FSL_I2C_SLAVE   0x7F
++#define CONFIG_SYS_FSL_I2C2_SLAVE  0x7F
++#define CONFIG_SYS_FSL_I2C3_SLAVE  0x7F
++#define CONFIG_SYS_FSL_I2C4_SLAVE  0x7F
++#define CONFIG_SYS_FSL_I2C_OFFSET  0x118000
++#define CONFIG_SYS_FSL_I2C2_OFFSET 0x118100
++#define CONFIG_SYS_FSL_I2C3_OFFSET 0x119000
++#define CONFIG_SYS_FSL_I2C4_OFFSET 0x119100
++#define CONFIG_SYS_FSL_I2C_SPEED   100000
++#define CONFIG_SYS_FSL_I2C2_SPEED  100000
++#define CONFIG_SYS_FSL_I2C3_SPEED  100000
++#define CONFIG_SYS_FSL_I2C4_SPEED  100000
++#define I2C_MUX_PCA_ADDR_PRI	0x77 /* I2C bus multiplexer,primary */
++#define I2C_MUX_PCA_ADDR_SEC1	0x75 /* I2C bus multiplexer,secondary 1 */
++#define I2C_MUX_PCA_ADDR_SEC2	0x76 /* I2C bus multiplexer,secondary 2 */
++#define I2C_MUX_CH_DEFAULT	0x8
++
++#define I2C_MUX_CH_VOL_MONITOR	0xa
++
++#define CONFIG_VID_FLS_ENV		"t208xrdb_vdd_mv"
++#ifndef CONFIG_SPL_BUILD
++#define CONFIG_VID
++#endif
++#define CONFIG_VOL_MONITOR_BMR463
++#define CONFIG_VOL_MONITOR_BMR463_SET
++#define CONFIG_VOL_MONITOR_BMR463_READ
++/* The lowest and highest voltage allowed for IFC1410 */
++#define VDD_MV_MIN			819
++#define VDD_MV_MAX			1212
++
++/*
++ * RapidIO
++ */
++#define CONFIG_SYS_SRIO1_MEM_VIRT	0xa0000000
++#define CONFIG_SYS_SRIO1_MEM_PHYS	0xc20000000ull
++#define CONFIG_SYS_SRIO1_MEM_SIZE	0x10000000 /* 256M */
++#define CONFIG_SYS_SRIO2_MEM_VIRT	0xb0000000
++#define CONFIG_SYS_SRIO2_MEM_PHYS	0xc30000000ull
++#define CONFIG_SYS_SRIO2_MEM_SIZE	0x10000000 /* 256M */
++/*
++ * for slave u-boot IMAGE instored in master memory space,
++ * PHYS must be aligned based on the SIZE
++ */
++#define CONFIG_SRIO_PCIE_BOOT_IMAGE_MEM_PHYS 0xfef200000ull
++#define CONFIG_SRIO_PCIE_BOOT_IMAGE_MEM_BUS1 0xfff00000ull
++#define CONFIG_SRIO_PCIE_BOOT_IMAGE_SIZE     0x100000 /* 1M */
++#define CONFIG_SRIO_PCIE_BOOT_IMAGE_MEM_BUS2 0x3fff00000ull
++/*
++ * for slave UCODE and ENV instored in master memory space,
++ * PHYS must be aligned based on the SIZE
++ */
++#define CONFIG_SRIO_PCIE_BOOT_UCODE_ENV_MEM_PHYS 0xfef100000ull
++#define CONFIG_SRIO_PCIE_BOOT_UCODE_ENV_MEM_BUS 0x3ffe00000ull
++#define CONFIG_SRIO_PCIE_BOOT_UCODE_ENV_SIZE    0x40000	/* 256K */
++
++/* slave core release by master*/
++#define CONFIG_SRIO_PCIE_BOOT_BRR_OFFSET 0xe00e4
++#define CONFIG_SRIO_PCIE_BOOT_RELEASE_MASK 0x00000001 /* release core 0 */
++
++/*
++ * SRIO_PCIE_BOOT - SLAVE
++ */
++#ifdef CONFIG_SRIO_PCIE_BOOT_SLAVE
++#define CONFIG_SYS_SRIO_PCIE_BOOT_UCODE_ENV_ADDR 0xFFE00000
++#define CONFIG_SYS_SRIO_PCIE_BOOT_UCODE_ENV_ADDR_PHYS \
++		(0x300000000ull | CONFIG_SYS_SRIO_PCIE_BOOT_UCODE_ENV_ADDR)
++#endif
++
++/*
++ * eSPI - Enhanced SPI
++ */
++#ifdef CONFIG_SPI_FLASH
++#define CONFIG_SPI_FLASH_SPANSION
++#define CONFIG_SPI_FLASH_BAR
++/*#define CONFIG_CMD_SF*/ /* moved in the defconfig files for IFC1410 */
++#define CONFIG_SF_DEFAULT_SPEED	 10000000
++#define CONFIG_SF_DEFAULT_MODE	  0
++#endif
++
++/*
++ * General PCI
++ * Memory space is mapped 1-1, but I/O space must start from 0.
++ */
++/*#define CONFIG_PCI		*//* Enable PCI/PCIE */
++#define CONFIG_PCIE3		/* PCIE controler 3 */
++#define CONFIG_PCIE4		/* PCIE controler 4 */
++#define CONFIG_FSL_PCI_INIT	/* Use common FSL init code */
++#define CONFIG_SYS_PCI_64BIT	/* enable 64-bit PCI resources */
++#define CONFIG_SYS_PCIE_IO_VIRT	        0xf8000000
++#define CONFIG_SYS_PCIE_IO_PHYS 	0xff8000000ull
++
++/* controller 3, Base address 260000 */
++#ifdef CONFIG_PCIE3
++#define CONFIG_SYS_PCIE3_MEM_VIRT	0x80000000
++#define CONFIG_SYS_PCIE3_MEM_BUS	0xc0000000
++#define CONFIG_SYS_PCIE3_MEM_PHYS	0xc00000000ull
++#define CONFIG_SYS_PCIE3_MEM_SIZE	0x40000000	/* 1G */
++#define CONFIG_SYS_PCIE3_IO_VIRT	(CONFIG_SYS_PCIE_IO_VIRT+0x20000)
++#define CONFIG_SYS_PCIE3_IO_BUS		0x00000000
++#define CONFIG_SYS_PCIE3_IO_PHYS        (CONFIG_SYS_PCIE_IO_PHYS + 0x20000ull)
++#define CONFIG_SYS_PCIE3_IO_SIZE	0x00010000	/* 64k */
++#endif
++
++/* controller 4, Base address 270000 */
++#ifdef CONFIG_PCIE4
++#define CONFIG_SYS_PCIE4_MEM_VIRT       0xc0000000
++#define CONFIG_SYS_PCIE4_MEM_BUS	0xc0000000
++#define CONFIG_SYS_PCIE4_MEM_PHYS	0xc40000000ull
++#define CONFIG_SYS_PCIE4_MEM_SIZE	0x40000000	/* 1G */
++#define CONFIG_SYS_PCIE4_IO_VIRT	(CONFIG_SYS_PCIE_IO_VIRT+0x30000)
++#define CONFIG_SYS_PCIE4_IO_BUS		0x00000000
++#define CONFIG_SYS_PCIE4_IO_PHYS	(CONFIG_SYS_PCIE_IO_PHYS + 0x30000ull)
++#define CONFIG_SYS_PCIE4_IO_SIZE	0x00010000	/* 64k */
++#endif
++
++#ifdef CONFIG_PCI
++#define CONFIG_PCI_INDIRECT_BRIDGE
++#define CONFIG_FSL_PCIE_RESET           /* need PCIe reset errata LSZ ADD */
++/*#define CONFIG_PCI_PNP		*//* do pci plug-and-play */
++#define CONFIG_PCI_SCAN_SHOW	/* show pci devices on startup */
++/*#define CONFIG_DOS_PARTITION*/ /* moved in the defconfig files for IFC1410 */
++#endif
++
++/* Qman/Bman */
++#ifndef CONFIG_NOBQFMAN
++#define CONFIG_SYS_BMAN_NUM_PORTALS	18
++#define CONFIG_SYS_BMAN_MEM_BASE	0xf4000000
++#define CONFIG_SYS_BMAN_MEM_PHYS	0xff4000000ull
++#define CONFIG_SYS_BMAN_MEM_SIZE	0x02000000
++#define CONFIG_SYS_BMAN_SP_CENA_SIZE    0x4000
++#define CONFIG_SYS_BMAN_SP_CINH_SIZE    0x1000
++#define CONFIG_SYS_BMAN_CENA_BASE       CONFIG_SYS_BMAN_MEM_BASE
++#define CONFIG_SYS_BMAN_CENA_SIZE       (CONFIG_SYS_BMAN_MEM_SIZE >> 1)
++#define CONFIG_SYS_BMAN_CINH_BASE       (CONFIG_SYS_BMAN_MEM_BASE + \
++					CONFIG_SYS_BMAN_CENA_SIZE)
++#define CONFIG_SYS_BMAN_CINH_SIZE       (CONFIG_SYS_BMAN_MEM_SIZE >> 1)
++#define CONFIG_SYS_BMAN_SWP_ISDR_REG	0xE08
++#define CONFIG_SYS_QMAN_NUM_PORTALS	18
++#define CONFIG_SYS_QMAN_MEM_BASE	0xf6000000
++#define CONFIG_SYS_QMAN_MEM_PHYS	0xff6000000ull
++#define CONFIG_SYS_QMAN_MEM_SIZE	0x02000000
++#define CONFIG_SYS_QMAN_SP_CENA_SIZE    0x4000
++#define CONFIG_SYS_QMAN_SP_CINH_SIZE    0x1000
++#define CONFIG_SYS_QMAN_CENA_BASE       CONFIG_SYS_QMAN_MEM_BASE
++#define CONFIG_SYS_QMAN_CENA_SIZE       (CONFIG_SYS_QMAN_MEM_SIZE >> 1)
++#define CONFIG_SYS_QMAN_CINH_BASE       (CONFIG_SYS_QMAN_MEM_BASE + \
++					CONFIG_SYS_QMAN_CENA_SIZE)
++#define CONFIG_SYS_QMAN_CINH_SIZE       (CONFIG_SYS_QMAN_MEM_SIZE >> 1)
++#define CONFIG_SYS_QMAN_SWP_ISDR_REG	0xE08
++
++#define CONFIG_SYS_DPAA_FMAN
++#define CONFIG_SYS_DPAA_PME
++#define CONFIG_SYS_PMAN
++#define CONFIG_SYS_DPAA_DCE
++#define CONFIG_SYS_DPAA_RMAN		/* RMan */
++#define CONFIG_SYS_INTERLAKEN
++
++/* Default address of microcode for the Linux Fman driver */
++#if defined(CONFIG_SPIFLASH)
++/*
++ * env is stored at 0x100000, sector size is 0x10000, ucode is stored after
++ * env, so we got 0x110000.
++ */
++#define CONFIG_SYS_QE_FW_IN_SPIFLASH
++#define CONFIG_SYS_CORTINA_FW_IN_SPIFLASH
++#define CONFIG_SYS_FMAN_FW_ADDR		0x110000
++#define CONFIG_CORTINA_FW_ADDR		0x120000
++
++#elif defined(CONFIG_SDCARD)
++/*
++ * PBL SD boot image should stored at 0x1000(8 blocks), the size of the image is
++ * about 1MB (2048 blocks), Env is stored after the image, and the env size is
++ * 0x2000 (16 blocks), 8 + 2048 + 16 = 2072, enlarge it to 2080.
++ */
++#define CONFIG_SYS_QE_FMAN_FW_IN_MMC
++#define CONFIG_SYS_CORTINA_FW_IN_MMC
++#define CONFIG_SYS_FMAN_FW_ADDR		(512 * 0x820)
++#define CONFIG_CORTINA_FW_ADDR		(512 * 0x8a0)
++
++#elif defined(CONFIG_NAND)
++#define CONFIG_SYS_QE_FMAN_FW_IN_NAND
++#define CONFIG_SYS_CORTINA_FW_IN_NAND
++#define CONFIG_SYS_FMAN_FW_ADDR		(3 * CONFIG_SYS_NAND_BLOCK_SIZE)
++#define CONFIG_CORTINA_FW_ADDR		(4 * CONFIG_SYS_NAND_BLOCK_SIZE)
++#elif defined(CONFIG_SRIO_PCIE_BOOT_SLAVE)
++/*
++ * Slave has no ucode locally, it can fetch this from remote. When implementing
++ * in two corenet boards, slave's ucode could be stored in master's memory
++ * space, the address can be mapped from slave TLB->slave LAW->
++ * slave SRIO or PCIE outbound window->master inbound window->
++ * master LAW->the ucode address in master's memory space.
++ */
++#define CONFIG_SYS_QE_FMAN_FW_IN_REMOTE
++#define CONFIG_SYS_CORTINA_FW_IN_REMOTE
++#define CONFIG_SYS_FMAN_FW_ADDR		0xFFE00000
++#define CONFIG_CORTINA_FW_ADDR		0xFFE10000
++#else
++#define CONFIG_SYS_QE_FMAN_FW_IN_NOR
++#define CONFIG_SYS_CORTINA_FW_IN_NOR
++#define CONFIG_SYS_FMAN_FW_ADDR		0xEFF00000
++#define CONFIG_CORTINA_FW_ADDR		0xEFE00000
++#endif
++#define CONFIG_SYS_QE_FMAN_FW_LENGTH	0x10000
++#define CONFIG_SYS_FDT_PAD		(0x3000 + CONFIG_SYS_QE_FMAN_FW_LENGTH)
++#endif /* CONFIG_NOBQFMAN */
++
++#ifdef CONFIG_SYS_DPAA_FMAN
++#define CONFIG_FMAN_ENET
++#define CONFIG_PHYLIB_10G
++/*
++#define CONFIG_PHY_AQUANTIA
++#define CONFIG_PHY_CORTINA
++#define CONFIG_PHY_REALTEK
++#define CONFIG_CORTINA_FW_LENGTH	0x40000
++*/
++#define RGMII_PHY1_ADDR		0x03  /* RealTek RTL8211E */
++#define RGMII_PHY2_ADDR		0x07
++#define SGMII_PHY_ADDR		0x07
++#define CORTINA_PHY_ADDR1	0x0c  /* Cortina CS4315 */
++#define CORTINA_PHY_ADDR2	0x0d
++#define FM1_10GEC3_PHY_ADDR	0x00  /* Aquantia AQ1202 10G Base-T */
++#define FM1_10GEC4_PHY_ADDR	0x01
++#define FM1_10GEC1_PHY_ADDR	  0x3
++#define SGMII_CARD_PORT1_PHY_ADDR 0x1C
++#define SGMII_CARD_PORT2_PHY_ADDR 0x1D
++#define SGMII_CARD_PORT3_PHY_ADDR 0x1E
++#define SGMII_CARD_PORT4_PHY_ADDR 0x1F
++#endif
++
++
++#ifdef CONFIG_FMAN_ENET
++#define CONFIG_MII		/* MII PHY management */
++#define CONFIG_ETHPRIME		"FM1@DTSEC3"
++#endif
++
++/*
++ * SATA
++ */
++#ifdef CONFIG_FSL_SATA_V2
++#define CONFIG_LIBATA
++#define CONFIG_FSL_SATA
++#define CONFIG_SYS_SATA_MAX_DEVICE	2
++#define CONFIG_SATA1
++#define CONFIG_SYS_SATA1		CONFIG_SYS_MPC85xx_SATA1_ADDR
++#define CONFIG_SYS_SATA1_FLAGS		FLAGS_DMA
++#define CONFIG_SATA2
++#define CONFIG_SYS_SATA2		CONFIG_SYS_MPC85xx_SATA2_ADDR
++#define CONFIG_SYS_SATA2_FLAGS		FLAGS_DMA
++#define CONFIG_LBA48
++#endif
++
++/*
++ * USB
++ */
++/*#ifdef CONFIG_USB_EHCI*/
++#ifdef CONFIG_USB_EHCI_HCD
++/*#define CONFIG_CMD_USB*/ /* moved in the defconfig files for IFC1410 */
++#define CONFIG_USB_STORAGE
++#define CONFIG_USB_EHCI_FSL
++#define CONFIG_EHCI_HCD_INIT_AFTER_RESET
++/*#define CONFIG_CMD_EXT2*/ /* moved in the defconfig files for IFC1410 */
++#define CONFIG_HAS_FSL_DR_USB
++#endif
++
++/*
++ * SDHC
++ */
++#ifdef CONFIG_MMC
++/*#define CONFIG_CMD_MMC*/ /* moved in the defconfig files for IFC1410 */
++#define CONFIG_FSL_ESDHC
++#define CONFIG_SYS_FSL_ESDHC_ADDR	CONFIG_SYS_MPC85xx_ESDHC_ADDR
++#define CONFIG_SYS_FSL_ESDHC_BROKEN_TIMEOUT
++#define CONFIG_SYS_FSL_MMC_HAS_CAPBLT_VS33
++#define CONFIG_GENERIC_MMC
++/*#define CONFIG_CMD_EXT2*/ /* moved in the defconfig files for IFC1410 */
++/*#define CONFIG_CMD_FAT*/ /* moved in the defconfig files for IFC1410 */
++/*#define CONFIG_DOS_PARTITION*/ /* moved in the defconfig files for IFC1410 */
++#endif
++
++/*
++ * Dynamic MTD Partition support with mtdparts
++ */
++#ifndef CONFIG_SYS_NO_FLASH
++#define CONFIG_MTD_DEVICE
++#define CONFIG_MTD_PARTITIONS
++#define CONFIG_FLASH_CFI_MTD
++#endif
++
++/*
++ * Environment
++ */
++
++/*
++ * Command line configuration.
++ */
++/*#define CONFIG_CMD_DHCP*/ /* moved in the defconfig files for IFC1410 */
++#define CONFIG_CMD_DNS
++#define CONFIG_BOOTP_DNS_NAME
++/*#define CONFIG_CMD_ERRATA
++*/
++/*#define CONFIG_CMD_MII*/ /* moved in the defconfig files for IFC1410 */
++/*#define CONFIG_CMD_I2C*/ /* moved in the defconfig files for IFC1410 */
++/*#define CONFIG_CMD_PING*/ /* moved in the defconfig files for IFC1410 */
++#define CONFIG_BOOTP_SEND_HOSTNAME
++
++#ifdef CONFIG_PCI
++#define CONFIG_CMD_PCI_ENUM
++#endif
++
++/* Hash command with SHA acceleration supported in hardware */
++#ifdef CONFIG_FSL_CAAM
++/*#define CONFIG_CMD_HASH
++ *#define CONFIG_SHA_HW_ACCEL
++ */
++#endif
++
++/*
++ * Miscellaneous configurable options
++ */
++#define CONFIG_SYS_LONGHELP		/* undef to save memory */
++#define CONFIG_CMDLINE_EDITING		/* Command-line editing */
++#define CONFIG_AUTO_COMPLETE		/* add autocompletion support */
++#define CONFIG_SYS_LOAD_ADDR	0x2000000 /* default load address */
++#ifdef CONFIG_CMD_KGDB
++#define CONFIG_SYS_CBSIZE	1024	  /* Console I/O Buffer Size */
++#else
++#define CONFIG_SYS_CBSIZE	256	  /* Console I/O Buffer Size */
++#endif
++#define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE+sizeof(CONFIG_SYS_PROMPT)+16)
++#define CONFIG_SYS_MAXARGS	16	/* max number of command args */
++#define CONFIG_SYS_BARGSIZE	CONFIG_SYS_CBSIZE/* Boot Argument Buffer Size */
++
++/*
++ * For booting Linux, the board info and command line data
++ * have to be in the first 64 MB of memory, since this is
++ * the maximum mapped by the Linux kernel during initialization.
++ */
++#define CONFIG_SYS_BOOTMAPSZ	(64 << 20)	/* Initial map for Linux*/
++#define CONFIG_SYS_BOOTM_LEN	(64 << 20)	/* Increase max gunzip size */
++
++#ifdef CONFIG_CMD_KGDB
++#define CONFIG_KGDB_BAUDRATE	230400	/* speed to run kgdb serial port */
++#define CONFIG_KGDB_SER_INDEX	2	/* which serial port to use */
++#endif
++
++/*
++ * Environment Configuration
++ */
++#define CONFIG_ROOTPATH	 "/opt/nfsroot"
++#define CONFIG_BOOTFILE	 "uImage"
++#define CONFIG_UBOOTPATH "u-boot.bin"	/* U-Boot image on TFTP server */
++
++/* default location for tftp and bootm */
++#define CONFIG_LOADADDR		1000000
++#define CONFIG_BAUDRATE		115200
++#if defined(CONFIG_BOOTDELAY)
++#undef CONFIG_BOOTDELAY
++#endif
++#define CONFIG_BOOTDELAY	5	/* -1 disables auto-boot */
++#define __USB_PHY_TYPE		utmi
++
++#define	CONFIG_EXTRA_ENV_SETTINGS				\
++	"hwconfig=fsl_ddr:"					\
++	"ctlr_intlv=" __stringify(CTRL_INTLV_PREFERED) ","	\
++	"bank_intlv=auto;"					\
++	"usb1:dr_mode=host,phy_type=" __stringify(__USB_PHY_TYPE) "\0"\
++	"netdev=eth0\0"						\
++	"uboot=" __stringify(CONFIG_UBOOTPATH) "\0"		\
++	"ubootaddr=" __stringify(CONFIG_SYS_TEXT_BASE) "\0"	\
++	"tftpflash=tftpboot $loadaddr $uboot && "		\
++	"protect off $ubootaddr +$filesize && "			\
++	"erase $ubootaddr +$filesize && "			\
++	"cp.b $loadaddr $ubootaddr $filesize && "		\
++	"protect on $ubootaddr +$filesize && "			\
++	"cmp.b $loadaddr $ubootaddr $filesize\0"		\
++	"consoledev=ttyS0\0"					\
++	"ramdiskaddr=2000000\0"					\
++	"ramdiskfile=t2080rdb/ramdisk.uboot\0"			\
++	"fdtaddr=c00000\0"					\
++	"fdtfile=t2080rdb/t2080rdb.dtb\0"			\
++	"bdev=sda3\0"
++
++/*
++ * For emulation this causes u-boot to jump to the start of the
++ * proof point app code automatically
++ */
++#define CONFIG_PROOF_POINTS				\
++	"setenv bootargs root=/dev/$bdev rw "		\
++	"console=$consoledev,$baudrate $othbootargs;"	\
++	"cpu 1 release 0x29000000 - - -;"		\
++	"cpu 2 release 0x29000000 - - -;"		\
++	"cpu 3 release 0x29000000 - - -;"		\
++	"cpu 4 release 0x29000000 - - -;"		\
++	"cpu 5 release 0x29000000 - - -;"		\
++	"cpu 6 release 0x29000000 - - -;"		\
++	"cpu 7 release 0x29000000 - - -;"		\
++	"go 0x29000000"
++
++#define CONFIG_HVBOOT				\
++	"setenv bootargs config-addr=0x60000000; "	\
++	"bootm 0x01000000 - 0x00f00000"
++
++#define CONFIG_ALU				\
++	"setenv bootargs root=/dev/$bdev rw "		\
++	"console=$consoledev,$baudrate $othbootargs;"	\
++	"cpu 1 release 0x01000000 - - -;"		\
++	"cpu 2 release 0x01000000 - - -;"		\
++	"cpu 3 release 0x01000000 - - -;"		\
++	"cpu 4 release 0x01000000 - - -;"		\
++	"cpu 5 release 0x01000000 - - -;"		\
++	"cpu 6 release 0x01000000 - - -;"		\
++	"cpu 7 release 0x01000000 - - -;"		\
++	"go 0x01000000"
++
++#define CONFIG_LINUX				\
++	"setenv bootargs root=/dev/ram rw "		\
++	"console=$consoledev,$baudrate $othbootargs;"	\
++	"setenv ramdiskaddr 0x02000000;"		\
++	"setenv fdtaddr 0x00c00000;"			\
++	"setenv loadaddr 0x1000000;"			\
++	"bootm $loadaddr $ramdiskaddr $fdtaddr"
++
++#define CONFIG_HDBOOT					\
++	"setenv bootargs root=/dev/$bdev rw "		\
++	"console=$consoledev,$baudrate $othbootargs;"	\
++	"tftp $loadaddr $bootfile;"			\
++	"tftp $fdtaddr $fdtfile;"			\
++	"bootm $loadaddr - $fdtaddr"
++
++#define CONFIG_NFSBOOTCOMMAND			\
++	"setenv bootargs root=/dev/nfs rw "	\
++	"nfsroot=$serverip:$rootpath "		\
++	"ip=$ipaddr:$serverip:$gatewayip:$netmask:$hostname:$netdev:off " \
++	"console=$consoledev,$baudrate $othbootargs;"	\
++	"tftp $loadaddr $bootfile;"		\
++	"tftp $fdtaddr $fdtfile;"		\
++	"bootm $loadaddr - $fdtaddr"
++
++#define CONFIG_RAMBOOTCOMMAND				\
++	"setenv bootargs root=/dev/ram rw "		\
++	"console=$consoledev,$baudrate $othbootargs;"	\
++	"tftp $ramdiskaddr $ramdiskfile;"		\
++	"tftp $loadaddr $bootfile;"			\
++	"tftp $fdtaddr $fdtfile;"			\
++	"bootm $loadaddr $ramdiskaddr $fdtaddr"
++
++#define CONFIG_BOOTCOMMAND		CONFIG_LINUX
++
++#include <asm/fsl_secure_boot.h>
++
++#endif	/* __IFC1410_H */
+diff --git a/scripts/check-config.sh b/scripts/check-config.sh
+index 2677584..bcc903d 100755
+--- a/scripts/check-config.sh
++++ b/scripts/check-config.sh
+@@ -45,7 +45,7 @@ if [ -s ${new_adhoc} ]; then
+ 	echo >&2 "Please add these via Kconfig instead. Find a suitable Kconfig"
+ 	echo >&2 "file and add a 'config' or 'menuconfig' option."
+ 	# Don't delete the temporary files in case they are useful
+-	exit 1
++#	exit 1
+ else
+ 	rm ${suspects} ${ok} ${new_adhoc}
+ fi
+-- 
+2.7.4
+

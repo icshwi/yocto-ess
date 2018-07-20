@@ -1,0 +1,28 @@
+From 7f1f49519278dfab73106dc1822e523d7a80e006 Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Fri, 20 Jul 2018 09:12:24 +0200
+Subject: [PATCH 2/4] Revert "driver: mtd: ifc: update bufnum mask for ver >=
+ 2.0.0"
+
+This reverts commit e9e31efadc78cff2cc8702208a6a056515c9b120.
+---
+ drivers/mtd/nand/fsl_ifc_nand.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/mtd/nand/fsl_ifc_nand.c b/drivers/mtd/nand/fsl_ifc_nand.c
+index 785e9ee..eca269d 100644
+--- a/drivers/mtd/nand/fsl_ifc_nand.c
++++ b/drivers/mtd/nand/fsl_ifc_nand.c
+@@ -907,9 +907,6 @@ static int fsl_ifc_chip_init(struct fsl_ifc_mtd *priv)
+ 	if (ctrl->version >= FSL_IFC_VERSION_1_1_0)
+ 		fsl_ifc_sram_init(priv);
+ 
+-	if (ctrl->version >= FSL_IFC_VERSION_2_0_0)
+-		priv->bufnum_mask = (priv->bufnum_mask * 2) + 1;
+-
+ 	return 0;
+ }
+ 
+-- 
+2.7.4
+

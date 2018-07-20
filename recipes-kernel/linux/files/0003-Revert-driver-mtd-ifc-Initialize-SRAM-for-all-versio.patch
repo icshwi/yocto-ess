@@ -1,0 +1,27 @@
+From 8ba3e202032b88ad0464a14ac5ded2729f63a384 Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Fri, 20 Jul 2018 09:12:37 +0200
+Subject: [PATCH 3/4] Revert "driver: mtd: ifc: Initialize SRAM for all version
+ >= 1.0"
+
+This reverts commit 836301ec69449bdceaffcf014be6be3cfaabd0c6.
+---
+ drivers/mtd/nand/fsl_ifc_nand.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/mtd/nand/fsl_ifc_nand.c b/drivers/mtd/nand/fsl_ifc_nand.c
+index eca269d..d1570f5 100644
+--- a/drivers/mtd/nand/fsl_ifc_nand.c
++++ b/drivers/mtd/nand/fsl_ifc_nand.c
+@@ -904,7 +904,7 @@ static int fsl_ifc_chip_init(struct fsl_ifc_mtd *priv)
+ 		chip->ecc.algo = NAND_ECC_HAMMING;
+ 	}
+ 
+-	if (ctrl->version >= FSL_IFC_VERSION_1_1_0)
++	if (ctrl->version == FSL_IFC_VERSION_1_1_0)
+ 		fsl_ifc_sram_init(priv);
+ 
+ 	return 0;
+-- 
+2.7.4
+

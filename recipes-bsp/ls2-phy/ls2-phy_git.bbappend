@@ -1,0 +1,1 @@
+COMPATIBLE_MACHINE = "(ls2080ardb|ls2088ardb|t2080|t4240|ifc1410-64b)"

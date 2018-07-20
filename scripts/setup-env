@@ -73,8 +73,7 @@ For more information about OpenEmbedded see their website:
     http://www.openembedded.org/
 
 You can now run 'bitbake <target>'
-    fsl-image-networking
-    fsl-image-networking-full
+    ess-image
 "
     echo "To return to this build environment later please run:"
     echo "    . $PROJECT_DIR/SOURCE_THIS"

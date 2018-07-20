@@ -296,7 +296,6 @@ DL_DIR = "$DOWNLOADS"
 SSTATE_DIR = "$CACHES"
 INHERIT += "own-mirrors"
 SOURCE_MIRROR_URL ?= "http://git.freescale.com/source/"
-INITRAMFS_IMAGE = "fsl-image-networking"
 EOF
 
 for s in $HOME/.oe $HOME/.yocto; do
@@ -306,7 +305,7 @@ for s in $HOME/.oe $HOME/.yocto; do
     fi
 done
 
-if echo "$MACHINE" |egrep -q "^(b4|p5|t1|t2|t4)"; then
+if echo "$MACHINE" |egrep -q "^(b4|p5|t1|t2|t4|ifc)"; then
     # disable prelink (for multilib scenario) for now
     sed -i s/image-mklibs.image-prelink/image-mklibs/g conf/local.conf
 fi

@@ -20,5 +20,15 @@ IMAGE_INSTALL_append = " \
     packagegroup-fsl-tools-core \
     packagegroup-fsl-benchmark-core \
     packagegroup-fsl-networking-core \
+    packagegroup-core-buildessential \
+    packagegroup-core-tools-profile \
+    packagegroup-core-full-cmdline \
+    packagegroup-core-nfs-server \
+    packagegroup-core-tools-debug \
+    packagegroup-fsl-networking-extended \
+    packagegroup-fsl-virtualization \
+    packagegroup-fsl-devtools \
+    packagegroup-fsl-benchmark-extended \
+    packagegroup-fsl-tools-extended \
 "
 

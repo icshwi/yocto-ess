@@ -74,6 +74,7 @@ For more information about OpenEmbedded see their website:
 
 You can now run 'bitbake <target>'
     ess-image
+    ess-toolchain
 "
     echo "To return to this build environment later please run:"
     echo "    . $PROJECT_DIR/SOURCE_THIS"

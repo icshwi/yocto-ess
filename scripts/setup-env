@@ -296,6 +296,11 @@ DL_DIR = "$DOWNLOADS"
 SSTATE_DIR = "$CACHES"
 INHERIT += "own-mirrors"
 SOURCE_MIRROR_URL ?= "http://git.freescale.com/source/"
+
+# Initramfs Options
+INITRAMFS_IMAGE = "ess-image-initramfs"
+INITRAMFS_IMAGE_BUNDLE = "1"
+
 EOF
 
 for s in $HOME/.oe $HOME/.yocto; do

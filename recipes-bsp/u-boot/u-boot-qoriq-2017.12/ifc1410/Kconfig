@@ -1,0 +1,12 @@
+if TARGET_IFC1410
+
+config SYS_BOARD
+	default "ifc1410"
+
+config SYS_VENDOR
+	default "freescale"
+
+config SYS_CONFIG_NAME
+	default "ifc1410"
+
+endif

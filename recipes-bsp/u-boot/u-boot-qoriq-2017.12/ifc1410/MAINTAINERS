@@ -1,0 +1,17 @@
+T208XIFC BOARD
+#M:	-
+S:	Maintained
+F:	board/ioxos/ifc1211/
+F:	board/ioxos/ifc1410/
+F:	include/configs/ifc1211.h
+F:	include/configs/ifc1410.h
+F:	configs/IFC1211_defconfig
+F:	configs/IFC1211_NAND_defconfig
+F:	configs/IFC1211_SDCARD_defconfig
+F:	configs/IFC1211_SPIFLASH_defconfig
+F:	configs/IFC1410_defconfig
+F:	configs/IFC1410_NAND_defconfig
+F:	configs/IFC1410_SDCARD_defconfig
+F:	configs/IFC1410_SPIFLASH_defconfig
+F:	configs/IFC1410_SECURE_BOOT_defconfig
+F:	configs/IFC1410_SRIO_PCIE_BOOT_defconfig

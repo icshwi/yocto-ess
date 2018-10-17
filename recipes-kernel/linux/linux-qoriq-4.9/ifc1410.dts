@@ -36,37 +36,26 @@
 /include/ "ifc1410.dtsi"
 
 / {
-	model = "fsl,T2080RDB";
-	compatible = "fsl,T2080RDB";
+	model = "fsl,T2081QDS";
+	compatible = "fsl,T2081QDS";
 	#address-cells = <2>;
 	#size-cells = <2>;
 	interrupt-parent = <&mpic>;
-
-	rio: rapidio@ffe0c0000 {
-		reg = <0xf 0xfe0c0000 0 0x11000>;
-
-		port1 {
-			ranges = <0 0 0xc 0x20000000 0 0x10000000>;
-		};
-		port2 {
-			ranges = <0 0 0xc 0x30000000 0 0x10000000>;
-		};
-	};
 };
 
 &soc {
 	fman@400000 {
-                rcpm-wakeup = <&rcpm 0x00000008>;
+                /*rcpm-wakeup = <&rcpm 0x00000008>;*/
 		ethernet@e0000 { /* 10GEC3 */
 	                fixed-link = <0 1 1000 0 0>;
-			phy-connection-type = "sgmii-basex";
-                        rcpm-wakeup = <&rcpm 0x80000000>;
+			phy-connection-type = "sgmii";
+                        /*rcpm-wakeup = <&rcpm 0x80000000>;*/
 		};
 
 		ethernet@e2000 { /* 10GEC4 */
-			phy-connection-type = "sgmii-basex";
+			phy-connection-type = "sgmii";
 	                fixed-link = <1 1 1000 0 0>;
-                        rcpm-wakeup = <&rcpm 0x80000000>;
+                        /*rcpm-wakeup = <&rcpm 0x80000000>;*/
 		};
 		ethernet@e4000 {
 			phy-handle = <&rgmii_phy1>;
@@ -83,4 +72,4 @@
 	};
 };
 
-/include/ "t2080si-post.dtsi"
+/include/ "t2081si-post.dtsi"

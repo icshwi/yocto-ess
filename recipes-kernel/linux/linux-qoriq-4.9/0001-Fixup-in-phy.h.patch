@@ -1,0 +1,25 @@
+From 4ce06b401e46353096adffc20414e7410be372bf Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Fri, 19 Oct 2018 14:14:56 +0200
+Subject: [PATCH] Fixup in phy.h
+
+---
+ include/linux/phy.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 914c430..73094de 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -130,6 +130,8 @@ static inline const char *phy_modes(phy_interface_t interface)
+ 		return "trgmii";
+ 	case PHY_INTERFACE_MODE_2500SGMII:
+ 		return "sgmii-2500";
++	case PHY_INTERFACE_MODE_SGMII_BASEX:
++		return "sgmii-basex";
+ 	default:
+ 		return "unknown";
+ 	}
+-- 
+2.7.4
+

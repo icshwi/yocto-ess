@@ -1,0 +1,25 @@
+From ca8461de6d297b2caf84f2b8619c5ed753ad242d Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Mon, 22 Oct 2018 08:11:09 +0200
+Subject: [PATCH] Use phy-connection
+
+---
+ drivers/net/ethernet/freescale/sdk_dpaa/mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/freescale/sdk_dpaa/mac.c b/drivers/net/ethernet/freescale/sdk_dpaa/mac.c
+index a88604f..ac05a12 100644
+--- a/drivers/net/ethernet/freescale/sdk_dpaa/mac.c
++++ b/drivers/net/ethernet/freescale/sdk_dpaa/mac.c
+@@ -327,7 +327,7 @@ static int __cold mac_probe(struct platform_device *_of_dev)
+ 	}
+ 
+ 	/* Get the PHY connection type */
+-	_errno = of_property_read_string(mac_node, "phy-connection-type",
++	_errno = of_property_read_string(mac_node, "phy-connection",
+ 			&char_prop);
+ 	if (unlikely(_errno)) {
+ 		dev_warn(dev,
+-- 
+2.7.4
+

@@ -45,21 +45,21 @@
 
 &soc {
 	fman@400000 {
-                /*rcpm-wakeup = <&rcpm 0x00000008>;*/
+                rcpm-wakeup = <&rcpm 0x00000008>;
 		ethernet@e0000 { /* 10GEC3 */
 	                fixed-link = <0 1 1000 0 0>;
-			phy-connection-type = "sgmii";
-                        /*rcpm-wakeup = <&rcpm 0x80000000>;*/
+			phy-connection = "sgmii-basex";
+                        rcpm-wakeup = <&rcpm 0x80000000>;
 		};
 
 		ethernet@e2000 { /* 10GEC4 */
-			phy-connection-type = "sgmii";
+			phy-connection = "sgmii-basex";
 	                fixed-link = <1 1 1000 0 0>;
-                        /*rcpm-wakeup = <&rcpm 0x80000000>;*/
+                        rcpm-wakeup = <&rcpm 0x80000000>;
 		};
 		ethernet@e4000 {
 			phy-handle = <&rgmii_phy1>;
-			phy-connection-type = "rgmii";
+			phy-connection = "rgmii";
 		};
 
 		mdio@fc000 {

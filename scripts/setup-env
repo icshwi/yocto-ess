@@ -301,6 +301,8 @@ SOURCE_MIRROR_URL ?= "http://git.freescale.com/source/"
 INITRAMFS_IMAGE = "ess-image-initramfs"
 INITRAMFS_IMAGE_BUNDLE = "1"
 
+ACCEPT_FSL_EULA = "1"
+
 EOF
 
 for s in $HOME/.oe $HOME/.yocto; do

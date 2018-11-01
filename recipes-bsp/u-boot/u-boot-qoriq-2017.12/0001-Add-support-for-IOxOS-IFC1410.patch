@@ -1,12 +1,12 @@
-From 4626498021556ba8b45a1fabca76ef7fe9b5a4af Mon Sep 17 00:00:00 2001
+From 1fa77ac25ba0c95f08b4aa7ce9056c466cda110d Mon Sep 17 00:00:00 2001
 From: Oliver Talevski <oliver.talevski@esss.se>
-Date: Mon, 15 Oct 2018 16:27:37 +0200
+Date: Thu, 1 Nov 2018 11:25:10 +0100
 Subject: [PATCH] Add support for IOxOS IFC1410
 
 ---
  arch/powerpc/cpu/mpc85xx/Kconfig          |   7 +
  arch/powerpc/include/asm/config_mpc85xx.h |   1 +
- board/freescale/common/vid.c              |  74 ++-
+ board/freescale/common/vid.c              |  76 ++-
  cmd/Makefile                              |   3 +
  cmd/prom.c                                | 847 ++++++++++++++++++++++++++++++
  drivers/ddr/fsl/ctrl_regs.c               |  38 +-
@@ -14,7 +14,7 @@ Subject: [PATCH] Add support for IOxOS IFC1410
  drivers/net/fm/eth.c                      |   3 +
  env/flash.c                               |  62 +++
  scripts/check-config.sh                   |   2 +-
- 10 files changed, 1146 insertions(+), 8 deletions(-)
+ 10 files changed, 1147 insertions(+), 9 deletions(-)
  create mode 100644 cmd/prom.c
 
 diff --git a/arch/powerpc/cpu/mpc85xx/Kconfig b/arch/powerpc/cpu/mpc85xx/Kconfig
@@ -55,7 +55,7 @@ index 6fd218a..0ce7836 100644
  #define CONFIG_SYS_NUM_FM1_DTSEC	8
  #define CONFIG_SYS_NUM_FM1_10GEC	4
 diff --git a/board/freescale/common/vid.c b/board/freescale/common/vid.c
-index 871f92a..eb94ce3 100644
+index 871f92a..9c93034 100644
 --- a/board/freescale/common/vid.c
 +++ b/board/freescale/common/vid.c
 @@ -76,6 +76,13 @@ static int find_ir_chip_on_i2c(void)
@@ -207,15 +207,18 @@ index 871f92a..eb94ce3 100644
  	/*
  	  * Adjust voltage to at or one step above target.
  	  * As measurements are less precise than setting the values
-@@ -731,7 +791,7 @@ int adjust_vdd(ulong vdd_override)
+@@ -731,9 +791,9 @@ int adjust_vdd(ulong vdd_override)
  		vdd_current -= IR_VDD_STEP_DOWN;
  		vdd_last = set_voltage(i2caddress, vdd_current);
  	}
 -
 +#endif
  	if (vdd_last > 0)
- 		printf("VID: Core voltage after adjustment is at %d mV\n",
+-		printf("VID: Core voltage after adjustment is at %d mV\n",
++		debug("VID: Core voltage after adjustment is at %d mV\n",
  		       vdd_last);
+ 	else
+ 		ret = -1;
 @@ -757,7 +817,9 @@ static int print_vdd(void)
  		return -1;
  	}

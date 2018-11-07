@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "Starting DDR calibration" > /dev/kmsg
+tscmon q e > /dev/kmsg
+

@@ -1,0 +1,26 @@
+From f88252f271dfa0a2e772fe72d33f0c74fdcb0874 Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Wed, 7 Nov 2018 14:48:09 +0100
+Subject: [PATCH] Run command and exit
+
+---
+ TscMon.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/TscMon.c b/TscMon.c
+index 60b88ce..464761c 100644
+--- a/TscMon.c
++++ b/TscMon.c
+@@ -570,6 +570,9 @@ int main(int argc, char *argv[]){
+ 				goto TscMon_exit;
+ 			}
+ 		}
++		else if(argv[2][0] == 'e'){
++			goto TscMon_exit;
++		}
+ 	}
+ 	else if(argc > 1){
+ 		struct cli_cmd_para script_para;
+-- 
+2.7.4
+

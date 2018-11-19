@@ -9,7 +9,7 @@ SRC_URI = "git://git@gitlab.esss.lu.se/ioxos/tsc;branch=master;protocol=ssh \
            file://0001-Run-command-and-exit.patch \
            file://0001-Add-license-file.patch \
            file://tosca_ddr_calib"
-SRCREV = "27901e5c8b1e5271227ff60784ebcc3ed13c6724"
+SRCREV = "e0a9b52b186797f3abd179a381f52ed0617755b2"
 
 S = "${WORKDIR}/git/src/TscMon"
 

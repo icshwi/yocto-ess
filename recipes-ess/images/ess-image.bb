@@ -14,8 +14,5 @@ LICENSE = "MIT"
 
 IMAGE_INSTALL_append = " \
     packagegroup-core-ssh-openssh \
-    packagegroup-fsl-mfgtools \
-    packagegroup-fsl-tools-core \
-    packagegroup-fsl-networking-core \
 "
 

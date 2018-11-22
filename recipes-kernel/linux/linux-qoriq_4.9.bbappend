@@ -12,6 +12,7 @@ SRC_URI_append += "file://ifc1410_4_9_defconfig \
                    file://0001-Fixup-in-phy.h.patch \
                    file://0001-Use-phy-connection.patch \
                    file://0002-ver_linux-Use-usr-bin-awk-instead-of-bin-awk.patch \
+                   file://0001-Remove-unused-ethernet-ports-from-dts.patch \
 "
 
 SCMVERSION = "n"

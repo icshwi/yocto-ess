@@ -7,7 +7,7 @@ SRC_URI_append += "file://ifc1410_4_9_defconfig \
                    file://ifc1410-sdk.dts \
                    file://ifc1410.dtsi \
                    file://ifc1410-pre.dtsi \
-                   file://0001-Revert-driver-mtd-ifc-Initialize-SRAM-for-all-versio.patch \
+                   file://0001-Set-CONFIG_FSL_IFC-default-y.patch \
                    file://0001-Configure-IFC1410-SGMII-PHY.patch \
                    file://0001-Fixup-in-phy.h.patch \
                    file://0001-Use-phy-connection.patch \

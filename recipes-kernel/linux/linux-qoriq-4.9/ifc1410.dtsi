@@ -60,22 +60,13 @@
 
 	ifc: localbus@ffe124000 {
 		reg = <0xf 0xfe124000 0 0x2000>;
-		ranges = <2 0 0xf 0xff800000 0x00010000
-			  3 0 0xf 0xffdf0000 0x00008000>;
+		ranges = <2 0 0xf 0xff800000 0x00010000>;
 
 		nand@2,0 {
 			#address-cells = <1>;
 			#size-cells = <1>;
 			compatible = "fsl,ifc-nand";
 			reg = <0x2 0x0 0x10000>;
-		};
-
-		boardctrl: board-control@3,0 {
-			#address-cells = <1>;
-			#size-cells = <1>;
-			compatible = "fsl,t2080-cpld";
-			reg = <3 0 0x300>;
-			ranges = <0 3 0 0x300>;
 		};
 	};
 

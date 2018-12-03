@@ -4,6 +4,7 @@ variables:
 
 stages:
   - build
+  - release
 
 build:
   tags:
@@ -17,3 +18,12 @@ build:
     paths:
       - tmp/deploy/images/ifc1410-64b
     expire_in: 12 hour
+
+release:
+  tags:
+    - docker
+  stage: release
+  image: registry.esss.lu.se/ics-docker/jfrog:latest
+  script:
+    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
+    - cd sstate-cache && jfrog rt upload --flat=false "*" yocto/sstate/

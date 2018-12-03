@@ -1,0 +1,19 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  LANG: en_US.UTF-8
+
+stages:
+  - build
+
+build:
+  tags:
+    - docker
+  stage: build
+  image: crops/yocto:debian-9-base
+  script:
+    - . ./setup-env -m ifc1410-64b
+    - bitbake ess-image
+  artifacts:
+    paths:
+      - tmp/deploy/images/ifc1410-64b
+    expire_in: 12 hour

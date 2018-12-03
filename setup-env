@@ -154,11 +154,11 @@ fi
 # Check the machine type specified
 valid_machine=false
 if [ -n "${MACHINE}" ];then
-    valid_num=`find ${ROOTDIR}/sources/meta-{ioxos,fsl,freescale,qoriq-demos}*/conf/machine \
+    valid_num=`find ${ROOTDIR}/sources/meta-*/conf/machine \
         -name ${MACHINE}.conf 2>/dev/null |wc -l`
     if [ "1" -lt "$valid_num" ];then
         echo "ERROR: possible error may occur due to duplicate ${MACHINE}.conf exist:"
-        find ${ROOTDIR}/sources/meta-{ioxos,fsl,freescale,qoriq-demos}*/conf/machine \
+        find ${ROOTDIR}/sources/meta-*/conf/machine \
             -name ${MACHINE}.conf 2>/dev/null
         echo "Please remove the useless layer under ${ROOTDIR}/sources"
         clean_up && return

@@ -1,0 +1,25 @@
+From 88b3d1e75690f865e245469399cb0798db065f68 Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Tue, 4 Dec 2018 14:25:41 +0100
+Subject: [PATCH] Fix for host gcc 6.3
+
+---
+ gcc/config/rs6000/extelim.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gcc/config/rs6000/extelim.c b/gcc/config/rs6000/extelim.c
+index 968b7fa..7bfb5f5 100644
+--- a/gcc/config/rs6000/extelim.c
++++ b/gcc/config/rs6000/extelim.c
+@@ -3103,7 +3103,7 @@ return_p (rtx rtn_insn)
+   int i;
+ 
+   if (GET_CODE (rtn) != SET)
+-    return false;
++    return NULL;
+ 
+   dest = SET_DEST (rtn);
+ 
+-- 
+2.7.4
+

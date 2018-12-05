@@ -294,8 +294,13 @@ BB_NUMBER_THREADS = "$THREADS"
 PARALLEL_MAKE = "-j $JOBS"
 DL_DIR = "$DOWNLOADS"
 SSTATE_DIR = "$CACHES"
-INHERIT += "own-mirrors"
-SOURCE_MIRROR_URL ?= "http://git.freescale.com/source/"
+
+# If object is not in artifactory we try freescale mirror
+PREMIRRORS_prepend = "\
+git://.*/.* http://git.freescale.com/source \n \
+https://.*/.* http://git.freescale.com/source \n \
+http://.*/.* http://git.freescale.com/source \n \
+ftp://.*/.* http://git.freescale.com/source \n"
 
 # Initramfs Options
 INITRAMFS_IMAGE = "ess-image-initramfs"
@@ -310,6 +315,9 @@ file://.* https://artifactory.esss.lu.se/artifactory/yocto/sstate/PATH"
 # Use artifactory as mirror for yoctoproject source download
 INHERIT += "own-mirrors"
 SOURCE_MIRROR_URL = "https://artifactory.esss.lu.se/artifactory/yoctoproject-mirror"
+
+# Create tarballs of all git repos in download dir
+BB_GENERATE_MIRROR_TARBALLS = "1"
 
 EOF
 

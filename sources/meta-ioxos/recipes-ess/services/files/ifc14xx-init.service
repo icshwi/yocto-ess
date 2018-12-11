@@ -1,0 +1,10 @@
+[Unit]
+Description=IFC14XX init
+After=systemd-modules-load.service
+
+[Service]
+Type=oneshot
+ExecStart=@SCRIPTDIR@/ifc14xx-init.sh
+
+[Install]
+WantedBy=multi-user.target

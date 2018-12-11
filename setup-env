@@ -329,6 +329,11 @@ file://.* https://artifactory.esss.lu.se/artifactory/yocto/sstate/PATH"
 # Create tarballs of all git repos in download dir
 BB_GENERATE_MIRROR_TARBALLS = "1"
 
+DISTRO_FEATURES_append = " systemd"
+DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
+VIRTUAL-RUNTIME_init_manager = "systemd"
+VIRTUAL-RUNTIME_initscripts = "systemd-compat-units"
+
 EOF
 
 for s in $HOME/.oe $HOME/.yocto; do

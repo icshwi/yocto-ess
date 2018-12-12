@@ -8,7 +8,7 @@ CORE_IMAGE_EXTRA_INSTALL_append_qoriq = " udev-rules-qoriq"
 IMAGE_FSTYPES = "tar.gz"
 
 SUMMARY = "Image to be used for IFC1410 and IFC1420"
-DESCRIPTION = "ESS image"
+DESCRIPTION = "IFC14XX image"
 
 LICENSE = "MIT"
 

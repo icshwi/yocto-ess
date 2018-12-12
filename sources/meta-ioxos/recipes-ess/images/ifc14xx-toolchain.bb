@@ -11,7 +11,7 @@ TOOLCHAIN_TARGET_TASK += " \
     libgomp-staticdev \
     libstdc++-staticdev \
     ${TCLIBC}-staticdev \
-    eudev-dev \
+    systemd-dev \
     libxml2-dev \
 "
 

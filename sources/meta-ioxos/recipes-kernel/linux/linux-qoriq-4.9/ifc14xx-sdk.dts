@@ -3,7 +3,7 @@
  * Copyright 2017-2018 NXP
  */
 
-#include "ifc1410.dts"
+#include "ifc14xx.dts"
 
 /include/ "qoriq-fman3-0-sdk.dtsi"
 /include/ "qoriq-bman-portals-sdk.dtsi"

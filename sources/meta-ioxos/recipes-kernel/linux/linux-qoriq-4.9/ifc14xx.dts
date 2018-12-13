@@ -32,8 +32,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/include/ "ifc1410-pre.dtsi"
-/include/ "ifc1410.dtsi"
+/include/ "ifc14xx-pre.dtsi"
+/include/ "ifc14xx.dtsi"
 
 / {
 	model = "fsl,T2081QDS";

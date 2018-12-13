@@ -38,7 +38,7 @@ index 92187d3..338556c 100644
  source "board/freescale/t102xrdb/Kconfig"
  source "board/freescale/t1040qds/Kconfig"
  source "board/freescale/t104xrdb/Kconfig"
-+source "board/freescale/ifc1410/Kconfig"
++source "board/freescale/ifc14xx/Kconfig"
  source "board/freescale/t208xqds/Kconfig"
  source "board/freescale/t208xrdb/Kconfig"
  source "board/freescale/t4qds/Kconfig"

@@ -191,7 +191,7 @@ LAYER_LIST=" \
 "
 EULA_FILE="$FSLROOTDIR/EULA"
 
-DISTRO="fsl-qoriq"
+DISTRO="ifc14xx"
 
 # set default jobs and threads
 CPUS=`grep -c processor /proc/cpuinfo`

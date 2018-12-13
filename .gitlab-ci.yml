@@ -22,7 +22,7 @@ build_image:
     - bitbake ifc14xx-image
   artifacts:
     paths:
-      - build_ifc1410-64b/tmp/deploy/images/ifc1410-64b
+      - build_ifc14xx-64b/tmp/deploy/images/ifc14xx-64b
       - sstate-cache/
       - downloads/
     expire_in: 24 hour
@@ -43,7 +43,7 @@ build_toolchain:
     - bitbake ifc14xx-toolchain
   artifacts:
     paths:
-      - build_ifc1410-64b/tmp/deploy/sdk
+      - build_ifc14xx-64b/tmp/deploy/sdk
     expire_in: 24 hour
 
 release_sstate:
@@ -78,7 +78,7 @@ release_images_tags:
   image: registry.esss.lu.se/ics-docker/jfrog:latest
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
-    - cd build_ifc1410-64b/tmp/deploy/images/ifc1410-64b && echo $CI_COMMIT_SHA > $CI_COMMIT_SHA
+    - cd build_ifc14xx-64b/tmp/deploy/images/ifc14xx-64b && echo $CI_COMMIT_SHA > $CI_COMMIT_SHA
     - jfrog rt upload --flat=false "*" boot-images/ioxos/$CI_COMMIT_TAG/
 
 release_images_web:
@@ -90,6 +90,6 @@ release_images_web:
   image: registry.esss.lu.se/ics-docker/jfrog:latest
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
-    - cd build_ifc1410-64b/tmp/deploy/images/ifc1410-64b && echo $CI_COMMIT_SHA > $CI_COMMIT_SHA
+    - cd build_ifc14xx-64b/tmp/deploy/images/ifc14xx-64b && echo $CI_COMMIT_SHA > $CI_COMMIT_SHA
     - jfrog rt upload --flat=false "*" boot-images/ioxos/$CI_PIPELINE_ID/
 

@@ -18,7 +18,7 @@ build_image:
     - chmod 700 ~/.ssh
     - ssh-keyscan -t rsa gitlab.esss.lu.se >> ~/.ssh/known_hosts
   script:
-    - . ./setup-env -m ifc1410-64b
+    - . ./setup-env -m ifc14xx-64b
     - bitbake ifc14xx-image
   artifacts:
     paths:
@@ -39,7 +39,7 @@ build_toolchain:
     - chmod 700 ~/.ssh
     - ssh-keyscan -t rsa gitlab.esss.lu.se >> ~/.ssh/known_hosts
   script:
-    - . ./setup-env -m ifc1410-64b
+    - . ./setup-env -m ifc14xx-64b
     - bitbake ifc14xx-toolchain
   artifacts:
     paths:

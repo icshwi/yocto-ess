@@ -21,6 +21,14 @@
 			compatible = "fsl,dpa-ethernet";
 			fsl,fman-mac = <&enet1>;
 		};
+		ethernet@2 {
+			compatible = "fsl,t2080-dpa-ethernet","fsl,dpa-ethernet";
+			fsl,fman-mac = <&enet6>;
+		};
+		ethernet@3 {
+			compatible = "fsl,t2080-dpa-ethernet","fsl,dpa-ethernet";
+			fsl,fman-mac = <&enet7>;
+		};
 	};
 };
 

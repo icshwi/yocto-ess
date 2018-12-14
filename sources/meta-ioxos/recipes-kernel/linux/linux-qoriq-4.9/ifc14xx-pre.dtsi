@@ -55,6 +55,8 @@
 		fman0 = &fman0;
 		ethernet0 = &enet0;
 		ethernet1 = &enet1;
+		ethernet2 = &enet6;
+		ethernet3 = &enet7;
 
 		pci0 = &pci0;
 		pci1 = &pci1;

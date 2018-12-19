@@ -1,0 +1,1 @@
+#define BOARD_TYPE_IFC1410 0x1410

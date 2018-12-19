@@ -7,8 +7,8 @@
 ifdef CONFIG_SPL_BUILD
 obj-y += spl.o
 else
-obj-$(CONFIG_IFC1410) += ifc1410.o
-obj-$(CONFIG_IFC1410) += eth_ifc1410.o
+obj-$(CONFIG_IFC14XX) += ifc1410.o
+obj-$(CONFIG_IFC14XX) += eth_ifc1410.o
 obj-$(CONFIG_PCI)     += pci.o
 endif
 

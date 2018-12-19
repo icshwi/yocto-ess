@@ -97,9 +97,6 @@ int board_eth_init(bd_t *bis)
 
 	/* Set the two on-board RGMII PHY address */
 	fm_info_set_phy_address(FM1_DTSEC3, RGMII_PHY1_ADDR);
-	if( board_type == BOARD_TYPE_IFC1211) {
-	  fm_info_set_phy_address(FM1_DTSEC4, RGMII_PHY2_ADDR);
-	}
 
 	switch (srds_s1) {
 	case 0x66:
@@ -179,14 +176,6 @@ int board_eth_init(bd_t *bis)
 	miiphy_write (devname, 3, 0xd, 0x4002);
 	miiphy_write (devname, 3, 0xe, 0x3e6f);
 
-
-	if( board_type == BOARD_TYPE_IFC1211) {
-	  retval = miiphy_read(devname, 7, MII_CTRL1000, &reg);
-	  miiphy_write (devname, 7, 0xd, 2);
-	  miiphy_write (devname, 7, 0xe, 8);
-	  miiphy_write (devname, 7, 0xd, 0x4002);
-	  miiphy_write (devname, 7, 0xe, 0x3e6f);
-	}
 /* #ifdef CONFIG_IFC1410_DTSECx */
 /*	if( board_type == BOARD_TYPE_IFC1410) {
 	   printf("IFC1410 initialize internal PHYs\n");

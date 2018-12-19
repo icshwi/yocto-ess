@@ -11,7 +11,7 @@
 #ifndef __IFC1410_H
 #define __IFC1410_H
 
-#define CONFIG_IFC1410
+#define CONFIG_IFC14XX
 #define CONFIG_ICS307_REFCLK_HZ 25000000  /* ICS307 ref clk freq */
 
 #define CONFIG_USB_EHCI_HCD
@@ -105,10 +105,6 @@
 		(0x300000000ull | CONFIG_SYS_SRIO_PCIE_BOOT_SLAVE_ADDR)
 #define CONFIG_RESET_VECTOR_ADDRESS 0xfffffffc
 #define CONFIG_SYS_NO_FLASH
-#endif
-
-#ifndef CONFIG_SYS_TEXT_BASE
-#define CONFIG_SYS_TEXT_BASE	0xeff40000
 #endif
 
 #ifndef CONFIG_RESET_VECTOR_ADDRESS
@@ -762,9 +758,6 @@ unsigned long get_board_ddr_clk(void);
 /*
  * Miscellaneous configurable options
  */
-#define CONFIG_SYS_LONGHELP		/* undef to save memory */
-#define CONFIG_CMDLINE_EDITING		/* Command-line editing */
-#define CONFIG_AUTO_COMPLETE		/* add autocompletion support */
 #define CONFIG_SYS_LOAD_ADDR	0x2000000 /* default load address */
 #ifdef CONFIG_CMD_KGDB
 #define CONFIG_SYS_CBSIZE	1024	  /* Console I/O Buffer Size */
@@ -780,8 +773,8 @@ unsigned long get_board_ddr_clk(void);
  * have to be in the first 64 MB of memory, since this is
  * the maximum mapped by the Linux kernel during initialization.
  */
-#define CONFIG_SYS_BOOTMAPSZ	(64 << 20)	/* Initial map for Linux*/
-#define CONFIG_SYS_BOOTM_LEN	(64 << 20)	/* Increase max gunzip size */
+#define CONFIG_SYS_BOOTMAPSZ	(256 << 20)	/* Initial map for Linux*/
+#define CONFIG_SYS_BOOTM_LEN	(256 << 20)	/* Increase max gunzip size */
 
 #ifdef CONFIG_CMD_KGDB
 #define CONFIG_KGDB_BAUDRATE	230400	/* speed to run kgdb serial port */

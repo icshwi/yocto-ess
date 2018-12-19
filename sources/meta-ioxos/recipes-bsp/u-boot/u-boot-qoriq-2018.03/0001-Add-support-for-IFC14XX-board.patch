@@ -1,7 +1,7 @@
-From 1fa77ac25ba0c95f08b4aa7ce9056c466cda110d Mon Sep 17 00:00:00 2001
+From be44d6dc27ea482da15d4f93c084308b50893bb9 Mon Sep 17 00:00:00 2001
 From: Oliver Talevski <oliver.talevski@esss.se>
-Date: Thu, 1 Nov 2018 11:25:10 +0100
-Subject: [PATCH] Add support for IOxOS IFC1410
+Date: Tue, 18 Dec 2018 08:57:14 +0100
+Subject: [PATCH] Add support for IFC14XX board
 
 ---
  arch/powerpc/cpu/mpc85xx/Kconfig          |   7 +
@@ -9,24 +9,24 @@ Subject: [PATCH] Add support for IOxOS IFC1410
  board/freescale/common/vid.c              |  76 ++-
  cmd/Makefile                              |   3 +
  cmd/prom.c                                | 847 ++++++++++++++++++++++++++++++
- drivers/ddr/fsl/ctrl_regs.c               |  38 +-
+ drivers/ddr/fsl/ctrl_regs.c               |  38 ++
  drivers/ddr/fsl/main.c                    | 117 +++++
- drivers/net/fm/eth.c                      |   3 +
+ drivers/net/fm/eth.c                      |   2 +
  env/flash.c                               |  62 +++
- scripts/check-config.sh                   |   2 +-
- 10 files changed, 1147 insertions(+), 9 deletions(-)
+ scripts/check-config.sh                   |   1 -
+ 10 files changed, 1146 insertions(+), 8 deletions(-)
  create mode 100644 cmd/prom.c
 
 diff --git a/arch/powerpc/cpu/mpc85xx/Kconfig b/arch/powerpc/cpu/mpc85xx/Kconfig
-index 92187d3..338556c 100644
+index 19e8d02..9fa464c 100644
 --- a/arch/powerpc/cpu/mpc85xx/Kconfig
 +++ b/arch/powerpc/cpu/mpc85xx/Kconfig
-@@ -307,6 +307,12 @@ config TARGET_T1042RDB_PI
- 	select PHYS_64BIT
+@@ -338,6 +338,12 @@ config TARGET_T1042RDB_PI
  	imply CMD_SATA
+ 	imply PANIC_HANG
  
-+config TARGET_IFC1410
-+	bool "Support IFC1410"
++config TARGET_IFC14XX
++	bool "Support IFC14XX"
 +	select ARCH_T2081
 +	select SUPPORT_SPL
 +	select PHYS_64BIT
@@ -34,7 +34,7 @@ index 92187d3..338556c 100644
  config TARGET_T2080QDS
  	bool "Support T2080QDS"
  	select ARCH_T2080
-@@ -1511,6 +1517,7 @@ source "board/freescale/t102xqds/Kconfig"
+@@ -1563,6 +1569,7 @@ source "board/freescale/t102xqds/Kconfig"
  source "board/freescale/t102xrdb/Kconfig"
  source "board/freescale/t1040qds/Kconfig"
  source "board/freescale/t104xrdb/Kconfig"
@@ -55,7 +55,7 @@ index 6fd218a..0ce7836 100644
  #define CONFIG_SYS_NUM_FM1_DTSEC	8
  #define CONFIG_SYS_NUM_FM1_10GEC	4
 diff --git a/board/freescale/common/vid.c b/board/freescale/common/vid.c
-index 871f92a..9c93034 100644
+index 06edc32..c166333 100644
 --- a/board/freescale/common/vid.c
 +++ b/board/freescale/common/vid.c
 @@ -76,6 +76,13 @@ static int find_ir_chip_on_i2c(void)
@@ -105,7 +105,7 @@ index 871f92a..9c93034 100644
  #else
  	return -1;
  #endif
-@@ -351,6 +377,19 @@ static int set_voltage_to_LTC(int i2caddress, int vdd)
+@@ -352,6 +378,19 @@ static int set_voltage_to_LTC(int i2caddress, int vdd)
  }
  #endif
  
@@ -125,7 +125,7 @@ index 871f92a..9c93034 100644
  static int set_voltage(int i2caddress, int vdd)
  {
  	int vdd_last = -1;
-@@ -359,6 +398,8 @@ static int set_voltage(int i2caddress, int vdd)
+@@ -360,6 +399,8 @@ static int set_voltage(int i2caddress, int vdd)
  	vdd_last = set_voltage_to_IR(i2caddress, vdd);
  #elif defined CONFIG_VOL_MONITOR_LTC3882_SET
  	vdd_last = set_voltage_to_LTC(i2caddress, vdd);
@@ -134,7 +134,7 @@ index 871f92a..9c93034 100644
  #else
  	#error Specific voltage monitor must be defined
  #endif
-@@ -448,7 +489,9 @@ int adjust_vdd(ulong vdd_override)
+@@ -466,7 +507,9 @@ int adjust_vdd(ulong vdd_override)
  		goto exit;
  	}
  #if defined(CONFIG_VOL_MONITOR_IR36021_SET) || \
@@ -145,7 +145,7 @@ index 871f92a..9c93034 100644
  	ret = find_ir_chip_on_i2c();
  	if (ret < 0) {
  		printf("VID: Could not find voltage regulator on I2C.\n");
-@@ -456,9 +499,12 @@ int adjust_vdd(ulong vdd_override)
+@@ -474,9 +517,12 @@ int adjust_vdd(ulong vdd_override)
  		goto exit;
  	} else {
  		i2caddress = ret;
@@ -159,7 +159,7 @@ index 871f92a..9c93034 100644
  	/* check IR chip work on Intel mode*/
  	ret = i2c_read(i2caddress,
  		       IR36021_INTEL_MODE_OOFSET,
-@@ -529,6 +575,9 @@ int adjust_vdd(ulong vdd_override)
+@@ -547,6 +593,9 @@ int adjust_vdd(ulong vdd_override)
  #ifdef CONFIG_VOL_MONITOR_LTC3882_SET
  	/* Set the target voltage */
  	vdd_last = vdd_current = set_voltage(i2caddress, vdd_target);
@@ -169,7 +169,7 @@ index 871f92a..9c93034 100644
  #else
  	/*
  	  * Adjust voltage to at or one step above target.
-@@ -620,7 +669,9 @@ int adjust_vdd(ulong vdd_override)
+@@ -638,7 +687,9 @@ int adjust_vdd(ulong vdd_override)
  		goto exit;
  	}
  #if defined(CONFIG_VOL_MONITOR_IR36021_SET) || \
@@ -180,7 +180,7 @@ index 871f92a..9c93034 100644
  	ret = find_ir_chip_on_i2c();
  	if (ret < 0) {
  		printf("VID: Could not find voltage regulator on I2C.\n");
-@@ -628,9 +679,12 @@ int adjust_vdd(ulong vdd_override)
+@@ -646,9 +697,12 @@ int adjust_vdd(ulong vdd_override)
  		goto exit;
  	} else {
  		i2caddress = ret;
@@ -194,7 +194,7 @@ index 871f92a..9c93034 100644
  	/* check IR chip work on Intel mode*/
  	ret = i2c_read(i2caddress,
  		       IR36021_INTEL_MODE_OOFSET,
-@@ -715,6 +769,12 @@ int adjust_vdd(ulong vdd_override)
+@@ -733,6 +787,12 @@ int adjust_vdd(ulong vdd_override)
  	}
  	vdd_current = vdd_last;
  	debug("VID: Core voltage is currently at %d mV\n", vdd_last);
@@ -207,7 +207,7 @@ index 871f92a..9c93034 100644
  	/*
  	  * Adjust voltage to at or one step above target.
  	  * As measurements are less precise than setting the values
-@@ -731,9 +791,9 @@ int adjust_vdd(ulong vdd_override)
+@@ -749,9 +809,9 @@ int adjust_vdd(ulong vdd_override)
  		vdd_current -= IR_VDD_STEP_DOWN;
  		vdd_last = set_voltage(i2caddress, vdd_current);
  	}
@@ -219,7 +219,7 @@ index 871f92a..9c93034 100644
  		       vdd_last);
  	else
  		ret = -1;
-@@ -757,7 +817,9 @@ static int print_vdd(void)
+@@ -775,7 +835,9 @@ static int print_vdd(void)
  		return -1;
  	}
  #if defined(CONFIG_VOL_MONITOR_IR36021_SET) || \
@@ -231,7 +231,7 @@ index 871f92a..9c93034 100644
  	if (ret < 0) {
  		printf("VID: Could not find voltage regulator on I2C.\n");
 diff --git a/cmd/Makefile b/cmd/Makefile
-index 2b0444d..c106581 100644
+index 9a358e4..b0d0327 100644
 --- a/cmd/Makefile
 +++ b/cmd/Makefile
 @@ -55,6 +55,9 @@ obj-$(CONFIG_CMD_FDC) += fdc.o
@@ -241,9 +241,9 @@ index 2b0444d..c106581 100644
 +ifdef CONFIG_CMD_PROM
 +obj-$(CONFIG_CMD_PROM) += prom.o
 +endif
- ifdef CONFIG_FPGA
  obj-$(CONFIG_CMD_FPGA) += fpga.o
- endif
+ obj-$(CONFIG_CMD_FPGAD) += fpgad.o
+ obj-$(CONFIG_CMD_FS_GENERIC) += fs.o
 diff --git a/cmd/prom.c b/cmd/prom.c
 new file mode 100644
 index 0000000..93219f9
@@ -1098,15 +1098,14 @@ index 0000000..93219f9
 +    "prom load <addr> io:<idx> <size>: load IO FPGA to PROM\n"
 +);
 diff --git a/drivers/ddr/fsl/ctrl_regs.c b/drivers/ddr/fsl/ctrl_regs.c
-index c0ee858..9fcd611 100644
+index 8b87271..80f1588 100644
 --- a/drivers/ddr/fsl/ctrl_regs.c
 +++ b/drivers/ddr/fsl/ctrl_regs.c
-@@ -2591,7 +2591,43 @@ compute_fsl_memctl_config_regs(const unsigned int ctrl_num,
- 		ddr->debug[28] = (ddr->debug[28] & 0xffffff00) |
+@@ -2644,6 +2644,44 @@ compute_fsl_memctl_config_regs(const unsigned int ctrl_num,
  				  popts->cpo_sample;
  #endif
--
-+#ifdef CONFIG_IFC1410
+ 
++#ifdef CONFIG_IFC14XX
 +	/* overwite DDR controller register to cope with IFC1211 */
 +	ddr->cs[0].bnds = 0x0000007F;        /* JFG */
 +	ddr->cs[0].config = 0x80014302;      /* 0x80014302; JFG */
@@ -1143,11 +1142,12 @@ index c0ee858..9fcd611 100644
 +	ddr->ddr_sdram_cfg_2 = 0x00401050;   /* 0x00404100  JFG */
 +	ddr->ddr_sdram_cfg = 0xE7200008;     /* 0xe7040000; JFG */
 +#endif
++
  	return check_fsl_memctl_config_regs(ddr);
  }
  
 diff --git a/drivers/ddr/fsl/main.c b/drivers/ddr/fsl/main.c
-index d0a7b3f..4e84016 100644
+index d0a7b3f..798602c 100644
 --- a/drivers/ddr/fsl/main.c
 +++ b/drivers/ddr/fsl/main.c
 @@ -163,6 +163,123 @@ void fsl_ddr_get_spd(generic_spd_eeprom_t *ctrl_dimms_spd,
@@ -1155,130 +1155,130 @@ index d0a7b3f..4e84016 100644
  		      unsigned int ctrl_num, unsigned int dimm_slots_per_ctrl)
  {
 +	uchar *p;
-+    int i;
++	int i;
 +
-+    if (ctrl_num >= CONFIG_NUM_DDR_CONTROLLERS) {
-+        printf("%s unexpected ctrl_num = %u\n", __FUNCTION__, ctrl_num);
-+        return;
-+    }
-+    for (i = 0; i < dimm_slots_per_ctrl; i++) {
-+      p = (uchar *) &ctrl_dimms_spd[i];
++	if (ctrl_num >= CONFIG_NUM_DDR_CONTROLLERS) {
++		printf("%s unexpected ctrl_num = %u\n", __FUNCTION__, ctrl_num);
++		return;
++	}
++	for (i = 0; i < dimm_slots_per_ctrl; i++) {
++	p = (uchar *) &ctrl_dimms_spd[i];
 +
-+      printf("       SPD emulation..");
++	printf("       SPD emulation..");
 +
-+      for( i = 0; i <  sizeof(generic_spd_eeprom_t); i++)
-+      {
-+        p[i] = 0;
-+      }
-+      p[0x0] = 0x92;
-+      p[0x1] = 0x12;
-+      p[0x2] = 0x0b;
-+      p[0x3] = 0x08;/*08*/
-+      p[0x4] = 0x04;/* 0x03 */
-+      p[0x5] = 0x19;
-+      p[0x6] = 0x02;
-+      p[0x7] = 0x02;/* 0x09 */
-+      p[0x8] = 0x0b;
-+      p[0x9] = 0x11;
-+      p[0xa] = 0x01;
-+      p[0xb] = 0x08;
-+      p[0xc] = 0x09;
-+      p[0xd] = 0x00;
-+      p[0xe] = 0xfc;
-+      p[0xf] = 0x02;
-+      p[0x10] = 0x69;
-+      p[0x11] = 0x78;
-+      p[0x12] = 0x69;
-+      p[0x13] = 0x28;
-+      p[0x14] = 0x69;
-+      p[0x15] = 0x11;
-+      p[0x16] = 0x10;
-+      p[0x17] = 0x79;
-+      p[0x18] = 0x00;
-+      p[0x19] = 0x05;
-+      p[0x1a] = 0x3c;
-+      p[0x1b] = 0x3c;
-+      p[0x1c] = 0x00;
-+      p[0x1d] = 0xd8;
-+      p[0x1e] = 0x83;
-+      p[0x1f] = 0x01;
-+      p[0x20] = 0x80;
-+      p[0x22] = 0xca;
-+      p[0x3c] = 0x0f;
-+      p[0x3d] = 0x11;
-+      p[0x3e] = 0x04;
-+      p[0x75] = 0xff;
-+      p[0x76] = 0xff;
-+      p[0x77] = 0x4b;
-+      p[0x78] = 0x15;
-+      p[0x79] = 0x45;
-+      p[0x7a] = 0x15;
-+      p[0x7b] = 0x11;
-+      p[0x7c] = 0x12;
-+      p[0x7d] = 0xa1;
-+      p[0x7e] = 0x21;/*21*/
-+      p[0x7f] = 0x70;/*70*/
-+      p[0x80] = 0x00;/*44*/
-+      p[0x81] = 0x33;
-+      p[0x82] = 0x58;
-+      p[0x83] = 0x50;
-+      p[0x84] = 0x35;
-+      p[0x85] = 0x36;
-+      p[0x86] = 0x30;
-+      p[0x87] = 0x38;
-+      p[0x88] = 0x32;
-+      p[0x89] = 0x58;
-+      p[0x8a] = 0x4c;
-+      p[0x8b] = 0x31;
-+      p[0x8c] = 0x30;
-+      p[0x8d] = 0x41;
-+      p[0x8e] = 0x41;
-+      p[0x8f] = 0x20;
-+      p[0x90] = 0x20;
-+      p[0x91] = 0x20;
-+      p[0x92] = 0x30;
-+      p[0x93] = 0x20;
-+      p[0x94] = 0x80;
-+      p[0x95] = 0x40;
-+      p[0xa0] = 0x44;
-+      p[0xa1] = 0x44;
-+      p[0xa2] = 0x53;
-+      p[0xa3] = 0x35;
-+      p[0xa4] = 0x34;
-+      p[0xa5] = 0x36;
-+      p[0xa6] = 0x30;
-+      p[0xa7] = 0x30;
-+      p[0xa8] = 0x37;
-+      p[0xa9] = 0x31;
-+      /*
-+      p[0x20] = 0x80;
-+      p[0x21] = 0x;
-+      p[0x22] = 0x;
-+      p[0x23] = 0x;
-+      p[0x24] = 0x;
-+      p[0x25] = 0x;
-+      p[0x26] = 0x;
-+      p[0x27] = 0x;
-+      p[0x28] = 0x;
-+      p[0x29] = 0x;
-+      p[0x2a] = 0x;
-+      p[0x2b] = 0x;
-+      p[0x2c] = 0x;
-+      p[0x2d] = 0x;
-+      p[0x2e] = 0x;
-+      p[0x2f] = 0x;
-+      p[126] = 0xbd;
-+      p[127] = 0x1c;
-+      */
-+    }
++	for( i = 0; i <  sizeof(generic_spd_eeprom_t); i++)
++	{
++		p[i] = 0;
++	}
++		p[0x0] = 0x92;
++		p[0x1] = 0x12;
++		p[0x2] = 0x0b;
++		p[0x3] = 0x08;/*08*/
++		p[0x4] = 0x04;/* 0x03 */
++		p[0x5] = 0x19;
++		p[0x6] = 0x02;
++		p[0x7] = 0x02;/* 0x09 */
++		p[0x8] = 0x0b;
++		p[0x9] = 0x11;
++		p[0xa] = 0x01;
++		p[0xb] = 0x08;
++		p[0xc] = 0x09;
++		p[0xd] = 0x00;
++		p[0xe] = 0xfc;
++		p[0xf] = 0x02;
++		p[0x10] = 0x69;
++		p[0x11] = 0x78;
++		p[0x12] = 0x69;
++		p[0x13] = 0x28;
++		p[0x14] = 0x69;
++		p[0x15] = 0x11;
++		p[0x16] = 0x10;
++		p[0x17] = 0x79;
++		p[0x18] = 0x00;
++		p[0x19] = 0x05;
++		p[0x1a] = 0x3c;
++		p[0x1b] = 0x3c;
++		p[0x1c] = 0x00;
++		p[0x1d] = 0xd8;
++		p[0x1e] = 0x83;
++		p[0x1f] = 0x01;
++		p[0x20] = 0x80;
++		p[0x22] = 0xca;
++		p[0x3c] = 0x0f;
++		p[0x3d] = 0x11;
++		p[0x3e] = 0x04;
++		p[0x75] = 0xff;
++		p[0x76] = 0xff;
++		p[0x77] = 0x4b;
++		p[0x78] = 0x15;
++		p[0x79] = 0x45;
++		p[0x7a] = 0x15;
++		p[0x7b] = 0x11;
++		p[0x7c] = 0x12;
++		p[0x7d] = 0xa1;
++		p[0x7e] = 0x21;/*21*/
++		p[0x7f] = 0x70;/*70*/
++		p[0x80] = 0x00;/*44*/
++		p[0x81] = 0x33;
++		p[0x82] = 0x58;
++		p[0x83] = 0x50;
++		p[0x84] = 0x35;
++		p[0x85] = 0x36;
++		p[0x86] = 0x30;
++		p[0x87] = 0x38;
++		p[0x88] = 0x32;
++		p[0x89] = 0x58;
++		p[0x8a] = 0x4c;
++		p[0x8b] = 0x31;
++		p[0x8c] = 0x30;
++		p[0x8d] = 0x41;
++		p[0x8e] = 0x41;
++		p[0x8f] = 0x20;
++		p[0x90] = 0x20;
++		p[0x91] = 0x20;
++		p[0x92] = 0x30;
++		p[0x93] = 0x20;
++		p[0x94] = 0x80;
++		p[0x95] = 0x40;
++		p[0xa0] = 0x44;
++		p[0xa1] = 0x44;
++		p[0xa2] = 0x53;
++		p[0xa3] = 0x35;
++		p[0xa4] = 0x34;
++		p[0xa5] = 0x36;
++		p[0xa6] = 0x30;
++		p[0xa7] = 0x30;
++		p[0xa8] = 0x37;
++		p[0xa9] = 0x31;
++		/*
++		p[0x20] = 0x80;
++		p[0x21] = 0x;
++		p[0x22] = 0x;
++		p[0x23] = 0x;
++		p[0x24] = 0x;
++		p[0x25] = 0x;
++		p[0x26] = 0x;
++		p[0x27] = 0x;
++		p[0x28] = 0x;
++		p[0x29] = 0x;
++		p[0x2a] = 0x;
++		p[0x2b] = 0x;
++		p[0x2c] = 0x;
++		p[0x2d] = 0x;
++		p[0x2e] = 0x;
++		p[0x2f] = 0x;
++		p[126] = 0xbd;
++		p[127] = 0x1c;
++		*/
++	}
  }
  #endif /* SPD_EEPROM_ADDRESSx */
  
 diff --git a/drivers/net/fm/eth.c b/drivers/net/fm/eth.c
-index bf5f89b..b2eeaca 100644
+index bf5f89b..666aa36 100644
 --- a/drivers/net/fm/eth.c
 +++ b/drivers/net/fm/eth.c
-@@ -52,10 +52,13 @@ qsgmii_loop:
+@@ -52,10 +52,12 @@ qsgmii_loop:
  	else
  		value = PHY_SGMII_IF_MODE_SGMII | PHY_SGMII_IF_MODE_AN;
  
@@ -1287,20 +1287,19 @@ index bf5f89b..b2eeaca 100644
  
  	/* Dev ability according to SGMII specification */
  	value = PHY_SGMII_DEV_ABILITY_SGMII;
-+
 +	value = 0xa1;
  	memac_mdio_write(&bus, i, MDIO_DEVAD_NONE, 0x4, value);
  
  	if (sgmii_2500) {
 diff --git a/env/flash.c b/env/flash.c
-index bac10ff..d0b5feb 100644
+index ccade77..7b6601c 100644
 --- a/env/flash.c
 +++ b/env/flash.c
 @@ -45,6 +45,11 @@ DECLARE_GLOBAL_DATA_PTR;
  #define INITENV
  #endif
  
-+#if defined(CONFIG_IFC1410)
++#if defined(CONFIG_IFC14XX)
 +#define LOADENV
 +#define INITENV
 +#endif
@@ -1312,21 +1311,21 @@ index bac10ff..d0b5feb 100644
  #endif
  
  #ifdef CMD_SAVEENV
-+#if defined(CONFIG_IFC1410)
++#if defined(CONFIG_IFC14XX)
 +extern struct ifc_node
 +{
 +	int *csr_ptr;
 +} ifc_node;
 +
 +extern int ifc_sflash_wr( struct ifc_node *ifc,
-+            	unsigned char *buf,
-+            	uint offset,
-+	       		uint len);
++		unsigned char *buf,
++		uint offset,
++		uint len);
 +
 +static int env_flash_save(void)
 +{
 +	env_t env_new;
-+	int	rc = 1;
++	int rc = 1;
 +
 +	rc = env_export( &env_new);
 +	if (rc)
@@ -1338,7 +1337,7 @@ index bac10ff..d0b5feb 100644
 +done:
 +	return rc;
 +}
-+#else  /* not IFC1410 */
++#else  /* not IFC14XX */
  static int env_flash_save(void)
  {
  	env_t	env_new;
@@ -1346,7 +1345,7 @@ index bac10ff..d0b5feb 100644
  
  	return rc;
  }
-+#endif /* IFC1410 */
++#endif /* IFC14XX */
  #endif /* CMD_SAVEENV */
  
  #else /* ! CONFIG_ENV_ADDR_REDUND */
@@ -1354,34 +1353,34 @@ index bac10ff..d0b5feb 100644
  #endif
  
  #ifdef CMD_SAVEENV
-+#if defined(CONFIG_IFC1410)
++#if defined(CONFIG_IFC14XX)
 +extern struct ifc_node
 +{
-+  int *csr_ptr;
++	int *csr_ptr;
 +} ifc_node;
 +
 +extern int ifc_sflash_wr( struct ifc_node *ifc,
-+            	unsigned char *buf,
-+            	uint offset,
-+	       		uint len);
++		unsigned char *buf,
++		uint offset,
++		uint len);
 +
 +static int env_flash_save(void)
 +{
-+	env_t	env_new;
-+	int	rc = 1;
++	env_t env_new;
++	int rc = 1;
 +
-+        rc = env_export( &env_new);
++	rc = env_export( &env_new);
 +	if (rc)
 +		goto done;
 +
-+    ifc_sflash_wr( &ifc_node,  &env_new, 0x13f20000, CONFIG_ENV_SIZE);
++	ifc_sflash_wr( &ifc_node,  &env_new, 0x13f20000, CONFIG_ENV_SIZE);
 +
 +	puts("done\n");
 +	rc = 0;
 +done:
 +	return rc;
 +}
-+#else  /* not IFC1211 0r IFC1410 */
++#else  /* not IFC14XX */
  static int env_flash_save(void)
  {
  	env_t	env_new;
@@ -1389,20 +1388,19 @@ index bac10ff..d0b5feb 100644
  	flash_sect_protect(1, (long)flash_addr, end_addr);
  	return rc;
  }
-+#endif /* IFC1410 */
++#endif /* IFC14XX */
  #endif /* CMD_SAVEENV */
  
  #endif /* CONFIG_ENV_ADDR_REDUND */
 diff --git a/scripts/check-config.sh b/scripts/check-config.sh
-index 2677584..bcc903d 100755
+index 2677584..45ccb45 100755
 --- a/scripts/check-config.sh
 +++ b/scripts/check-config.sh
-@@ -45,7 +45,7 @@ if [ -s ${new_adhoc} ]; then
+@@ -45,7 +45,6 @@ if [ -s ${new_adhoc} ]; then
  	echo >&2 "Please add these via Kconfig instead. Find a suitable Kconfig"
  	echo >&2 "file and add a 'config' or 'menuconfig' option."
  	# Don't delete the temporary files in case they are useful
 -	exit 1
-+#	exit 1
  else
  	rm ${suspects} ${ok} ${new_adhoc}
  fi

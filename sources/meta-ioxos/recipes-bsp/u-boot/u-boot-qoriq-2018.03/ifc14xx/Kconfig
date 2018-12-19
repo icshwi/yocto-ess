@@ -1,4 +1,4 @@
-if TARGET_IFC1410
+if TARGET_IFC14XX
 
 config SYS_BOARD
 	default "ifc14xx"

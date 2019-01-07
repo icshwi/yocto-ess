@@ -13,6 +13,7 @@ TOOLCHAIN_TARGET_TASK += " \
     ${TCLIBC}-staticdev \
     systemd-dev \
     libxml2-dev \
+    libtirpc \
 "
 
 TOOLCHAIN_HOST_TASK += " \

@@ -8,7 +8,7 @@ stages:
 
 build_image:
   tags:
-    - docker
+    - yocto
   stage: build
   image: crops/yocto:debian-9-base
   before_script:
@@ -18,7 +18,7 @@ build_image:
     - chmod 700 ~/.ssh
     - ssh-keyscan -t rsa gitlab.esss.lu.se >> ~/.ssh/known_hosts
   script:
-    - . ./setup-env -m ifc14xx-64b
+    - . ./setup-env -m ifc14xx-64b -j 8 -t 8
     - bitbake ifc14xx-image
   artifacts:
     paths:
@@ -29,7 +29,7 @@ build_image:
 
 build_toolchain:
   tags:
-    - docker
+    - yocto
   stage: build
   image: crops/yocto:debian-9-base
   before_script:
@@ -39,7 +39,7 @@ build_toolchain:
     - chmod 700 ~/.ssh
     - ssh-keyscan -t rsa gitlab.esss.lu.se >> ~/.ssh/known_hosts
   script:
-    - . ./setup-env -m ifc14xx-64b
+    - . ./setup-env -m ifc14xx-64b -j 8 -t 8
     - bitbake ifc14xx-toolchain
   artifacts:
     paths:
@@ -48,7 +48,7 @@ build_toolchain:
 
 release_sstate:
   tags:
-    - docker
+    - yocto
   stage: release
   image: registry.esss.lu.se/ics-docker/jfrog:latest
   script:
@@ -57,7 +57,7 @@ release_sstate:
 
 release_downloads:
   tags:
-    - docker
+    - yocto
   stage: release
   image: registry.esss.lu.se/ics-docker/jfrog:latest
   script:
@@ -73,7 +73,7 @@ release_images_tags:
   only:
     - tags
   tags:
-    - docker
+    - yocto
   stage: release
   image: registry.esss.lu.se/ics-docker/jfrog:latest
   script:
@@ -85,7 +85,7 @@ release_images_web:
   only:
     - web
   tags:
-    - docker
+    - yocto
   stage: release
   image: registry.esss.lu.se/ics-docker/jfrog:latest
   script:

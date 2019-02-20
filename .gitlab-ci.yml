@@ -93,3 +93,15 @@ release_images_web:
     - cd build_ifc14xx-64b/tmp/deploy/images/ifc14xx-64b && echo $CI_COMMIT_SHA > $CI_COMMIT_SHA
     - jfrog rt upload --flat=false "*" boot-images/ioxos/$CI_PIPELINE_ID/
 
+release_toolchain_web:
+  only:
+    - web
+  tags:
+    - yocto
+  stage: release
+  image: registry.esss.lu.se/ics-docker/jfrog:latest
+  script:
+    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
+    - cd build_ifc14xx-64b/tmp/deploy/sdk && echo $CI_COMMIT_SHA > $CI_COMMIT_SHA
+    - jfrog rt upload --flat=false "*" yocto/toolchain/
+    - jfrog rt upload --flat=false "*" yocto/toolchain/$CI_PIPELINE_ID/

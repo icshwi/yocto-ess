@@ -1,0 +1,34 @@
+From b987d29a3f6293d4d62f6a218c3f3b2dc6a73a98 Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Fri, 22 Feb 2019 13:18:34 +0100
+Subject: [PATCH] powerpc fix stringop-truncation error
+
+---
+ arch/powerpc/kernel/nvram_64.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/powerpc/kernel/nvram_64.c b/arch/powerpc/kernel/nvram_64.c
+index 496d639..2f8e5b0 100644
+--- a/arch/powerpc/kernel/nvram_64.c
++++ b/arch/powerpc/kernel/nvram_64.c
+@@ -1033,7 +1033,7 @@ loff_t __init nvram_create_partition(const char *name, int sig,
+ 		return -ENOSPC;
+ 	
+ 	/* Create our OS partition */
+-	new_part = kmalloc(sizeof(*new_part), GFP_KERNEL);
++	new_part = kzalloc(sizeof(*new_part), GFP_KERNEL);
+ 	if (!new_part) {
+ 		pr_err("%s: kmalloc failed\n", __func__);
+ 		return -ENOMEM;
+@@ -1042,7 +1042,7 @@ loff_t __init nvram_create_partition(const char *name, int sig,
+ 	new_part->index = free_part->index;
+ 	new_part->header.signature = sig;
+ 	new_part->header.length = size;
+-	strncpy(new_part->header.name, name, 12);
++	memcpy(new_part->header.name, name, strnlen(name, sizeof(new_part->header.name)));
+ 	new_part->header.checksum = nvram_checksum(&new_part->header);
+ 
+ 	rc = nvram_write_header(new_part);
+-- 
+2.7.4
+

@@ -27,6 +27,27 @@ build_image:
       - downloads/
     expire_in: 24 hour
 
+build_image_rt:
+  tags:
+    - yocto
+  stage: build
+  image: crops/yocto:debian-9-base
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -t rsa gitlab.esss.lu.se >> ~/.ssh/known_hosts
+  script:
+    - . ./setup-env -m ifc14xx-rt-64b -j 8 -t 8
+    - bitbake ifc14xx-image
+  artifacts:
+    paths:
+      - build_ifc14xx-rt-64b/tmp/deploy/images/ifc14xx-rt-64b
+      - sstate-cache/
+      - downloads/
+    expire_in: 24 hour
+
 build_toolchain:
   tags:
     - yocto
@@ -92,6 +113,18 @@ release_images_web:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
     - cd build_ifc14xx-64b/tmp/deploy/images/ifc14xx-64b && echo $CI_COMMIT_SHA > $CI_COMMIT_SHA
     - jfrog rt upload --flat=false "*" boot-images/ioxos/$CI_PIPELINE_ID/
+
+release_images_rt_web:
+  only:
+    - web
+  tags:
+    - yocto
+  stage: release
+  image: registry.esss.lu.se/ics-docker/jfrog:latest
+  script:
+    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
+    - cd build_ifc14xx-rt-64b/tmp/deploy/images/ifc14xx-rt-64b
+    - jfrog rt upload --flat=false "*" boot-images/ioxos/$CI_PIPELINE_ID/rt/
 
 release_toolchain_web:
   only:

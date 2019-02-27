@@ -1,7 +1,7 @@
 ===================================
 Setting up to use the Yocto project
 ===================================
-$: git clone --recurse-submodules git@gitlab.esss.lu.se:ioxos/yocto-ioxos.git
+$: git clone --recurse-submodules git@gitlab.esss.lu.se:icshwi/yocto-ess.git
 
 ===============
 Building images

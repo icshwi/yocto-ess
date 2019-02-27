@@ -13,3 +13,6 @@
 [submodule "sources/meta-qoriq-demos"]
 	path = sources/meta-qoriq-demos
 	url = https://source.codeaurora.org/external/qoriq/qoriq-components/meta-qoriq-demos
+[submodule "sources/meta-intel"]
+	path = sources/meta-intel
+	url = git://git.yoctoproject.org/meta-intel

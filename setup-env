@@ -75,6 +75,8 @@ For more information about OpenEmbedded see their website:
 You can now run 'bitbake <target>'
     ifc14xx-image
     ifc14xx-toolchain
+    cct-image
+    cct-toolchain
 "
     echo "To return to this build environment later please run:"
     echo "    . $PROJECT_DIR/SOURCE_THIS"
@@ -97,7 +99,7 @@ usage() {
     echo -e "\n    Supported machines:
     `find ${ROOTDIR}/sources/meta-{ess,fsl,freescale,qoriq-demos,intel}*/conf/machine \
         -name *.conf 2>/dev/null \
-        |egrep "/(mpc|b4|bsc|c29|p1|p2|p3|p4|p5|t1|t2|t4|ls|ifc|intel).*conf$" |sort \
+        |egrep "/(mpc|b4|bsc|c29|p1|p2|p3|p4|p5|t1|t2|t4|ls|ifc|intel|cct).*conf$" |sort \
         |xargs echo |sed -e 's,[^ ]*/,,g;s,.conf,,g'`
 "
 
@@ -194,6 +196,9 @@ EULA_FILE="$FSLROOTDIR/EULA"
 
 if echo "$MACHINE" | egrep -q "^ifc"; then
     DISTRO="ifc14xx"
+fi
+if echo "$MACHINE" | egrep -q "^cct"; then
+    DISTRO="cct"
 fi
 if echo "$MACHINE" | egrep -q "^intel"; then
     DISTRO="poky"

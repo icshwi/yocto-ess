@@ -305,36 +305,6 @@ BBMASK = " lxc"
 
 ACCEPT_FSL_EULA = "1"
 
-EOF
-
-if echo "$MACHINE" | egrep -q "^ifc"; then
-    cat >> conf/local.conf <<-EOF
-
-# Setup mirrors
-# 1. Yocto will look in local downloads/ dir
-# 2. Yocto will look in artifactory yocto/downloads
-# 3. Yocto will use the artifactory mirror repo
-# 4. Yocto will use the upstream SRC_URI specified
-# 5. Yocto will use the Freescale mirror repo
-INHERIT += "own-mirrors"
-SOURCE_MIRROR_URL = "https://artifactory.esss.lu.se/artifactory/yocto/downloads"
-
-PREMIRRORS_prepend = "\
-git://.*/.* https://artifactory.esss.lu.se/artifactory/yoctoproject-mirror \n \
-https://.*/.* https://artifactory.esss.lu.se/artifactory/yoctoproject-mirror \n \
-http://.*/.* https://artifactory.esss.lu.se/artifactory/yoctoproject-mirror \n \
-ftp://.*/.* https://artifactory.esss.lu.se/artifactory/yoctoproject-mirror \n"
-
-MIRRORS += "\
-git://.*/.* http://git.freescale.com/source \n \
-https://.*/.* http://git.freescale.com/source \n \
-http://.*/.* http://git.freescale.com/source \n \
-ftp://.*/.* http://git.freescale.com/source \n"
-
-# Initramfs Options
-INITRAMFS_IMAGE = "ifc14xx-image-initramfs"
-INITRAMFS_IMAGE_BUNDLE = "1"
-
 # Use shared-state files from artifactory
 SSTATE_MIRRORS ?= "\
 file://.* https://artifactory.esss.lu.se/artifactory/yocto/sstate/PATH"
@@ -346,6 +316,36 @@ DISTRO_FEATURES_append = " systemd"
 DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
 VIRTUAL-RUNTIME_init_manager = "systemd"
 VIRTUAL-RUNTIME_initscripts = "systemd-compat-units"
+
+# Setup mirrors
+# 1. Yocto will look in local downloads/ dir
+# 2. Yocto will look in artifactory yocto/downloads
+# 3. Yocto will use the artifactory mirror repo
+# 4. Yocto will use the upstream SRC_URI specified
+# 5. Yocto will use the Freescale mirror repo (IFC14XX only)
+INHERIT += "own-mirrors"
+SOURCE_MIRROR_URL = "https://artifactory.esss.lu.se/artifactory/yocto/downloads"
+
+PREMIRRORS_prepend = "\
+git://.*/.* https://artifactory.esss.lu.se/artifactory/yoctoproject-mirror \n \
+https://.*/.* https://artifactory.esss.lu.se/artifactory/yoctoproject-mirror \n \
+http://.*/.* https://artifactory.esss.lu.se/artifactory/yoctoproject-mirror \n \
+ftp://.*/.* https://artifactory.esss.lu.se/artifactory/yoctoproject-mirror \n"
+
+EOF
+
+if echo "$MACHINE" | egrep -q "^ifc"; then
+    cat >> conf/local.conf <<-EOF
+
+MIRRORS += "\
+git://.*/.* http://git.freescale.com/source \n \
+https://.*/.* http://git.freescale.com/source \n \
+http://.*/.* http://git.freescale.com/source \n \
+ftp://.*/.* http://git.freescale.com/source \n"
+
+# Initramfs Options
+INITRAMFS_IMAGE = "ifc14xx-image-initramfs"
+INITRAMFS_IMAGE_BUNDLE = "1"
 
 EOF
 fi

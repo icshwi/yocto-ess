@@ -208,8 +208,9 @@ release_toolchain_web:
   image: registry.esss.lu.se/ics-docker/jfrog:latest
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
-    - cd build_ifc14xx-64b/tmp/deploy/sdk && echo $CI_COMMIT_SHA > $CI_COMMIT_SHA
+    - cd build_ifc14xx-64b/tmp/deploy/sdk
     - jfrog rt upload --flat=false "*" yocto/toolchain/
+    - echo $CI_COMMIT_SHA > $CI_COMMIT_SHA
     - jfrog rt upload --flat=false "*" yocto/toolchain/$CI_PIPELINE_ID/
 
 release_images_cct_tags:
@@ -269,6 +270,7 @@ release_toolchain_cct_web:
   image: registry.esss.lu.se/ics-docker/jfrog:latest
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
-    - cd build_cct-64/tmp/deploy/sdk && echo $CI_COMMIT_SHA > $CI_COMMIT_SHA
+    - cd build_cct-64/tmp/deploy/sdk
     - jfrog rt upload --flat=false "*" yocto/toolchain/
+    - echo $CI_COMMIT_SHA > $CI_COMMIT_SHA
     - jfrog rt upload --flat=false "*" yocto/toolchain/$CI_PIPELINE_ID/

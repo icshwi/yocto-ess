@@ -310,6 +310,8 @@ BBMASK = " lxc"
 
 ACCEPT_FSL_EULA = "1"
 
+hostname_pn-base-files = ""
+
 # Use shared-state files from artifactory
 SSTATE_MIRRORS ?= "\
 file://.* https://artifactory.esss.lu.se/artifactory/yocto/sstate/PATH"

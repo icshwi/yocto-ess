@@ -12,7 +12,7 @@ index 9b70c53..f91b1b5 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -49,26 +49,13 @@ tsc-objs := tscdrvr.o ioctllib.o tscklib.o maplib.o irqlib.o mapmaslib.o  rdwrli
- 	dmalib.o timerlib.o fifolib.o i2clib.o semaphorelib.o
+ 	dmalib.o timerlib.o fifolib.o i2clib.o semaphorelib.o userirqlib.o
  pon-objs := pondrvr.o
  
 -ifeq ($(ARCH),powerpc)

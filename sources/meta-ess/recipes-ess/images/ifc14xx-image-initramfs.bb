@@ -1,4 +1,4 @@
-include ifc14xx-image.bb
+require ifc14xx-image.bb
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 

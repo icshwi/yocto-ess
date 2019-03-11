@@ -350,10 +350,6 @@ https://.*/.* http://git.freescale.com/source \n \
 http://.*/.* http://git.freescale.com/source \n \
 ftp://.*/.* http://git.freescale.com/source \n"
 
-# Initramfs Options
-INITRAMFS_IMAGE = "ifc14xx-image-initramfs"
-INITRAMFS_IMAGE_BUNDLE = "1"
-
 EOF
 fi
 

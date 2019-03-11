@@ -7,3 +7,5 @@ IMAGE_INSTALL_append = " \
     packagegroup-core-ssh-openssh \
 "
 
+IMAGE_FSTYPES += " cpio.gz"
+

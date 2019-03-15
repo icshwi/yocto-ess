@@ -1,5 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/u-boot-qoriq-2018.03:"
 SRC_URI_append += "file://0001-Add-support-for-IFC14XX-board.patch \
+                   file://0001-Add-lc-command-to-save-string-in-lowercase.patch \
                    file://ifc14xx/ \
                    file://ifc14xx_config.h \
                    file://IFC14XX_defconfig \

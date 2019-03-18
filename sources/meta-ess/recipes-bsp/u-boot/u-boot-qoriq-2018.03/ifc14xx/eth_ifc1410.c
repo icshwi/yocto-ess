@@ -38,6 +38,17 @@ int board_eth_init(bd_t *bis)
 #endif
 	int board_type = *(int *)CONFIG_SYS_PON_BASE & 0xffff;
 
+	if( board_type == BOARD_TYPE_IFC1410) {
+		//*(volatile uint *)0xfe0eA664 = 0xf0000800;
+		//*(volatile uint *)0xfe0eA674 = 0xe8000800;
+		*(volatile uint *)0xfe0eA800 = 0x33051500;
+		*(volatile uint *)0xfe0eA804 = 0xc0000011;
+		*(volatile uint *)0xfe0eA800 = 0x33651500;
+		*(volatile uint *)0xfe0eA840 = 0x33051500;
+		*(volatile uint *)0xfe0eA844 = 0xc0000011;
+		*(volatile uint *)0xfe0eA840 = 0x33651500;
+	}
+
 #if defined(CONFIG_FMAN_ENET)
 	int i, interface;
 	struct memac_mdio_info dtsec_mdio_info;
@@ -54,31 +65,6 @@ int board_eth_init(bd_t *bis)
 	srds_s1 = in_be32(&gur->rcwsr[4]) &
 					FSL_CORENET2_RCWSR4_SRDS1_PRTCL;
 	srds_s1 >>= FSL_CORENET2_RCWSR4_SRDS1_PRTCL_SHIFT;
-
-#if defined(CONFIG_IFC1410_DTSECx)
-/*	if(board_type == BOARD_TYPE_IFC1410) {
-// ---- DTSEC1 with internal SGMII phy
-
-  	  dtsec1_mdio_info.regs =
-		(struct memac_mdio_controller *)(CONFIG_SYS_FSL_FM1_ADDR+0xe0000);
-
-	  dtsec1_mdio_info.name = "FSL_INT_MDIO_1";
-
-*/	  /* Register the 1G Internal MDIO bus for DTSEC#1 */
-/*	  fm_memac_mdio_init(bis, &dtsec1_mdio_info);
-
-// ---- DTSEC2 with internal SGMII phy
-
-	  dtsec2_mdio_info.regs =
-		(struct memac_mdio_controller *)(CONFIG_SYS_FSL_FM1_ADDR+0xe2000);
-
-	  dtsec2_mdio_info.name = "FSL_INT_MDIO_2";
-
-*/	  /* Register the 1G Internal MDIO bus for DTSEC#2 */
-/*	  fm_memac_mdio_init(bis, &dtsec2_mdio_info);
-	}
-*/// -----
-#endif
 
 	dtsec_mdio_info.regs =
 		(struct memac_mdio_controller *)CONFIG_SYS_FM1_DTSEC_MDIO_ADDR;
@@ -126,23 +112,6 @@ int board_eth_init(bd_t *bis)
 			dev = miiphy_get_dev_by_name(DEFAULT_FM_MDIO_NAME);
 			fm_info_set_mdio(i, dev);
 			break;
-#if defined(CONFIG_IFC1410_DTSECx)
-/*		case PHY_INTERFACE_MODE_SGMII:
-		    switch (i) {
-			case FM1_DTSEC1:
-				dev = miiphy_get_dev_by_name("FSL_INT_MDIO_1");
-				break;
-			case FM1_DTSEC2:
-				dev = miiphy_get_dev_by_name("FSL_INT_MDIO_2");
-				break;
-			default:
-				dev = miiphy_get_dev_by_name(DEFAULT_FM_MDIO_NAME);
-				break;
-			}
-			fm_info_set_mdio(i, dev);
-			break;
-*/
-#endif
 		default:
 			break;
 		}
@@ -176,52 +145,6 @@ int board_eth_init(bd_t *bis)
 	miiphy_write (devname, 3, 0xd, 0x4002);
 	miiphy_write (devname, 3, 0xe, 0x3e6f);
 
-/* #ifdef CONFIG_IFC1410_DTSECx */
-/*	if( board_type == BOARD_TYPE_IFC1410) {
-	   printf("IFC1410 initialize internal PHYs\n");
-	   miiphy_read( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0x1, &reg);
-	   printf("FSL_INT_MDIO_1 : %x:%d = %x\n",SGMII_CARD_PORT2_PHY_ADDR, 0x1, reg);
-	  miiphy_write( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0x0, 0x8000);
-	  {
-	    int tmo = 1000;
-	    while( --tmo)
-	    {
-	      miiphy_read( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0x0, &reg);
-	      if( !(reg&0x8000))break;
-	    }
-	    if( !tmo)
-	    {
-	      printf("FSL_INT_MDIO_1 : reset timeout\n");
-	    }
-	  }
-	  miiphy_write( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0xf4, 0x3);
-	  miiphy_write( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0xe4, 0xa1);
-	  miiphy_write( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0xf3, 0x3);
-	  miiphy_write( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0xf2, 0x6a0);
-	  miiphy_write( "FSL_INT_MDIO_1", SGMII_CARD_PORT2_PHY_ADDR, 0xe0, 0x1200);
-
-	  miiphy_read( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0x1, &reg);
-	  printf("FSL_INT_MDIO_2 : %x:%d = %x\n",SGMII_CARD_PORT3_PHY_ADDR, 0x1, reg);
-	  miiphy_write( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0x0, 0x8000);
-	  {
-	    int tmo = 1000;
-	    while( --tmo)
-	    {
-	      miiphy_read( "FSL_INT_MDIO_2", SGMII_CARD_PORT2_PHY_ADDR, 0x0, &reg);
-	      if( !(reg&0x8000))break;
-	    }
-	    if( !tmo)
-	    {
-	      printf("FSL_INT_MDIO_2 : reset timeout\n");
-	    }
-	  }
-	  miiphy_write( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0xf4, 0x3);
-	  miiphy_write( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0xe4, 0xa1);
-	  miiphy_write( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0xf3, 0x3);
-	  miiphy_write( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0xf2, 0x6a0);
-	  miiphy_write( "FSL_INT_MDIO_2", SGMII_CARD_PORT3_PHY_ADDR, 0xe0, 0x1200);
-	}*/
-/* #endif */
 	printf("leaving board_eth_init()\n");
 	return(retval);
 #else

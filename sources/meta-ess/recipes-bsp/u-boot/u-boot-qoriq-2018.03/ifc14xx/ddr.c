@@ -142,13 +142,13 @@ void testdram( void)
 	  printf("DDR already initialized...\n");
 	  return;
 	}
-	printf("work around A-008109\n");
+	//printf("work around A-008109\n");
 	/* Freescale work around A-008109 [CG] */
-	ctl = in_be32(  (volatile unsigned int *)0xfe008f48); /* read DEBUG_19       */
-	ctl |= 2;                                             /* set bit 30          */
-	out_be32(  (volatile unsigned int *)0xfe008f48, ctl); /* overwrite  DEBUG_19 */
-	ctl = 0x30000000;
-	out_be32(  (volatile unsigned int *)0xfe008f70, ctl); /* write  DEBUG_29     */
+	//ctl = in_be32(  (volatile unsigned int *)0xfe008f48); /* read DEBUG_19       */
+	//ctl |= 2;                                             /* set bit 30          */
+	//out_be32(  (volatile unsigned int *)0xfe008f48, ctl); /* overwrite  DEBUG_19 */
+	//ctl = 0x30000000;
+	//out_be32(  (volatile unsigned int *)0xfe008f70, ctl); /* write  DEBUG_29     */
 
 	/* prepare data for memory test */
         out_be32(  (volatile unsigned int *)0xfe008d20, 0x11111111); /* test pattern */

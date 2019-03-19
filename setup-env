@@ -280,6 +280,9 @@ sed -e "s,MACHINE ??=.*,MACHINE ??= '$MACHINE',g" \
         -e "s,DISTRO ?=.*,DISTRO ?= '$DISTRO',g" \
         -i conf/local.conf
 
+# Remove debug-tweaks
+sed -e "s,EXTRA_IMAGE_FEATURES ?=.*,EXTRA_IMAGE_FEATURES ?= \"\",g" -i conf/local.conf
+
 # Clean up PATH, because if it includes tokens to current directories somehow,
 # wrong binaries can be used instead of the expected ones during task execution
 export PATH="`echo $PATH | sed 's/\(:.\|:\)*:/:/g;s/^.\?://;s/:.\?$//'`"
@@ -305,6 +308,12 @@ BB_NUMBER_THREADS = "$THREADS"
 PARALLEL_MAKE = "-j $JOBS"
 DL_DIR = "$DOWNLOADS"
 SSTATE_DIR = "$CACHES"
+
+# Add iocuser
+INHERIT += "extrausers"
+EXTRA_USERS_PARAMS = "\
+        groupadd -f iocgroup; \
+        useradd -P vaha23neca -g iocgroup -G sudo iocuser;"
 
 BBMASK = " lxc"
 

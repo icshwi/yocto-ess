@@ -7,6 +7,8 @@ CORE_IMAGE_EXTRA_INSTALL += "udev-extraconf lsb"
 DESCRIPTION = "IFC14XX initramfs image"
 LICENSE = "MIT"
 
+IMAGE_FEATURES += "package-management"
+
 IMAGE_FSTYPES += " cpio.gz"
 PACKAGE_INSTALL = "${IMAGE_INSTALL}"
 

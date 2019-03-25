@@ -11,6 +11,7 @@ DESCRIPTION = "IFC14XX image"
 
 LICENSE = "MIT"
 
+IMAGE_FEATURES += "package-management"
 IMAGE_INSTALL_append = " \
     packagegroup-core-ssh-openssh \
 "

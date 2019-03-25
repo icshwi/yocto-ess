@@ -359,6 +359,42 @@ https://.*/.* http://git.freescale.com/source \n \
 http://.*/.* http://git.freescale.com/source \n \
 ftp://.*/.* http://git.freescale.com/source \n"
 
+PACKAGE_FEED_URIS = "https://artifactory.esss.lu.se/artifactory/ics-rpm"
+PACKAGE_FEED_BASE_PATHS = "ioxos"
+EOF
+fi
+
+if echo "$MACHINE" | egrep -q "^ifc14xx-64b"; then
+    cat >> conf/local.conf <<-EOF
+PACKAGE_FEED_ARCHS = "ifc14xx_64b noarch ppc64e6500 ppc64e6500_qoriq ppce6500"
+
+EOF
+fi
+
+if echo "$MACHINE" | egrep -q "^ifc14xx-rt-64b"; then
+    cat >> conf/local.conf <<-EOF
+PACKAGE_FEED_ARCHS = "ifc14xx_rt_64b noarch ppc64e6500 ppc64e6500_qoriq ppce6500"
+
+EOF
+fi
+
+if echo "$MACHINE" | egrep -q "^cct-64"; then
+    cat >> conf/local.conf <<-EOF
+
+PACKAGE_FEED_URIS = "https://artifactory.esss.lu.se/artifactory/ics-rpm"
+PACKAGE_FEED_BASE_PATHS = "cct"
+PACKAGE_FEED_ARCHS = "cct_64 noarch corei7_64 corei7_64_intel_common"
+
+EOF
+fi
+
+if echo "$MACHINE" | egrep -q "^cct-rt-64"; then
+    cat >> conf/local.conf <<-EOF
+
+PACKAGE_FEED_URIS = "https://artifactory.esss.lu.se/artifactory/ics-rpm"
+PACKAGE_FEED_BASE_PATHS = "cct"
+PACKAGE_FEED_ARCHS = "cct_rt_64 noarch corei7_64 corei7_64_intel_common"
+
 EOF
 fi
 

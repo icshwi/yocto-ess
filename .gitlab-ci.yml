@@ -137,6 +137,8 @@ build_toolchain_cct:
     expire_in: 24 hour
 
 release_sstate:
+  variables:
+    GIT_STRATEGY: none
   tags:
     - yocto
   stage: release
@@ -146,6 +148,8 @@ release_sstate:
     - cd sstate-cache && jfrog rt upload --flat=false "*" yocto/sstate/
 
 release_downloads:
+  variables:
+    GIT_STRATEGY: none
   tags:
     - yocto
   stage: release
@@ -160,6 +164,8 @@ release_downloads:
     - jfrog rt upload --flat=false "*.zip" yocto/downloads/
 
 release_images_tags:
+  variables:
+    GIT_STRATEGY: none
   only:
     - tags
   tags:
@@ -172,6 +178,8 @@ release_images_tags:
     - jfrog rt upload --flat=false "*" boot-images/ioxos/$CI_COMMIT_TAG/
 
 release_images_web:
+  variables:
+    GIT_STRATEGY: none
   only:
     - web
   tags:
@@ -184,6 +192,8 @@ release_images_web:
     - jfrog rt upload --flat=false "*" boot-images/ioxos/$CI_PIPELINE_ID/
 
 release_images_rt_tags:
+  variables:
+    GIT_STRATEGY: none
   only:
     - tags
   tags:
@@ -196,6 +206,8 @@ release_images_rt_tags:
     - jfrog rt upload --flat=false "*" boot-images/ioxos/$CI_COMMIT_TAG/rt/
 
 release_images_rt_web:
+  variables:
+    GIT_STRATEGY: none
   only:
     - web
   tags:
@@ -208,6 +220,8 @@ release_images_rt_web:
     - jfrog rt upload --flat=false "*" boot-images/ioxos/$CI_PIPELINE_ID/rt/
 
 release_toolchain_web:
+  variables:
+    GIT_STRATEGY: none
   only:
     - web
   tags:
@@ -222,6 +236,8 @@ release_toolchain_web:
     - jfrog rt upload --flat=false "*" yocto/toolchain/$CI_PIPELINE_ID/
 
 release_images_cct_tags:
+  variables:
+    GIT_STRATEGY: none
   only:
     - tags
   tags:
@@ -234,6 +250,8 @@ release_images_cct_tags:
     - jfrog rt upload --flat=false "*" boot-images/cct/$CI_COMMIT_TAG/
 
 release_images_cct_web:
+  variables:
+    GIT_STRATEGY: none
   only:
     - web
   tags:
@@ -246,6 +264,8 @@ release_images_cct_web:
     - jfrog rt upload --flat=false "*" boot-images/cct/$CI_PIPELINE_ID/
 
 release_images_rt_cct_tags:
+  variables:
+    GIT_STRATEGY: none
   only:
     - tags
   tags:
@@ -258,6 +278,8 @@ release_images_rt_cct_tags:
     - jfrog rt upload --flat=false "*" boot-images/cct/$CI_COMMIT_TAG/rt/
 
 release_images_rt_cct_web:
+  variables:
+    GIT_STRATEGY: none
   only:
     - web
   tags:
@@ -270,6 +292,8 @@ release_images_rt_cct_web:
     - jfrog rt upload --flat=false "*" boot-images/cct/$CI_PIPELINE_ID/rt/
 
 release_toolchain_cct_web:
+  variables:
+    GIT_STRATEGY: none
   only:
     - web
   tags:
@@ -284,6 +308,8 @@ release_toolchain_cct_web:
     - jfrog rt upload --flat=false "*" yocto/toolchain/$CI_PIPELINE_ID/
 
 release_rpm_tags:
+  variables:
+    GIT_STRATEGY: none
   only:
     - tags
   tags:
@@ -296,6 +322,8 @@ release_rpm_tags:
     - jfrog rt upload --flat=false "*" ics-rpm/ioxos/
 
 release_rpm_rt_tags:
+  variables:
+    GIT_STRATEGY: none
   only:
     - tags
   tags:
@@ -308,6 +336,8 @@ release_rpm_rt_tags:
     - jfrog rt upload --flat=false "*" ics-rpm/ioxos/ifc14xx_rt_64b/
 
 release_rpm_web:
+  variables:
+    GIT_STRATEGY: none
   only:
     - web
   tags:
@@ -320,6 +350,8 @@ release_rpm_web:
     - jfrog rt upload --flat=false "*" ics-rpm/ioxos/
 
 release_rpm_rt_web:
+  variables:
+    GIT_STRATEGY: none
   only:
     - web
   tags:
@@ -332,6 +364,8 @@ release_rpm_rt_web:
     - jfrog rt upload --flat=false "*" ics-rpm/ioxos/ifc14xx_rt_64b/
 
 release_rpm_cct_tags:
+  variables:
+    GIT_STRATEGY: none
   only:
     - tags
   tags:
@@ -344,6 +378,8 @@ release_rpm_cct_tags:
     - jfrog rt upload --flat=false "*" ics-rpm/cct/
 
 release_rpm_rt_cct_tags:
+  variables:
+    GIT_STRATEGY: none
   only:
     - tags
   tags:
@@ -356,6 +392,8 @@ release_rpm_rt_cct_tags:
     - jfrog rt upload --flat=false "*" ics-rpm/cct/cct_rt_64/
 
 release_rpm_cct_web:
+  variables:
+    GIT_STRATEGY: none
   only:
     - web
   tags:
@@ -368,6 +406,8 @@ release_rpm_cct_web:
     - jfrog rt upload --flat=false "*" ics-rpm/cct/
 
 release_rpm_rt_cct_web:
+  variables:
+    GIT_STRATEGY: none
   only:
     - web
   tags:

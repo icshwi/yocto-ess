@@ -26,7 +26,7 @@ build_image:
       - build_ifc14xx-64b/tmp/deploy/images/ifc14xx-64b
       - sstate-cache/
       - downloads/
-      - build_ifc14xx-64b/tmp/deploy/rpm
+#      - build_ifc14xx-64b/tmp/deploy/rpm
     expire_in: 24 hour
 
 build_image_rt:
@@ -49,7 +49,7 @@ build_image_rt:
       - build_ifc14xx-rt-64b/tmp/deploy/images/ifc14xx-rt-64b
       - sstate-cache/
       - downloads/
-      - build_ifc14xx-rt-64b/tmp/deploy/rpm
+#      - build_ifc14xx-rt-64b/tmp/deploy/rpm
     expire_in: 24 hour
 
 build_toolchain:
@@ -91,7 +91,7 @@ build_image_cct:
       - build_cct-64/tmp/deploy/images/cct-64
       - sstate-cache/
       - downloads/
-      - build_cct-64/tmp/deploy/rpm
+#      - build_cct-64/tmp/deploy/rpm
     expire_in: 24 hour
 
 build_image_rt_cct:
@@ -114,7 +114,7 @@ build_image_rt_cct:
       - build_cct-rt-64/tmp/deploy/images/cct-rt-64
       - sstate-cache/
       - downloads/
-      - build_cct-rt-64/tmp/deploy/rpm
+#      - build_cct-rt-64/tmp/deploy/rpm
     expire_in: 24 hour
 
 build_toolchain_cct:
@@ -307,114 +307,114 @@ release_toolchain_cct_web:
     - echo $CI_COMMIT_SHA > $CI_COMMIT_SHA
     - jfrog rt upload --flat=false "*" yocto/toolchain/$CI_PIPELINE_ID/
 
-release_rpm_tags:
-  variables:
-    GIT_STRATEGY: none
-  only:
-    - tags
-  tags:
-    - yocto
-  stage: release
-  image: registry.esss.lu.se/ics-docker/jfrog:latest
-  script:
-    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
-    - cd build_ifc14xx-64b/tmp/deploy/rpm
-    - jfrog rt upload --flat=false "*.rpm" ics-rpm/ioxos/
+#release_rpm_tags:
+#  variables:
+#    GIT_STRATEGY: none
+#  only:
+#    - tags
+#  tags:
+#    - yocto
+#  stage: release
+#  image: registry.esss.lu.se/ics-docker/jfrog:latest
+#  script:
+#    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
+#    - cd build_ifc14xx-64b/tmp/deploy/rpm
+#    - jfrog rt upload --flat=false "*.rpm" ics-rpm/ioxos/
 
-release_rpm_rt_tags:
-  variables:
-    GIT_STRATEGY: none
-  only:
-    - tags
-  tags:
-    - yocto
-  stage: release
-  image: registry.esss.lu.se/ics-docker/jfrog:latest
-  script:
-    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
-    - cd build_ifc14xx-rt-64b/tmp/deploy/rpm/ifc14xx_rt_64b
-    - jfrog rt upload --flat=false "*.rpm" ics-rpm/ioxos/ifc14xx_rt_64b/
+#release_rpm_rt_tags:
+#  variables:
+#    GIT_STRATEGY: none
+#  only:
+#    - tags
+#  tags:
+#    - yocto
+#  stage: release
+#  image: registry.esss.lu.se/ics-docker/jfrog:latest
+#  script:
+#    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
+#    - cd build_ifc14xx-rt-64b/tmp/deploy/rpm/ifc14xx_rt_64b
+#    - jfrog rt upload --flat=false "*.rpm" ics-rpm/ioxos/ifc14xx_rt_64b/
 
-release_rpm_web:
-  variables:
-    GIT_STRATEGY: none
-  only:
-    - web
-  tags:
-    - yocto
-  stage: release
-  image: registry.esss.lu.se/ics-docker/jfrog:latest
-  script:
-    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
-    - cd build_ifc14xx-64b/tmp/deploy/rpm
-    - jfrog rt upload --flat=false "*.rpm" ics-rpm/ioxos/
+#release_rpm_web:
+#  variables:
+#    GIT_STRATEGY: none
+#  only:
+#    - web
+#  tags:
+#    - yocto
+#  stage: release
+#  image: registry.esss.lu.se/ics-docker/jfrog:latest
+#  script:
+#    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
+#    - cd build_ifc14xx-64b/tmp/deploy/rpm
+#    - jfrog rt upload --flat=false "*.rpm" ics-rpm/ioxos/
 
-release_rpm_rt_web:
-  variables:
-    GIT_STRATEGY: none
-  only:
-    - web
-  tags:
-    - yocto
-  stage: release
-  image: registry.esss.lu.se/ics-docker/jfrog:latest
-  script:
-    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
-    - cd build_ifc14xx-rt-64b/tmp/deploy/rpm/ifc14xx_rt_64b
-    - jfrog rt upload --flat=false "*.rpm" ics-rpm/ioxos/ifc14xx_rt_64b/
+#release_rpm_rt_web:
+#  variables:
+#    GIT_STRATEGY: none
+#  only:
+#    - web
+#  tags:
+#    - yocto
+#  stage: release
+#  image: registry.esss.lu.se/ics-docker/jfrog:latest
+#  script:
+#    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
+#    - cd build_ifc14xx-rt-64b/tmp/deploy/rpm/ifc14xx_rt_64b
+#    - jfrog rt upload --flat=false "*.rpm" ics-rpm/ioxos/ifc14xx_rt_64b/
 
-release_rpm_cct_tags:
-  variables:
-    GIT_STRATEGY: none
-  only:
-    - tags
-  tags:
-    - yocto
-  stage: release
-  image: registry.esss.lu.se/ics-docker/jfrog:latest
-  script:
-    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
-    - cd build_cct-64/tmp/deploy/rpm
-    - jfrog rt upload --flat=false "*.rpm" ics-rpm/cct/
+#release_rpm_cct_tags:
+#  variables:
+#    GIT_STRATEGY: none
+#  only:
+#    - tags
+#  tags:
+#    - yocto
+#  stage: release
+#  image: registry.esss.lu.se/ics-docker/jfrog:latest
+#  script:
+#    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
+#    - cd build_cct-64/tmp/deploy/rpm
+#    - jfrog rt upload --flat=false "*.rpm" ics-rpm/cct/
 
-release_rpm_rt_cct_tags:
-  variables:
-    GIT_STRATEGY: none
-  only:
-    - tags
-  tags:
-    - yocto
-  stage: release
-  image: registry.esss.lu.se/ics-docker/jfrog:latest
-  script:
-    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
-    - cd build_cct-rt-64/tmp/deploy/rpm/cct_rt_64
-    - jfrog rt upload --flat=false "*.rpm" ics-rpm/cct/cct_rt_64/
+#release_rpm_rt_cct_tags:
+#  variables:
+#    GIT_STRATEGY: none
+#  only:
+#    - tags
+#  tags:
+#    - yocto
+#  stage: release
+#  image: registry.esss.lu.se/ics-docker/jfrog:latest
+#  script:
+#    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
+#    - cd build_cct-rt-64/tmp/deploy/rpm/cct_rt_64
+#    - jfrog rt upload --flat=false "*.rpm" ics-rpm/cct/cct_rt_64/
 
-release_rpm_cct_web:
-  variables:
-    GIT_STRATEGY: none
-  only:
-    - web
-  tags:
-    - yocto
-  stage: release
-  image: registry.esss.lu.se/ics-docker/jfrog:latest
-  script:
-    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
-    - cd build_cct-64/tmp/deploy/rpm
-    - jfrog rt upload --flat=false "*.rpm" ics-rpm/cct/
+#release_rpm_cct_web:
+#  variables:
+#    GIT_STRATEGY: none
+#  only:
+#    - web
+#  tags:
+#    - yocto
+#  stage: release
+#  image: registry.esss.lu.se/ics-docker/jfrog:latest
+#  script:
+#    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
+#    - cd build_cct-64/tmp/deploy/rpm
+#    - jfrog rt upload --flat=false "*.rpm" ics-rpm/cct/
 
-release_rpm_rt_cct_web:
-  variables:
-    GIT_STRATEGY: none
-  only:
-    - web
-  tags:
-    - yocto
-  stage: release
-  image: registry.esss.lu.se/ics-docker/jfrog:latest
-  script:
-    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
-    - cd build_cct-rt-64/tmp/deploy/rpm/cct_rt_64
-    - jfrog rt upload --flat=false "*.rpm" ics-rpm/cct/cct_rt_64/
+#release_rpm_rt_cct_web:
+#  variables:
+#    GIT_STRATEGY: none
+#  only:
+#    - web
+#  tags:
+#    - yocto
+#  stage: release
+#  image: registry.esss.lu.se/ics-docker/jfrog:latest
+#  script:
+#    - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
+#    - cd build_cct-rt-64/tmp/deploy/rpm/cct_rt_64
+#    - jfrog rt upload --flat=false "*.rpm" ics-rpm/cct/cct_rt_64/

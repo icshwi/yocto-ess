@@ -319,7 +319,7 @@ release_rpm_tags:
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
     - cd build_ifc14xx-64b/tmp/deploy/rpm
-    - jfrog rt upload --flat=false "*" ics-rpm/ioxos/
+    - jfrog rt upload --flat=false "*.rpm" ics-rpm/ioxos/
 
 release_rpm_rt_tags:
   variables:
@@ -333,7 +333,7 @@ release_rpm_rt_tags:
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
     - cd build_ifc14xx-rt-64b/tmp/deploy/rpm/ifc14xx_rt_64b
-    - jfrog rt upload --flat=false "*" ics-rpm/ioxos/ifc14xx_rt_64b/
+    - jfrog rt upload --flat=false "*.rpm" ics-rpm/ioxos/ifc14xx_rt_64b/
 
 release_rpm_web:
   variables:
@@ -347,7 +347,7 @@ release_rpm_web:
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
     - cd build_ifc14xx-64b/tmp/deploy/rpm
-    - jfrog rt upload --flat=false "*" ics-rpm/ioxos/
+    - jfrog rt upload --flat=false "*.rpm" ics-rpm/ioxos/
 
 release_rpm_rt_web:
   variables:
@@ -361,7 +361,7 @@ release_rpm_rt_web:
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
     - cd build_ifc14xx-rt-64b/tmp/deploy/rpm/ifc14xx_rt_64b
-    - jfrog rt upload --flat=false "*" ics-rpm/ioxos/ifc14xx_rt_64b/
+    - jfrog rt upload --flat=false "*.rpm" ics-rpm/ioxos/ifc14xx_rt_64b/
 
 release_rpm_cct_tags:
   variables:
@@ -375,7 +375,7 @@ release_rpm_cct_tags:
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
     - cd build_cct-64/tmp/deploy/rpm
-    - jfrog rt upload --flat=false "*" ics-rpm/cct/
+    - jfrog rt upload --flat=false "*.rpm" ics-rpm/cct/
 
 release_rpm_rt_cct_tags:
   variables:
@@ -389,7 +389,7 @@ release_rpm_rt_cct_tags:
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
     - cd build_cct-rt-64/tmp/deploy/rpm/cct_rt_64
-    - jfrog rt upload --flat=false "*" ics-rpm/cct/cct_rt_64/
+    - jfrog rt upload --flat=false "*.rpm" ics-rpm/cct/cct_rt_64/
 
 release_rpm_cct_web:
   variables:
@@ -403,7 +403,7 @@ release_rpm_cct_web:
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
     - cd build_cct-64/tmp/deploy/rpm
-    - jfrog rt upload --flat=false "*" ics-rpm/cct/
+    - jfrog rt upload --flat=false "*.rpm" ics-rpm/cct/
 
 release_rpm_rt_cct_web:
   variables:
@@ -417,4 +417,4 @@ release_rpm_rt_cct_web:
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
     - cd build_cct-rt-64/tmp/deploy/rpm/cct_rt_64
-    - jfrog rt upload --flat=false "*" ics-rpm/cct/cct_rt_64/
+    - jfrog rt upload --flat=false "*.rpm" ics-rpm/cct/cct_rt_64/

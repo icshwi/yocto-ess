@@ -1,0 +1,51 @@
+===================================
+Setting up to use the Yocto project
+===================================
+$: git clone --recurse-submodules git@gitlab.esss.lu.se:icshwi/yocto-ess.git
+$: cd yocto-ess/
+
+===========================
+Building images for IFC14xx
+===========================
+# ifc14xx-rt-64b for rt kernel, -t <number of parallel tasks>, -j <number of parallel jobs>
+$: . ./setup-env -m ifc14xx-64b -t 4 -j 4
+$: bitbake ifc14xx-image
+
+Images will be found here:
+tmp/deploy/images/ifc14xx-64b/
+tmp/deploy/images/ifc14xx-rt-64b/
+
+==============================
+Building toolchain for IFC14xx
+==============================
+$: bitbake ifc14xx-toolchain
+
+Toolchain will be found here:
+tmp/deploy/sdk/
+
+==================================
+Building images for Concurrent CPU
+==================================
+# cct-rt-64 for rt kernel, -t <number of parallel tasks>, -j <number of parallel jobs>
+$: . ./setup-env -m cct-64 -t 4 -j 4
+$: bitbake cct-image
+
+Images will be found here:
+tmp/deploy/images/cct-64/
+tmp/deploy/images/cct-rt-64/
+
+=====================================
+Building toolchain for Concurrent CPU
+=====================================
+$: bitbake cct-toolchain
+
+Toolchain will be found here:
+tmp/deploy/sdk/
+
+=======================
+File bug/task
+=======================
+Issue tracker: https://jira.esss.lu.se
+Project: ICS HW and Integration
+Issue type: Task or Bug
+Component: ICS_HWI_WP04

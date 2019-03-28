@@ -14,6 +14,7 @@ TOOLCHAIN_TARGET_TASK += " \
     systemd-dev \
     libxml2-dev \
     libtirpc \
+    jpeg \
 "
 
 TOOLCHAIN_HOST_TASK += " \

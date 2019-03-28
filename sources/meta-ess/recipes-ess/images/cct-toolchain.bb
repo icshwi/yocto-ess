@@ -4,5 +4,6 @@ TOOLCHAIN_TARGET_TASK += " \
     systemd-dev \
     libxml2-dev \
     libtirpc \
+    jpeg \
 "
 

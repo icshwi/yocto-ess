@@ -69,6 +69,8 @@ build_toolchain:
   artifacts:
     paths:
       - build_ifc14xx-64b/tmp/deploy/sdk
+      - sstate-cache/
+      - downloads/
     expire_in: 24 hour
 
 build_image_cct:
@@ -134,6 +136,8 @@ build_toolchain_cct:
   artifacts:
     paths:
       - build_cct-64/tmp/deploy/sdk
+      - sstate-cache/
+      - downloads/
     expire_in: 24 hour
 
 release_sstate:

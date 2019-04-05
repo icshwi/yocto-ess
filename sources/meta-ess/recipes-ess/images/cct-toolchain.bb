@@ -5,5 +5,7 @@ TOOLCHAIN_TARGET_TASK += " \
     libxml2-dev \
     libtirpc \
     jpeg \
+    boost \
+    curl \
 "
 

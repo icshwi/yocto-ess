@@ -9,7 +9,7 @@ SRC_URI = "git://git@gitlab.esss.lu.se/ioxos/tsc;branch=master;protocol=ssh \
            file://0001-Run-command-and-exit.patch \
            file://0001-Enable-FMCs-before-exiting.patch \
            file://0001-Add-license-file.patch"
-SRCREV = "40905a8eb597aab13d66f39230cab8511255a3ba"
+SRCREV = "08d43f8b847d029c1bea22743e933367aed61f88"
 
 S = "${WORKDIR}/git/src/TscMon"
 

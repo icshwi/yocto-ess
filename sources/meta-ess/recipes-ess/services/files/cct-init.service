@@ -1,0 +1,10 @@
+[Unit]
+Description=Concurrent CPU init
+After=systemd-modules-load.service
+
+[Service]
+Type=oneshot
+ExecStart=@SCRIPTDIR@/cct-init.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,6 +1,7 @@
 [Unit]
 Description=Host init
-After=network.target
+After=systemd-networkd-wait-online.service
+Wants=systemd-networkd-wait-online.service
 
 [Service]
 Type=oneshot

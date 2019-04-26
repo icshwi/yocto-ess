@@ -1,6 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/u-boot-qoriq-2018.03:"
 SRC_URI_append += "file://0001-Add-support-for-IFC14XX-board.patch \
                    file://0001-Add-lc-command-to-save-string-in-lowercase.patch \
+                   file://0001-support-for-CPU-at-1800MHz-ethernet-10GB-line-revers.patch \
                    file://0002-Add-support-for-Micron-Cypress.patch \
                    file://0001-Add-prom-cmd-whatmem.patch \
                    file://ifc14xx/ \

@@ -16,8 +16,8 @@ RPROVIDES_${PN} += "kernel-module-mrf-${KERNEL_VERSION}"
 
 do_install_append () {
 	install -d ${D}${sysconfdir}/modules-load.d
-	install -m 0644 ${WORKDIR}/mrfioc2.conf ${D}${sysconfdir}/modules-load.d
-	
+	install -m 0644 ${WORKDIR}/mrfioc2.conf ${D}${sysconfdir}/modules-load.d/mrf.conf
+
 	install -d ${D}/etc/udev/rules.d
 	install -m 0666 ${WORKDIR}/99-uio.rules ${D}/etc/udev/rules.d/99-uio.rules
 }

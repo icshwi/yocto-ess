@@ -1,0 +1,1 @@
+KERNEL=="uio*", ATTR{name}=="mrf-pci", MODE="0666"

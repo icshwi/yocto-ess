@@ -4,7 +4,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 CORE_IMAGE_EXTRA_INSTALL += "udev-extraconf lsb"
 
-IMAGE_FSTYPES = "cpio.gz"
+IMAGE_FSTYPES = "tar.gz cpio.gz"
 
 SUMMARY = "Image to be used for IFC1410 and IFC1420"
 DESCRIPTION = "IFC14XX image"

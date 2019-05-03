@@ -15,8 +15,8 @@
  * help@hdfgroup.org.                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * Created:		Sep 27, 2018
- *			root <root@IFC1211_101>
+ * Created:		May  3, 2019
+ *			iocuser@ifc1410-64b
  *
  * Purpose:		This machine-generated source code contains
  *			information about the various integer and

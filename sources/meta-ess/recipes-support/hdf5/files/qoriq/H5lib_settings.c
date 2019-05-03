@@ -15,8 +15,8 @@
  * help@hdfgroup.org.                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * Created:		Sep 27, 2018
- *			root <root@IFC1211_101>
+ * Created:		May  3, 2019
+ *			iocuser@ifc1410-64b
  *
  * Purpose:		This machine-generated source code contains
  *			information about the library build configuration
@@ -36,21 +36,21 @@ char H5libhdf5_settings[]=
 	"General Information:\n"
 	"-------------------\n"
 	"		   HDF5 Version: 1.8.19\n"
-	"		  Configured on: Thu Sep 27 14:02:25 CEST 2018\n"
-	"		  Configured by: root@IFC1211_101\n"
+	"		  Configured on: Fri May  3 12:25:06 UTC 2019\n"
+	"		  Configured by: iocuser@ifc1410-64b\n"
 	"		 Configure mode: production\n"
 	"		    Host system: powerpc64-unknown-linux-gnu\n"
-	"	      Uname information: Linux tn-sim-mtca-ifc-2 4.14.67-ifc14xx #1 SMP Mon Apr 29 11:36:48 UTC 2019 ppc64 ppc64 ppc64 GNU/Linux\n"
+	"	      Uname information: Linux ifc1410-64b 4.14.67-ifc14xx #1 SMP Thu Mar 28 09:34:42 UTC 2019 ppc64 ppc64 ppc64 GNU/Linux\n"
 	"		       Byte sex: big-endian\n"
 	"		      Libraries: static, shared\n"
-	"	     Installation point: /home/root/hdf5/hdf5\n"
+	"	     Installation point: /home/iocuser/hdf5-1.8.19/hdf5\n"
 	"\n"
 	"Compiling Options:\n"
 	"------------------\n"
 	"               Compilation Mode: production\n"
 	"                     C Compiler: /usr/bin/gcc ( gcc (GCC) 8.2.0)\n"
 	"                         CFLAGS: \n"
-	"                      H5_CFLAGS: -std=c99 -pedantic -Wall -Wextra -Wundef -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -Wnested-externs -Winline -Wfloat-equal -Wmissing-format-attribute -Wmissing-noreturn -Wpacked -Wdisabled-optimization -Wformat=2 -Wunreachable-code -Wendif-labels -Wdeclaration-after-statement -Wold-style-definition -Winvalid-pch -Wvariadic-macros -Winit-self -Wmissing-include-dirs -Wswitch-default -Wswitch-enum -Wunused-macros -Wunsafe-loop-optimizations -Wc++-compat -Wstrict-overflow -Wlogical-op -Wlarger-than=2048 -Wvla -Wsync-nand -Wframe-larger-than=16384 -Wpacked-bitfield-compat -Wstrict-overflow=5 -Wjump-misses-init -Wunsuffixed-float-constants -Wdouble-promotion -Wsuggest-attribute=const -Wtrampolines -Wstack-usage=8192 -Wvector-operation-performance -Wsuggest-attribute=pure -Wsuggest-attribute=noreturn -Wsuggest-attribute=format -Wdate-time -Wopenmp-simd -O3\n"
+	"                      H5_CFLAGS:   -std=c99 -pedantic -Wall -W -Wundef -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -Wnested-externs -Winline -O -finline-functions\n"
 	"                      AM_CFLAGS: \n"
 	"                       CPPFLAGS: \n"
 	"                    H5_CPPFLAGS: -D_GNU_SOURCE -D_POSIX_C_SOURCE=200112L   -DNDEBUG -UH5_DEBUG_API\n"
@@ -61,7 +61,7 @@ char H5libhdf5_settings[]=
 	"                        LDFLAGS: \n"
 	"                     H5_LDFLAGS: \n"
 	"                     AM_LDFLAGS: \n"
-	" 	 	Extra libraries: -ldl -lm \n"
+	" 	 	Extra libraries: -lz -ldl -lm \n"
 	" 		       Archiver: ar\n"
 	" 		 	 Ranlib: ranlib\n"
 	" 	      Debugged Packages: \n"
@@ -86,7 +86,7 @@ char H5libhdf5_settings[]=
 	"                   Threadsafety: no\n"
 	"            Default API Mapping: v18\n"
 	" With Deprecated Public Symbols: yes\n"
-	"         I/O filters (external): \n"
+	"         I/O filters (external): deflate(zlib)\n"
 	"                            MPE: no\n"
 	"                     Direct VFD: no\n"
 	"                        dmalloc: no\n"

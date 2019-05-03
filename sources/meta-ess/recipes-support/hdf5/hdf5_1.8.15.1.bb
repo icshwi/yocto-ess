@@ -21,13 +21,16 @@ SRC_URI += "file://hdf5-c.patch"
 SRC_URI += "${H5_CONFIG_FILES}"
 
 H5_CONFIG_FILES ?= " \
-    file://H5Tinit.c \
-    file://H5lib_settings.c \
 "
 
 H5_CONFIG_FILES_qoriq = " \
     file://qoriq/H5Tinit.c \
     file://qoriq/H5lib_settings.c \
+"
+
+H5_CONFIG_FILES_intel-x86-common = " \
+    file://cct/H5Tinit.c \
+    file://cct/H5lib_settings.c \
 "
 
 SRC_URI[md5sum] = "3c0d7a8c38d1abc7b40fc12c1d5f2bb8"
@@ -57,6 +60,10 @@ inherit autotools pkgconfig
 # generated during cross-compilation
 do_configure_append_qoriq() {
     cp ${WORKDIR}/qoriq/H5*.c ${B}/src/
+}
+
+do_configure_append_intel-x86-common() {
+    cp ${WORKDIR}/cct/H5*.c ${B}/src/
 }
 
 do_install_append() {

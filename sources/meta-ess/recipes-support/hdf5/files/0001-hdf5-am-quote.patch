@@ -1,0 +1,25 @@
+From 10bbf4124656d22fe5ca5cdd5876963b1d188b74 Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Fri, 3 May 2019 15:12:17 +0200
+Subject: [PATCH 1/4] hdf5 am quote
+
+---
+ acsite.m4 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/acsite.m4 b/acsite.m4
+index 663c661..46c0700 100644
+--- a/acsite.m4
++++ b/acsite.m4
+@@ -58,7 +58,7 @@ dnl
+ dnl	Check how F9X handles modules. This macro also checks which
+ dnl	command-line option to use to include the module once it's built.
+ dnl
+-AC_DEFUN(AC_F9X_MODS,
++AC_DEFUN([AC_F9X_MODS],
+ [AC_MSG_CHECKING(what $FC does with modules)
+ AC_LANG_PUSH(Fortran)
+ 
+-- 
+2.7.4
+

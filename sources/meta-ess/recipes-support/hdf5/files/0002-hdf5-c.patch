@@ -1,6 +1,17 @@
---- hdf5-1.8.15-patch1/src/Makefile.am.orig	2015-09-30 23:20:08.683217290 +0100
-+++ hdf5-1.8.15-patch1/src/Makefile.am	2015-09-30 23:20:29.470278123 +0100
-@@ -122,30 +122,6 @@
+From f937a5604464288797b873c07b6bc0b016d673a3 Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Fri, 3 May 2019 15:21:02 +0200
+Subject: [PATCH 2/4] hdf5 c
+
+---
+ src/Makefile.am | 24 ------------------------
+ 1 file changed, 24 deletions(-)
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 3b16018..ba3c1e8 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -120,30 +120,6 @@ include_HEADERS = hdf5.h H5api_adpt.h H5overflow.h H5pubconf.h H5public.h H5vers
  settingsdir=$(libdir)
  settings_DATA=libhdf5.settings
  
@@ -31,3 +42,6 @@
  # Error header generation
  #
  # Actually, H5Einit.h, H5Eterm.h, H5Edefin.h and H5Epubgen.h all
+-- 
+2.7.4
+

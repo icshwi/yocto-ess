@@ -1,6 +1,17 @@
---- hdf5-1.8.15-patch1/configure.ac.orig	2015-09-26 20:57:43.764764359 +0100
-+++ hdf5-1.8.15-patch1/configure.ac	2015-09-26 20:58:11.021955389 +0100
-@@ -1719,24 +1719,7 @@
+From 04346b516104b1ae33d4b391b8880ebdae4dc61c Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Fri, 3 May 2019 15:22:52 +0200
+Subject: [PATCH 3/4] hdf5 threads
+
+---
+ configure.ac | 19 +------------------
+ 1 file changed, 1 insertion(+), 18 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 796352f..b8db024 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1680,24 +1680,7 @@ AC_DEFINE_UNQUOTED([PRINTF_LL_WIDTH], ["$hdf5_cv_printf_ll"],
  ## Check if pthread_attr_setscope(&attribute, PTHREAD_SCOPE_SYSTEM)
  ## is supported on this system
  ##
@@ -26,3 +37,6 @@
  
  if test ${hdf5_cv_system_scope_threads} = "yes"; then
    AC_DEFINE([SYSTEM_SCOPE_THREADS], [1],
+-- 
+2.7.4
+

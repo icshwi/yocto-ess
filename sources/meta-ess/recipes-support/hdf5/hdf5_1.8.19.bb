@@ -1,21 +1,21 @@
 LICENSE = "BSD"
-LIC_FILES_CHKSUM = "file://COPYING;md5=f1883baf3a14753e47d9152b3b994ada"
+LIC_FILES_CHKSUM = "file://COPYING;md5=57e5351b17591e659eedae107265c606"
 
 BBCLASSEXTEND = "native"
 
-SRC_URI = "http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.15-patch1/src/hdf5-1.8.15-patch1.tar.bz2"
+SRC_URI = "http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.19/src/hdf5-1.8.19.tar.bz2"
 
 # automake is stricter on quoting now
-SRC_URI += "file://hdf5-am-quote.patch"
+SRC_URI += "file://0001-hdf5-am-quote.patch"
 
 # switch the threading off
-SRC_URI += "file://hdf5-threads.patch"
+SRC_URI += "file://0003-hdf5-threads.patch"
 
 # force shared library build
-SRC_URI += "file://hdf5-shared.patch"
+SRC_URI += "file://0004-hdf5-shared.patch"
 
 # avoid generating of the H5Tinit.c and H5lib_settings.c files
-SRC_URI += "file://hdf5-c.patch"
+SRC_URI += "file://0002-hdf5-c.patch"
 
 # H5Tinit.c and H5lib_settings.c files for each platform
 SRC_URI += "${H5_CONFIG_FILES}"
@@ -33,11 +33,11 @@ H5_CONFIG_FILES_intel-x86-common = " \
     file://cct/H5lib_settings.c \
 "
 
-SRC_URI[md5sum] = "3c0d7a8c38d1abc7b40fc12c1d5f2bb8"
-SRC_URI[sha256sum] = "a5afc630c4443547fff15e9637b5b10404adbed4c00206d89517d32d6668fb32"
+SRC_URI[md5sum] = "6f0353ee33e99089c110a1c8d2dd1b22"
+SRC_URI[sha256sum] = "59c03816105d57990329537ad1049ba22c2b8afe1890085f0c022b75f1727238"
 
 DEPENDS += "zlib"
-S = "${WORKDIR}/hdf5-1.8.15-patch1"
+S = "${WORKDIR}/hdf5-1.8.19"
 
 EXTRA_OECONF = "--with-szlib=no --with-pthread=no --enable-threadsafe=no"
 EXTRA_OECONF += "hdf5_cv_fp_to_integer_overflow_works=yes"

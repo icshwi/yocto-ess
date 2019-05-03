@@ -1,6 +1,17 @@
---- hdf5-1.8.15-patch1/configure.ac.orig	2015-09-28 19:01:44.509683424 +0100
-+++ hdf5-1.8.15-patch1/configure.ac	2015-09-28 19:02:10.060166948 +0100
-@@ -3003,23 +3003,8 @@
+From 18c1802acb475e19eec93390252f83e8db604c2e Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Fri, 3 May 2019 15:24:28 +0200
+Subject: [PATCH 4/4] hdf5 shared
+
+---
+ configure.ac | 19 ++-----------------
+ 1 file changed, 2 insertions(+), 17 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index b8db024..664cc6d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2871,23 +2871,8 @@ touch ./config/stamp2
  ## Finally the makefiles
  test "$no_create" = yes || ${CONFIG_SHELL-/bin/sh} $CONFIG_STATUS || exit 1
  
@@ -26,3 +37,6 @@
  
  if test "X$enable_static" = "Xyes" && test "X$enable_shared" = "Xyes"; then
    STATIC_SHARED="static, shared"
+-- 
+2.7.4
+

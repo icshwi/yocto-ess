@@ -7,5 +7,6 @@ TOOLCHAIN_TARGET_TASK += " \
     jpeg \
     boost \
     curl \
+    hdf5 \
 "
 

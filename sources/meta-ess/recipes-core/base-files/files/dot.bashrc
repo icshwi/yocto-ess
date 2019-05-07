@@ -15,3 +15,6 @@ alias ll='ls $LS_OPTIONS -lah'
 # alias rm='rm -i'
 # alias cp='cp -i'
 # alias mv='mv -i'
+
+export PATH=/sbin:$PATH
+

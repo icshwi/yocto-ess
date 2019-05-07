@@ -320,15 +320,15 @@ release_rpm:
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
     - cd build_ifc14xx-64b/tmp/deploy/rpm
-    - jfrog rt upload --flat=false "tsc-*.rpm" rpm-ics/ioxos/ --exclude-patterns="tsc-dev*;tsc-dbg*"
-    - jfrog rt upload --flat=false "tscmon-*.rpm" rpm-ics/ioxos/ --exclude-patterns="tscmon-dev*;tscmon-dbg*"
-    - jfrog rt upload --flat=false "hdf5-*.rpm" rpm-ics/ioxos/ --exclude-patterns="hdf5-dev*;hdf5-dbg*"
-    - jfrog rt upload --flat=false "tar-*.rpm" rpm-ics/ioxos/ --exclude-patterns="tar-dev*;tar-dbg*"
-    - jfrog rt upload --flat=false "bzip2-*.rpm" rpm-ics/ioxos/ --exclude-patterns="bzip2-dev*;bzip2-dbg*"
-    - jfrog rt upload --flat=false "python-*.rpm" rpm-ics/ioxos/ --exclude-patterns="*-dev-*;*-dbg-*"
-    - jfrog rt upload --flat=false "python3-*.rpm" rpm-ics/ioxos/ --exclude-patterns="*-dev-*;*-dbg-*"
+    - jfrog rt upload --flat=false --exclude-patterns="tsc-dev*;tsc-dbg*" "tsc-*.rpm" rpm-ics/ioxos/
+    - jfrog rt upload --flat=false --exclude-patterns="tscmon-dev*;tscmon-dbg*" "tscmon-*.rpm" rpm-ics/ioxos/
+    - jfrog rt upload --flat=false --exclude-patterns="hdf5-dev*;hdf5-dbg*" "hdf5-*.rpm" rpm-ics/ioxos/
+    - jfrog rt upload --flat=false --exclude-patterns="tar-dev*;tar-dbg*" "tar-*.rpm" rpm-ics/ioxos/
+    - jfrog rt upload --flat=false --exclude-patterns="bzip2-dev*;bzip2-dbg*" "bzip2-*.rpm" rpm-ics/ioxos/
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "python-*.rpm" rpm-ics/ioxos/
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "python3-*.rpm" rpm-ics/ioxos/
     - cd ../../../../build_ifc14xx-rt-64b/tmp/deploy/rpm
-    - jfrog rt upload --flat=false "tsc-*.rpm" rpm-ics/ioxos/ --exclude-patterns="tsc-dev*;tsc-dbg*"
+    - jfrog rt upload --flat=false --exclude-patterns="tsc-dev*;tsc-dbg*" "tsc-*.rpm" rpm-ics/ioxos/
 
 release_rpm_cct:
   variables:
@@ -343,13 +343,13 @@ release_rpm_cct:
   script:
     - jfrog rt config artifactory --url=${ARTIFACTORY_URL} --apikey=${ARTIFACTORY_API_KEY}
     - cd build_cct-64/tmp/deploy/rpm
-    - jfrog rt upload --flat=false "tsc-*.rpm" rpm-ics/cct/ --exclude-patterns="tsc-dev*;tsc-dbg*"
-    - jfrog rt upload --flat=false "tscmon-*.rpm" rpm-ics/cct/ --exclude-patterns="tscmon-dev*;tscmon-dbg*"
-    - jfrog rt upload --flat=false "hdf5-*.rpm" rpm-ics/cct/ --exclude-patterns="hdf5-dev*;hdf5-dbg*"
-    - jfrog rt upload --flat=false "tar-*.rpm" rpm-ics/cct/ --exclude-patterns="tar-dev*;tar-dbg*"
-    - jfrog rt upload --flat=false "bzip2-*.rpm" rpm-ics/cct/ --exclude-patterns="bzip2-dev*;bzip2-dbg*"
-    - jfrog rt upload --flat=false "python-*.rpm" rpm-ics/cct/ --exclude-patterns="*-dev-*;*-dbg-*"
-    - jfrog rt upload --flat=false "python3-*.rpm" rpm-ics/cct/ --exclude-patterns="*-dev-*;*-dbg-*"
+    - jfrog rt upload --flat=false --exclude-patterns="tsc-dev*;tsc-dbg*" "tsc-*.rpm" rpm-ics/cct/
+    - jfrog rt upload --flat=false --exclude-patterns="tscmon-dev*;tscmon-dbg*" "tscmon-*.rpm" rpm-ics/cct/
+    - jfrog rt upload --flat=false --exclude-patterns="hdf5-dev*;hdf5-dbg*" "hdf5-*.rpm" rpm-ics/cct/
+    - jfrog rt upload --flat=false --exclude-patterns="tar-dev*;tar-dbg*" "tar-*.rpm" rpm-ics/cct/
+    - jfrog rt upload --flat=false --exclude-patterns="bzip2-dev*;bzip2-dbg*" "bzip2-*.rpm" rpm-ics/cct/
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "python-*.rpm" rpm-ics/cct/
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "python3-*.rpm" rpm-ics/cct/
     - cd ../../../../build_cct-rt-64/tmp/deploy/rpm/tmp/deploy/rpm
-    - jfrog rt upload --flat=false "tsc-*.rpm" rpm-ics/cct/ --exclude-patterns="tsc-dev*;tsc-dbg*"
+    - jfrog rt upload --flat=false --exclude-patterns="tsc-dev*;tsc-dbg*" "tsc-*.rpm" rpm-ics/cct/
 

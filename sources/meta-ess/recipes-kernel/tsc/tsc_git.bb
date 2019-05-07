@@ -6,6 +6,9 @@ SRC_URI = "git://git@gitlab.esss.lu.se/ioxos/tsc;branch=master;protocol=ssh \
            file://0001-Adapt-Makefile-for-Yocto.patch \
            file://0001-Add-license-file.patch \
            file://tsc.conf"
+
+#Change these when updating
+PV = "3.4.1"
 SRCREV = "08d43f8b847d029c1bea22743e933367aed61f88"
 
 S = "${WORKDIR}/git/driver"

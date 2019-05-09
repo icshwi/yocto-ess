@@ -360,7 +360,7 @@ http://.*/.* http://git.freescale.com/source \n \
 ftp://.*/.* http://git.freescale.com/source \n"
 
 PACKAGE_FEED_URIS = "https://artifactory.esss.lu.se/artifactory/rpm-ics"
-PACKAGE_FEED_BASE_PATHS = "ioxos"
+PACKAGE_FEED_BASE_PATHS = "yocto/ioxos"
 EOF
 fi
 
@@ -382,7 +382,7 @@ if echo "$MACHINE" | egrep -q "^cct-64"; then
     cat >> conf/local.conf <<-EOF
 
 PACKAGE_FEED_URIS = "https://artifactory.esss.lu.se/artifactory/rpm-ics"
-PACKAGE_FEED_BASE_PATHS = "cct"
+PACKAGE_FEED_BASE_PATHS = "yocto/cct"
 PACKAGE_FEED_ARCHS = "cct_64 noarch corei7_64 corei7_64_intel_common"
 
 EOF
@@ -392,7 +392,7 @@ if echo "$MACHINE" | egrep -q "^cct-rt-64"; then
     cat >> conf/local.conf <<-EOF
 
 PACKAGE_FEED_URIS = "https://artifactory.esss.lu.se/artifactory/rpm-ics"
-PACKAGE_FEED_BASE_PATHS = "cct"
+PACKAGE_FEED_BASE_PATHS = "yocto/cct"
 PACKAGE_FEED_ARCHS = "cct_rt_64 noarch corei7_64 corei7_64_intel_common"
 
 EOF

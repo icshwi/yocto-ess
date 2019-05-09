@@ -51,6 +51,7 @@ build_image_rt:
   script:
     - . ./setup-env -m ifc14xx-rt-64b -j 8 -t 8
     - bitbake ifc14xx-image
+    - bitbake mrfioc2
     - bitbake package-index
   artifacts:
     paths:

@@ -6,6 +6,9 @@ SRC_URI = "git://git@github.com/javicereijo/mrfioc2.git;branch=master;protocol=s
            file://0001-Adapt-Makefile-for-Yocto-build.patch \
            file://mrfioc2.conf \
            file://99-uio.rules"
+
+#Change these when updating
+PV = "2.2.0_ess_rc5"
 SRCREV = "b4a57281cb11c831aab242b32b00557b174a0506"
 
 S = "${WORKDIR}/git/mrmShared/linux"

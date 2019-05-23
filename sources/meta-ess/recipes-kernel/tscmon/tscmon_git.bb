@@ -6,13 +6,11 @@ INSANE_SKIP_${PN} = "ldflags"
 RDEPENDS_${PN} = " bash tsc"
 
 SRC_URI = "git://git@gitlab.esss.lu.se/ioxos/tsc;branch=master;protocol=ssh \
-           file://0001-Run-command-and-exit.patch \
-           file://0001-Enable-FMCs-before-exiting.patch \
            file://0001-Add-license-file.patch"
 
 #Change these when updating
-PV = "3.5.0"
-SRCREV = "db91d5367355e5ca0707c1ed54c83d06a7ed05d3"
+PV = "3.5.1"
+SRCREV = "f5f4a066dd854144a82c9a70c3b7439a91d38b1c"
 
 S = "${WORKDIR}/git/src/TscMon"
 

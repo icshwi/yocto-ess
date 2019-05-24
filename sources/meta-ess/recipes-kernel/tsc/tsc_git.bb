@@ -8,8 +8,8 @@ SRC_URI = "git://git@gitlab.esss.lu.se/ioxos/tsc;branch=master;protocol=ssh \
            file://tsc.conf"
 
 #Change these when updating
-PV = "3.5.1"
-SRCREV = "f5f4a066dd854144a82c9a70c3b7439a91d38b1c"
+PV = "3.5.2"
+SRCREV = "8ac258da70eb6fe00ad0369b1bbb3bc1970ea5c0"
 
 S = "${WORKDIR}/git/driver"
 

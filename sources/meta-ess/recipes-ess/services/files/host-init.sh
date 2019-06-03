@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# Add password to iocuser
-echo 'iocuser:$6$icshwi$NmdM0vjS1kd82bEW0NUuaxyttGEHvImV09J7EOL5sufjRdanD7NHuABiH1mzdNo7ZKktoX.1w13rKVcOcCOZi0' | chpasswd -e
-
 # Create csi user
 adduser csi
 echo 'csi:$6$rounds=656000$dU2LteK8bw34CcUd$UrTE09vKKtQTF6sj8OSrRVzs5uzLlPAgpmsAK3kzSUztiSesIauzB5nHgiG93EdwGNsa4h/jQ6Yn21V28Bs7s0' | chpasswd -e

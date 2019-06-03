@@ -313,7 +313,7 @@ SSTATE_DIR = "$CACHES"
 INHERIT += "extrausers"
 EXTRA_USERS_PARAMS = "\
         groupadd -f iocgroup; \
-        useradd -P '' -g iocgroup -G sudo iocuser;"
+        useradd -P vaha23neca -g iocgroup -G sudo iocuser;"
 
 BBMASK = " lxc"
 

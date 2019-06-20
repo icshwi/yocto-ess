@@ -159,6 +159,8 @@ build_toolchain_cct:
 release_sstate_download:
   variables:
     GIT_STRATEGY: none
+  only:
+    - branches@gitlab.esss.lu.se/icshwi/yocto-ess
   tags:
     - yocto
   stage: release

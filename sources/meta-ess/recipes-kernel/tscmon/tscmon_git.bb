@@ -9,8 +9,8 @@ SRC_URI = "git://git@gitlab.esss.lu.se/ioxos/tsc;branch=master;protocol=ssh \
            file://0001-Add-license-file.patch"
 
 #Change these when updating
-PV = "3.5.4"
-SRCREV = "e32c56a69f593329eff9d231b31889ec60d1c784"
+PV = "3.5.5"
+SRCREV = "4d22d641e29c7313e7c1c91ac0e1e3e0ebcb431f"
 
 S = "${WORKDIR}/git/src/TscMon"
 

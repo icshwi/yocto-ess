@@ -162,7 +162,7 @@ release_sstate_download:
   variables:
     GIT_STRATEGY: none
   only:
-    - branches@gitlab.esss.lu.se/icshwi/yocto-ess
+    - branches@icshwi/yocto-ess
   tags:
     - yocto
   stage: release

@@ -18,6 +18,9 @@ TOOLCHAIN_TARGET_TASK += " \
     boost \
     curl \
     hdf5 \
+    tiff \
+    netcdf-c-dev \
+    c-blosc-staticdev \
 "
 
 TOOLCHAIN_HOST_TASK += " \

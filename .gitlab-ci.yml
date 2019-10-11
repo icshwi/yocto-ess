@@ -32,6 +32,7 @@ build_image:
     - bitbake tiff
     - bitbake c-blosc
     - bitbake netcdf-c
+    - bitbake i2c-tools
     - bitbake package-index
   artifacts:
     paths:
@@ -279,6 +280,7 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libtiff*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/c-blosc-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/netcdf-c-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-dev-*;*-misc-*;*-doc-*;*-staticdev-*" "*/i2c-tools-*.rpm" rpm-ics/yocto/ioxos/ || true
     - cd ../../../../build_ifc14xx-rt-64b/tmp/deploy/rpm
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-tsc-dev*;*kernel-module-tsc-dbg*" "*/kernel-module-tsc-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*mrfioc2-dev*;*mrfioc2-dbg*" "*/mrfioc2-*.rpm" rpm-ics/yocto/ioxos/ || true

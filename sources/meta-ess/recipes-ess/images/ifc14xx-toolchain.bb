@@ -18,10 +18,13 @@ TOOLCHAIN_TARGET_TASK += " \
     boost \
     curl \
     hdf5 \
-    tiff \
+    tiff \ 
     netcdf-c-dev \
     c-blosc-staticdev \
+    gawk \
+    kernel-devsrc \
 "
+
 
 TOOLCHAIN_HOST_TASK += " \
     nativesdk-dtc \

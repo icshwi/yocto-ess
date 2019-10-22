@@ -4,6 +4,12 @@ Setting up to use the Yocto project
 $: git clone --recurse-submodules git@gitlab.esss.lu.se:icshwi/yocto-ess.git
 $: cd yocto-ess/
 
+OR
+
+$: git clone https://gitlab.esss.lu.se/icshwi/yocto-ess.git
+$: cd yocto-ess/
+$: git submodule update --init --reference ./
+
 ===========================
 Building images for IFC14xx
 ===========================

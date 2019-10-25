@@ -8,8 +8,8 @@ SRC_URI = "git://git@gitlab.esss.lu.se/ioxos/tsc;branch=master;protocol=ssh \
            file://tsc.conf"
 
 #Change these when updating
-PV = "3.5.5"
-SRCREV = "4d22d641e29c7313e7c1c91ac0e1e3e0ebcb431f"
+PV = "4.0.0"
+SRCREV = "8163398b2d43202d372d29e9dbe80162357cac2c"
 
 S = "${WORKDIR}/git/driver"
 
@@ -21,4 +21,3 @@ do_install_append () {
 	install -d ${D}${sysconfdir}/modules-load.d
 	install -m 0644 ${WORKDIR}/tsc.conf ${D}${sysconfdir}/modules-load.d
 }
-

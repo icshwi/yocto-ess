@@ -9,8 +9,8 @@ SRC_URI = "git://git@gitlab.esss.lu.se/ioxos/tsc;branch=master;protocol=ssh \
            file://0001-Add-license-file.patch"
 
 #Change these when updating
-PV = "3.5.5"
-SRCREV = "4d22d641e29c7313e7c1c91ac0e1e3e0ebcb431f"
+PV = "4.0.0"
+SRCREV = "8163398b2d43202d372d29e9dbe80162357cac2c"
 
 S = "${WORKDIR}/git/src/TscMon"
 
@@ -26,4 +26,3 @@ do_install() {
     cp ${S}/TscMon ${D}/usr/bin/TscMon
     ln -sf TscMon ${D}/usr/bin/tscmon
 }
-

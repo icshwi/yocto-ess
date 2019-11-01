@@ -5,6 +5,7 @@ SRC_URI_append += "file://0001-Add-support-for-IFC14XX-board.patch \
                    file://0002-Add-support-for-Micron-Cypress.patch \
                    file://0001-Add-prom-cmd-whatmem.patch \
                    file://0001-Unselect-errata-A009942.-Does-not-apply-to-IFC14xx.patch \
+                   file://0001-Reduce-maximum-SDHC-clock-speed-for-IFC1410.patch \
                    file://ifc14xx/ \
                    file://ifc14xx_config.h \
                    file://IFC14XX_defconfig \

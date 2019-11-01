@@ -1,0 +1,32 @@
+From eede418a686231721bb9c21dcf4bf60af46908de Mon Sep 17 00:00:00 2001
+From: Ross Elliot <ross.elliot@esss.se>
+Date: Thu, 31 Oct 2019 09:34:50 +0100
+Subject: [PATCH] Reduce maximum SDHC clock speed for IFC1410
+
+    The SDHC clock needs to be reduced due to long PCB traces
+    on the IFC1410.
+---
+ drivers/mmc/fsl_esdhc.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/mmc/fsl_esdhc.c b/drivers/mmc/fsl_esdhc.c
+index f32b622..5cddb8f 100644
+--- a/drivers/mmc/fsl_esdhc.c
++++ b/drivers/mmc/fsl_esdhc.c
+@@ -1184,7 +1184,13 @@ static int fsl_esdhc_init(struct fsl_esdhc_priv *priv,
+ 	cfg->host_caps |= priv->caps;
+ 
+ 	cfg->f_min = 400000;
++
++#ifdef CONFIG_IFC14XX
++    printf("Reducing SHDC clock for IFC1410: 26 MHz\n");
++    cfg->f_max = min(priv->sdhc_clk, (u32)26000000);
++#else
+ 	cfg->f_max = min(priv->sdhc_clk, (u32)200000000);
++#endif
+ 
+ 	cfg->b_max = CONFIG_SYS_MMC_MAX_BLK_COUNT;
+ 
+-- 
+1.8.3.1
+

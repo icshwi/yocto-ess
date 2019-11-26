@@ -33,8 +33,13 @@ fi
 
 BOOTSERVER=$(cat /proc/net/pnp | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
 HOST=$(echo $HOSTNAME | grep -o '^[^.]\+')
+NETDEV=$(ip addr | awk '/MULTICAST,UP,LOWER_UP/ {print $2}' | sed 's/.$//')
+MAC=$(cat /sys/class/net/$NETDEV/address | awk '{ gsub(":", "-") ;  print $0 }')
 
 tftp -g -r boot/scripts/setup-$HOST.sh -l /usr/share/host-init/setup-$HOST.sh $BOOTSERVER
+if [ ! -e "/usr/share/host-init/setup-$HOST.sh" ]; then
+    tftp -g -r boot/uboot/$MAC/host-init.sh -l /usr/share/host-init/setup-$HOST.sh $BOOTSERVER
+fi
 
 if [ -e "/usr/share/host-init/setup-$HOST.sh" ]; then
 	chmod +x /usr/share/host-init/setup-$HOST.sh

@@ -1,14 +1,13 @@
 DESCRIPTION = "Tosca FPGA kernel driver"
-LICENSE = "GPLv2+"
-LIC_FILES_CHKSUM = "file://COPYING;md5=b9b7c84bed8ea6fab5a6e3ee89e6fe0e"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://../LICENSE;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-SRC_URI = "git://git@gitlab.esss.lu.se/ioxos/tsc;branch=master;protocol=ssh \
-           file://0001-Add-license-file.patch \
+SRC_URI = "git://github.com/icshwi/tsc.git;branch=master;protocol=https \
            file://tsc.conf"
 
 #Change these when updating
-PV = "4.0.0"
-SRCREV = "8163398b2d43202d372d29e9dbe80162357cac2c"
+PV = "4.0.2"
+SRCREV = "a2766d9324fa31305d003bef19107b0af34a4223"
 
 S = "${WORKDIR}/git/driver"
 

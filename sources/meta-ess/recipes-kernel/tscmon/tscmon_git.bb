@@ -1,24 +1,17 @@
 DESCRIPTION = "Tosca FPGA kernel driver tool"
-LICENSE = "CLOSED"
-LIC_FILES_CHKSUM = "file://COPYING;md5=b7fb7d87d0bc8c4c871ab8499e28463d"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 INSANE_SKIP_${PN} = "ldflags"
 RDEPENDS_${PN} = " bash tsc"
 
-SRC_URI = "git://git@gitlab.esss.lu.se/ioxos/tsc;branch=master;protocol=ssh \
-           file://0001-Add-license-file.patch"
+SRC_URI = "git://github.com/icshwi/tsc.git;branch=master;protocol=https"
 
 #Change these when updating
-PV = "4.0.0"
-SRCREV = "8163398b2d43202d372d29e9dbe80162357cac2c"
+PV = "4.0.2"
+SRCREV = "a2766d9324fa31305d003bef19107b0af34a4223"
 
-S = "${WORKDIR}/git/src/TscMon"
-
-do_compile_prepend() {
-    cd ../../lib
-    make
-    cd ../src/TscMon
-}
+S = "${WORKDIR}/git"
 
 do_install() {
     install -d ${D}/usr/bin

@@ -34,6 +34,7 @@ build_image:
     - bitbake netcdf-c
     - bitbake i2c-tools
     - bitbake valgrind
+    - bitbake git
     - bitbake package-index
   artifacts:
     paths:
@@ -114,6 +115,7 @@ build_image_cct:
     - bitbake c-blosc
     - bitbake netcdf-c
     - bitbake valgrind
+    - bitbake git
     - bitbake package-index
   artifacts:
     paths:
@@ -286,6 +288,7 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/netcdf-c-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-dev-*;*-misc-*;*-doc-*;*-staticdev-*" "*/i2c-tools-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-staticdev-*" "*/valgrind-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*;*-perltools-*" "*/git-*.rpm" rpm-ics/yocto/ioxos/ || true
     - cd ../../../../build_ifc14xx-rt-64b/tmp/deploy/rpm
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-tsc-dev*;*kernel-module-tsc-dbg*" "*/kernel-module-tsc-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*mrfioc2-dev*;*mrfioc2-dbg*" "*/mrfioc2-*.rpm" rpm-ics/yocto/ioxos/ || true
@@ -306,6 +309,7 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/c-blosc-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/netcdf-c-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-staticdev-*" "*/valgrind-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*;*-perltools-*" "*/git-*.rpm" rpm-ics/yocto/cct/ || true
     - cd ../../../../build_cct-rt-64/tmp/deploy/rpm
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-tsc-dev*;*kernel-module-tsc-dbg*" "*/kernel-module-tsc-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*mrfioc2-dev*;*mrfioc2-dbg*" "*/mrfioc2-*.rpm" rpm-ics/yocto/cct/ || true

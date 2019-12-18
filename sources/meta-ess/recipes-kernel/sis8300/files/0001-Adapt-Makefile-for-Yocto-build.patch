@@ -1,0 +1,21 @@
+diff --git a/Makefile b/Makefile
+index 6af8072..aec3bc3 100644
+--- a/Makefile
++++ b/Makefile
+@@ -7,14 +7,14 @@ ifneq ($(KERNELRELEASE),)
+ 
+ else
+ 
+-  KERNELDIR ?= /lib/modules/$(shell uname -r)/build
++  KERNEL_SRC ?= /lib/modules/$(shell uname -r)/build
+   PWD := $(shell pwd)
+ 
+ 
+ all: modules
+ 
+ modules modules_install clean:
+-	$(MAKE) -C $(KERNELDIR) M=$(PWD) $@
++	$(MAKE) -C $(KERNEL_SRC) M=$(PWD) $@
+ 
+ .PHONY: all modules modules_install clean
+ 

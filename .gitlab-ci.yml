@@ -169,6 +169,50 @@ build_toolchain_cct:
       - downloads/
     expire_in: 24 hour
 
+build_image_fpgaioc:
+  tags:
+    - yocto
+  stage: build
+  image: crops/yocto:debian-9-base
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -t rsa gitlab.esss.lu.se >> ~/.ssh/known_hosts
+  script:
+    - . ./setup-env -m fpgaioc -j 8 -t 8
+    - bitbake fpgaioc-image
+    - bitbake package-index
+  artifacts:
+    paths:
+      - build_fpgaioc/tmp/deploy/images/picozed-zynq7
+      - sstate-cache/
+      - downloads/
+      - build_fpgaioc/tmp/deploy/rpm
+    expire_in: 24 hour
+
+build_toolchain_fpgaioc:
+  tags:
+    - yocto
+  stage: build
+  image: crops/yocto:debian-9-base
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -t rsa gitlab.esss.lu.se >> ~/.ssh/known_hosts
+  script:
+    - . ./setup-env -m fpgaioc -j 8 -t 8
+    - bitbake fpgaioc-toolchain
+  artifacts:
+    paths:
+      - build_fpgaioc/tmp/deploy/sdk
+      - sstate-cache/
+      - downloads/
+    expire_in: 24 hour
+
 release_sstate_download:
   variables:
     GIT_STRATEGY: none

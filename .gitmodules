@@ -1,18 +1,21 @@
 [submodule "sources/poky"]
-	path = sources/poky
-	url = git://git.yoctoproject.org/poky.git
+    path = sources/poky
+    url = git://git.yoctoproject.org/poky.git
 [submodule "sources/meta-freescale"]
-	path = sources/meta-freescale
-	url = git://git.yoctoproject.org/meta-freescale.git
+    path = sources/meta-freescale
+    url = git://git.yoctoproject.org/meta-freescale.git
 [submodule "sources/meta-openembedded"]
-	path = sources/meta-openembedded
-	url = git://git.openembedded.org/meta-openembedded
+    path = sources/meta-openembedded
+    url = git://git.openembedded.org/meta-openembedded
 [submodule "sources/meta-freescale-distro"]
-	path = sources/meta-freescale-distro
-	url = https://github.com/Freescale/meta-freescale-distro
+    path = sources/meta-freescale-distro
+    url = https://github.com/Freescale/meta-freescale-distro
 [submodule "sources/meta-qoriq-demos"]
-	path = sources/meta-qoriq-demos
-	url = https://source.codeaurora.org/external/qoriq/qoriq-components/meta-qoriq-demos
+    path = sources/meta-qoriq-demos
+    url = https://source.codeaurora.org/external/qoriq/qoriq-components/meta-qoriq-demos
 [submodule "sources/meta-intel"]
-	path = sources/meta-intel
-	url = git://git.yoctoproject.org/meta-intel
+    path = sources/meta-intel
+    url = git://git.yoctoproject.org/meta-intel
+[submodule "sources/meta-xilinx"]
+	path = sources/meta-xilinx
+	url = git://github.com/Xilinx/meta-xilinx

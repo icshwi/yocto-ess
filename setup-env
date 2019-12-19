@@ -63,7 +63,7 @@ PROJECT_DIR=${ROOTDIR}/build_${MACHINE}
 
 prompt_message () {
 local i=''
-echo "Welcome to Freescale QorIQ SDK (Reference Distro)
+echo "Welcome to ESS Linux SDK (Reference Distro)
 
 The Yocto Project has extensive documentation about OE including a
 reference manual which can be found at:
@@ -77,6 +77,9 @@ You can now run 'bitbake <target>'
     ifc14xx-toolchain
     cct-image
     cct-toolchain
+    fpgaioc-image
+    fpgaioc-toolchain
+    fpgaioc-rescue-image
 "
     echo "To return to this build environment later please run:"
     echo "    . $PROJECT_DIR/SOURCE_THIS"
@@ -97,9 +100,9 @@ usage() {
     echo "Usage: . $PROGNAME -m <machine>"
 
     echo -e "\n    Supported machines:
-    `find ${ROOTDIR}/sources/meta-{ess,fsl,freescale,qoriq-demos,intel}*/conf/machine \
+    `find ${ROOTDIR}/sources/meta-{ess,fsl,freescale,qoriq-demos,intel,xilinx/*}*/conf/machine \
         -name *.conf 2>/dev/null \
-        |egrep "/(mpc|b4|bsc|c29|p1|p2|p3|p4|p5|t1|t2|t4|ls|ifc|intel|cct).*conf$" |sort \
+        |egrep "/(mpc|b4|bsc|c29|p1|p2|p3|p4|p5|t1|t2|t4|ls|ifc|intel|cct|fpga|zynq|zu|zc|micro|zed|pico).*conf$" |sort \
         |xargs echo |sed -e 's,[^ ]*/,,g;s,.conf,,g'`
 "
 
@@ -156,7 +159,7 @@ fi
 # Check the machine type specified
 valid_machine=false
 if [ -n "${MACHINE}" ];then
-    valid_num=`find ${ROOTDIR}/sources/meta-*/conf/machine \
+    valid_num=`find ${ROOTDIR}/sources/meta-{*,xilinx/*}/conf/machine \
         -name ${MACHINE}.conf 2>/dev/null |wc -l`
     if [ "1" -lt "$valid_num" ];then
         echo "ERROR: possible error may occur due to duplicate ${MACHINE}.conf exist:"
@@ -191,6 +194,7 @@ LAYER_LIST=" \
     meta-qoriq-demos \
     meta-ess \
     meta-intel \
+    meta-xilinx/meta-xilinx-bsp \
 "
 EULA_FILE="$FSLROOTDIR/EULA"
 
@@ -199,6 +203,9 @@ if echo "$MACHINE" | egrep -q "^ifc"; then
 fi
 if echo "$MACHINE" | egrep -q "^cct"; then
     DISTRO="cct"
+fi
+if echo "$MACHINE" | egrep -q "^fpgaioc"; then
+    DISTRO="fpgaioc"
 fi
 if echo "$MACHINE" | egrep -q "^intel"; then
     DISTRO="poky"

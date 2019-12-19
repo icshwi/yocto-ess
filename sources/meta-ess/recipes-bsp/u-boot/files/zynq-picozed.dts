@@ -1,0 +1,70 @@
+/*
+ * Avnet PicoZed board DTS
+ * Modified for FPGA-IOC
+ *
+ * Copyright (C) 2015 Xilinx, Inc.
+ *
+ * SPDX-License-Identifier:	GPL-2.0+
+ */
+/dts-v1/;
+#include "zynq-7000.dtsi"
+
+/ {
+	model = "Zynq PicoZed Board / FPGA-IOC";
+	compatible = "xlnx,zynq-picozed", "xlnx,zynq-7000";
+
+	aliases {
+		serial0 = &uart0;
+		ethernet0 = &gem0;
+		spi0 = &qspi;
+		mmc0 = &sdhci1;
+	};
+
+	memory@0 {
+		device_type = "memory";
+		reg = <0 0x40000000>;
+	};
+
+	chosen {
+	    bootargs = "earlycon";
+	    stdout-path = "serial0:115200n8";
+	};
+};
+
+&gem0 {
+	status = "okay";
+	phy-mode = "rgmii-id";
+	phy-handle = <&ethernet_phy>;
+
+	ethernet_phy: ethernet-phy@0 {
+		compatible = "marvell,88e1512";
+		device_type = "ethernet-phy";
+		reg = <0>;
+	};
+};
+
+&uart0 {
+	u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&uart1 {
+	u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&qspi {
+	u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&sdhci0 {
+	u-boot,dm-pre-reloc;
+	status = "disabled";
+};
+
+&sdhci1 {
+	u-boot,dm-pre-reloc;
+	status = "okay";
+};
+

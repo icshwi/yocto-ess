@@ -1,0 +1,4 @@
+define KFEATURE_DESCRIPTION "Enable I2C slave interface"
+define KFEATURE_COMPATIBILITY all
+
+kconf hardware fragments.cfg

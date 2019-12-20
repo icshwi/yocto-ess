@@ -48,6 +48,23 @@ $: bitbake cct-toolchain
 Toolchain will be found here:
 tmp/deploy/sdk/
 
+==================================
+Building images for FPGA-IOC
+==================================
+$: . ./setup-env -m fpgaioc -t 4 -j 4
+$: bitbake fpgaioc-image
+
+Images will be found here:
+tmp/deploy/images/picozed-zynq7/
+
+=====================================
+Building toolchain for FPGA-IOC
+=====================================
+$: bitbake fpgaioc-toolchain
+
+Toolchain will be found here:
+tmp/deploy/sdk/
+
 =======================
 File bug/task
 =======================

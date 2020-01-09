@@ -39,12 +39,13 @@
 	status = "okay";
 	phy-mode = "rgmii-id";
 	phy-handle = <&ethernet_phy>;
-        xlnx,ptp-enet-clock = <0x69f6bcb>;
+    /*xlnx,ptp-enet-clock = <0x69f6bcb>;*/
 
-	ethernet_phy: ethernet-phy@1 {
-		compatible = "marvell,88e1512";
+	ethernet_phy: ethernet-phy@0 {
+		compatible = "marvell,88e1510";
 		device_type = "ethernet-phy";
-		reg = <1>;
+		reg = <0>;
+        marvell,reg-init=<3 16 0xff00 0x1e 3 17 0xfff0 0x0a>;
 	};
 };
 
@@ -54,7 +55,7 @@
 
 &sdhci1 {
 	status = "okay";
-	/* SD1 is onnected to a non-removable eMMC flash device */
+	/* SD1 is connected to a non-removable eMMC flash device */
 	non-removable;
 };
 

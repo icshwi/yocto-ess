@@ -18,7 +18,7 @@ do_configure_prepend() {
 	bbnote "Add u-boot extra environment params"
 	#sed -i 's/fit_image=[a-zA-Z0-9_\-\.\+]*/fit_image=image.ub\\0/g' ${WORKDIR}/git/include/configs/zynq-common.h 
 	sed -i  '/^\s*DFU_ALT_INFO \\.*/i "bootrescue=echo Booting **Rescue** FPGA-IOC Linux image from QSPI; sf probe 0;sf read 0x2080000 0x200000 0x400000;sf read 0x2000000 0x6f0000 0x10000;sf read 0x3000000 0x700000 0x800000;sleep 1;bootm 0x2080000 0x3000000 0x2000000 \\0" \\' ${WORKDIR}/git/include/configs/zynq-common.h 
-	sed -i  '/^\s*DFU_ALT_INFO \\.*/i "bootcmd=echo Booting FPGA-IOC Linux image from MMC; mmc rescan;fatload mmc 0:1 0x2080000 uImage;fatload mmc 0:1 0x2000000 picozed-zynq7.dtb;sleep 1;bootm 0x2080000 - 0x2000000 \\0" \\' ${WORKDIR}/git/include/configs/zynq-common.h 
+	sed -i  '/^\s*DFU_ALT_INFO \\.*/i "bootcmd=echo Booting FPGA-IOC Linux image from MMC; mmc rescan; run setbootenv; fatload mmc 0:1 0x2080000 uImage;fatload mmc 0:1 0x2000000 picozed-zynq7.dtb;sleep 1;bootm 0x2080000 - 0x2000000 \\0" \\' ${WORKDIR}/git/include/configs/zynq-common.h 
 }
 
 

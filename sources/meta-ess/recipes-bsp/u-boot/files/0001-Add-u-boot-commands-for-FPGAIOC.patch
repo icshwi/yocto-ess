@@ -1,0 +1,24 @@
+diff --git a/include/configs/zynq-common.h b/include/configs/zynq-common.h
+index 55b983fc16..e09c2fc54e 100644
+--- a/include/configs/zynq-common.h
++++ b/include/configs/zynq-common.h
+@@ -237,6 +237,10 @@
+ 			"echo Copying FIT from USB to RAM... && " \
+ 			"load usb 0 ${load_addr} ${fit_image} && " \
+ 			"bootm ${load_addr}; fi\0" \
++"bootrescue=echo Booting **Rescue** FPGA-IOC Linux image from QSPI; sf probe 0;sf read 0x2080000 0x200000 0x400000;sf read 0x2000000 0x6f0000 0x10000;sf read 0x3000000 0x700000 0x800000;sleep 1;bootm 0x2080000 0x3000000 0x2000000 \0" \
++"bootcmd=echo Booting FPGA-IOC Linux image from MMC; mmc rescan;fatload mmc 0:1 0x2080000 uImage;fatload mmc 0:1 0x2000000 picozed-zynq7.dtb;sleep 1;bootm 0x2080000 - 0x2000000 \0" \
++"bootrescue=echo Booting **Rescue** FPGA-IOC Linux image from QSPI; sf probe 0;sf read 0x2080000 0x200000 0x400000;sf read 0x2000000 0x6f0000 0x10000;sf read 0x3000000 0x700000 0x800000;sleep 1;bootm 0x2080000 0x3000000 0x2000000 \0" \
++"bootcmd=echo Booting FPGA-IOC Linux image from MMC; mmc rescan; run setbootenv; fatload mmc 0:1 0x2080000 uImage;fatload mmc 0:1 0x2000000 picozed-zynq7.dtb;sleep 1;bootm 0x2080000 - 0x2000000 \0" \
+ 		DFU_ALT_INFO \
+ 		BOOTENV
+ #endif
+@@ -263,7 +267,7 @@
+ 
+ 
+ /* Extend size of kernel image for uncompression */
+-#define CONFIG_SYS_BOOTM_LEN	(60 * 1024 * 1024)
++#define CONFIG_SYS_BOOTM_LEN	(85 * 1024 * 1024)
+ 
+ /* Boot FreeBSD/vxWorks from an ELF image */
+ #define CONFIG_SYS_MMC_MAX_DEVICE	1

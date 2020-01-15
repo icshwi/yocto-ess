@@ -15,7 +15,7 @@ IMAGE_INSTALL_append = " \
         kernel-module-i2c-slave-miniioc \
         "
 
-IMAGE_FSTYPES="tar.gz ext3"
+IMAGE_FSTYPES="cpio.gz tar.gz ext3"
 
 MACHINE_ESSENTIAL_EXTRA_RDEPENDS += "device-tree \
 			     	     i2c-slave-miniioc \

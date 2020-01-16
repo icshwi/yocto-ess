@@ -301,6 +301,14 @@ release_images_web:
     - for f in *; do filename=${f%.*}; ext=${f##*.}; mv $f "${filename}-${CI_COMMIT_SHORT_SHA}.${ext}" ; done
     - echo $CI_COMMIT_SHA > SHA-$CI_COMMIT_SHA
     - jfrog rt upload --flat=false "*" yocto/toolchain/$CI_PIPELINE_ID/
+    - cd ../../../../
+    - cd build_fpgaioc/tmp/deploy/images/picozed-zynq7
+    - jfrog rt upload --flat=false "*" boot-images/fpgaioc/$CI_PIPELINE_ID/
+    - cd ../../../../../
+    - cd build_fpgaioc/tmp/deploy/sdk
+    - for f in *; do filename=${f%.*}; ext=${f##*.}; mv $f "${filename}-${CI_COMMIT_SHORT_SHA}.${ext}" ; done
+    - echo $CI_COMMIT_SHA > SHA-$CI_COMMIT_SHA
+    - jfrog rt upload --flat=false "*" yocto/toolchain/$CI_PIPELINE_ID/
 
 release_rpm:
   variables:

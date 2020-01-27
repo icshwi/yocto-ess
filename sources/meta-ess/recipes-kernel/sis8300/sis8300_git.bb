@@ -11,7 +11,6 @@ SRC_URI = "git://git@gitlab.esss.lu.se/icshwi/kmod-sis8300;branch=master;protoco
 
 #Change these when updating
 PV = "0.0.1"
-SRCREV = "a2766d9324fa31305d003bef19107b0af34a4223"
 SRCREV = "6d58eb3d6e4e985f5da8bab0929beccdb6d160cd"
 
 S = "${WORKDIR}/git"

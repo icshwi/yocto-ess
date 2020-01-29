@@ -20,8 +20,8 @@ index 55b983fc16..3faa7d28b9 100644
 +            "run setbootenv; dhcp;" \
 +            "setenv serverip 172.30.4.170; " \
 +            "tftpboot 10200000 boot/fpgaioc/stable/uImage; " \
-+            "tftpboot 11000000 boot/fpgaioc/stable/devicetree/picozed-zynq7.dtb; " \
-+            "tftpboot 10200000 boot/fpgaioc/stable/fpgaioc-image-picozed-zynq7.cpio.gz.u-boot; " \
++            "tftpboot 11000000 boot/fpgaioc/stable/fpgaioc-image-picozed-zynq7.cpio.gz.u-boot; " \
++            "tftpboot 10000000 boot/fpgaioc/stable/devicetree/picozed-zynq7.dtb; " \
 +            "bootm 10200000 11000000 10000000 \0" \
  		DFU_ALT_INFO \
  		BOOTENV

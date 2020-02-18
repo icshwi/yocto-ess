@@ -88,3 +88,13 @@
 &qspi {
 	status = "disabled";
 };
+
+&spi0 {
+	status = "okay";
+    SY87739L@0{
+        compatible="spidev";
+    	reg = <0>; //chipselect 0
+    	spi-max-frequency= <250000>;
+    };
+};
+

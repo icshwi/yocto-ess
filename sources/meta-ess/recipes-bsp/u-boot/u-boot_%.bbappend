@@ -3,6 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI_append := " file://zynq-picozed.dts \
                     file://0001-Modify-defconfig-for-FPGAIOC.patch \
                     file://0001-Add-u-boot-commands-for-FPGAIOC.patch \
+                    file://0001-SPI-CMD-Permit-Setting-Bus-Frequency.patch \
                   "
 
 do_compile_prepend() {

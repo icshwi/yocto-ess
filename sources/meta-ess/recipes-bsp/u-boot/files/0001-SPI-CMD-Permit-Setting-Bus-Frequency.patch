@@ -1,5 +1,5 @@
 diff --git a/cmd/spi.c b/cmd/spi.c
-index 9a2edcff65..4b5cb72fed 100644
+index 9a2edcff65..2d87478f88 100644
 --- a/cmd/spi.c
 +++ b/cmd/spi.c
 @@ -35,6 +35,7 @@
@@ -46,7 +46,6 @@ index 9a2edcff65..4b5cb72fed 100644
  		}
  		if (argc >= 3)
  			bitlen = simple_strtoul(argv[2], NULL, 10);
-../sources/meta-ess/recipes-bsp/u-boot/files/0001-SPI-CMD-Permit-Setting-Bus-Frequency.patch
 @@ -166,10 +172,11 @@ int do_spi (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
  U_BOOT_CMD(
  	sspi,	5,	1,	do_spi,

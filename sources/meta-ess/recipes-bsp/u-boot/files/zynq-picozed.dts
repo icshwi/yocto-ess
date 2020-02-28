@@ -75,3 +75,12 @@
     spi-activate-delay = <1>; /* Time delay between activating chip-select and starting clock (uS) */
     spi-deactivate-delay = <1>; /* Time delay between stopping clock and de-activating chip-select (uS) */
 };
+
+&i2c1 {
+    status = "okay";
+    clock-frequency = <400000>;
+
+    si5346@6f {
+		reg = <0x6f>;
+    };
+};

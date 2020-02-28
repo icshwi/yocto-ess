@@ -77,6 +77,10 @@
 &i2c1 {
 	status = "okay";
 	clock-frequency = <400000>;
+
+    si5346@6f {
+        reg = <0x6f>;
+    };
 };
  
 &usb0 {

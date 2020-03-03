@@ -80,7 +80,71 @@
     status = "okay";
     clock-frequency = <400000>;
 
-    si5346@6f {
-		reg = <0x6f>;
+    i2c-mux@75 {
+        compatible = "nxp,pca9546";
+        #address-cells = <1>;
+        #size-cells = <0>;
+        reg = <0x75>;
+
+        i2c@0 {
+            #address-cells = <1>;
+            #size-cells = <0>;
+            reg = <0>;
+            si5346@6f {
+                compatible = "linux,si5346";
+                reg = <0x6f>;
+            };
+        };
+
+        i2c@1 {
+            #address-cells = <1>;
+            #size-cells = <0>;
+            reg = <1>;
+
+            pca9541a@77 {
+                compatible = "nxp,pca9541";
+                reg = <0x77>;
+
+                i2c-arb {
+                    #address-cells = <1>;
+                    #size-cells = <0>;
+
+                    temp@49 {
+                        reg = <0x49>;
+                    };
+
+                    svc-eth-mac@50 {
+                        compatible = "atmel,24c02";
+                        reg = <0x50>;
+                    };
+
+                    zynq-eth-mac@52 {
+                        compatible = "atmel,24c02";
+                        reg = <0x52>;
+                    };
+
+                    zynq-sfp-mac@53 {
+                        compatible = "atmel,24c02";
+                        reg = <0x53>;
+                    };
+
+                    rtc@69 {
+                        compatible = "abracon,ab0805";
+                        reg = <0x69>;
+                        abracon,tc-diode = "standard";
+                    };
+                };
+            };
+        };
+
+        i2c@2 {
+            #address-cells = <1>;
+            #size-cells = <0>;
+            reg = <2>;
+            fmc@77 {
+                reg = <0x77>;
+            };
+        };
     };
 };
+

@@ -8,98 +8,176 @@
 /include/ "zynq-7000-qspi-dummy.dtsi"
 
 / {
-	model = "Avnet picoZed / FPGA-IOC";
-	compatible = "avnet,picozed", "xlnx,zynq-7000";
+    model = "Avnet picoZed / FPGA-IOC";
+    compatible = "avnet,picozed", "xlnx,zynq-7000";
 
-	aliases {
-		ethernet0 = &gem0;
-		serial0 = &uart0;
-		serial1 = &uart1;
-		mmc0 = &sdhci1;
-	};
+    aliases {
+        ethernet0 = &gem0;
+        serial0 = &uart0;
+        serial1 = &uart1;
+        mmc0 = &sdhci1;
+    };
 
-	memory {
-		device_type = "memory";
-		reg = <0x0 0x40000000>;
-	};
+    memory {
+        device_type = "memory";
+        reg = <0x0 0x40000000>;
+    };
 
-	chosen {
-		bootargs = "earlyprintk console=ttyPS0,115200 root=/dev/mmcblk0p2 rw rootdelay=2 rootfstype=ext3";
-		stdout-path = "serial0:115200n8";
-	};
+    chosen {
+        bootargs = "earlyprintk console=ttyPS0,115200 root=/dev/mmcblk0p2 rw rootdelay=2 rootfstype=ext3";
+        stdout-path = "serial0:115200n8";
+    };
 
-	usb_phy0: phy0 {
-		compatible = "usb-nop-xceiv";
-		#phy-cells = <0>;
-		reset-gpios = <&gpio0 7 1>; /* MIO 7, GPIO_ACTIVE_LOW */
-	};
+    usb_phy0: phy0 {
+        compatible = "usb-nop-xceiv";
+        #phy-cells = <0>;
+        reset-gpios = <&gpio0 7 1>; /* MIO 7, GPIO_ACTIVE_LOW */
+    };
 };
 
 &gem0 {
-	status = "okay";
-	phy-mode = "rgmii-id";
-	phy-handle = <&ethernet_phy>;
+    status = "okay";
+    phy-mode = "rgmii-id";
+    phy-handle = <&ethernet_phy>;
 
-	ethernet_phy: ethernet-phy@0 {
-		device_type = "ethernet-phy";
-		reg = <0>;
-	};
+    ethernet_phy: ethernet-phy@0 {
+        device_type = "ethernet-phy";
+        reg = <0>;
+    };
 };
 
 &sdhci0 {
-	status = "disabled";
+    status = "disabled";
 }; 
 
 &sdhci1 {
-	status = "okay";
-	/* SD1 is connected to a non-removable eMMC flash device */
-	non-removable;
+    status = "okay";
+    /* SD1 is connected to a non-removable eMMC flash device */
+    non-removable;
 };
 
 &uart0 {
-	status = "okay";
+    status = "okay";
 };
 
 &uart1 {
-	status = "okay";
+    status = "okay";
 };
 
 &i2c0 {
-	status = "okay";
+    status = "okay";
 
-	miniioc@1f {
-		compatible = "linux,slave-miniioc";
-		reg = <0x1f>;
-	};
+    miniioc@1f {
+        compatible = "linux,slave-miniioc";
+        reg = <0x1f>;
+    };
 
 };
 
 &i2c1 {
-	status = "okay";
-	clock-frequency = <400000>;
+    status = "okay";
+    clock-frequency = <400000>;
 
-    si5346@6f {
-        compatible = "linux,si5346";
-        reg = <0x6f>;
+    i2c-mux@75 {
+        compatible = "nxp,pca9546";
+        #address-cells = <1>;
+        #size-cells = <0>;
+        reg = <0x75>;
+
+        i2c@0 {
+            #address-cells = <1>;
+            #size-cells = <0>;
+            reg = <0>;
+            si5346@6f {
+                compatible = "linux,si5346";
+                reg = <0x6f>;
+            };
+        };
+
+        i2c@1 {
+            #address-cells = <1>;
+            #size-cells = <0>;
+            reg = <1>;
+
+            pca9541a@77 {
+                compatible = "nxp,pca9541";
+                reg = <0x77>;
+
+                i2c-arb {
+                    #address-cells = <1>;
+                    #size-cells = <0>;
+/*
+ -- These devices are on the i2c bus, but do not have linux drivers
+                    pac1934-0@10 {
+                        reg = <0x10>;
+                    };
+
+                    pac1934-1@11 {
+                        reg = <0x11>;
+                    };
+
+                    temp@49 {
+                        reg = <0x49>;
+                    };
+
+                    adp5150@4a {
+                        reg = <0x4a>;
+                    };
+*/
+                    svc-eth-mac@50 {
+                        compatible = "atmel,24c02";
+                        reg = <0x50>;
+                    };
+
+                    zynq-eth-mac@52 {
+                        compatible = "atmel,24c02";
+                        reg = <0x52>;
+                    };
+
+                    zynq-sfp-mac@53 {
+                        compatible = "atmel,24c02";
+                        reg = <0x53>;
+                    };
+
+                    rtc@69 {
+                        compatible = "abracon,ab0805";
+                        reg = <0x69>;
+                        abracon,tc-diode = "standard";
+                    };
+                };
+            };
+        };
+
+        i2c@2 {
+            #address-cells = <1>;
+            #size-cells = <0>;
+            reg = <2>;
+        };
+
+        i2c@3 {
+            #address-cells = <1>;
+            #size-cells = <0>;
+            reg = <3>;
+        };
     };
 };
- 
+
 &usb0 {
-	status = "disabled";
-	dr_mode = "host";
-	usb-phy = <&usb_phy0>;
+    status = "disabled";
+    dr_mode = "host";
+    usb-phy = <&usb_phy0>;
 };
 
 &qspi {
-	status = "disabled";
+    status = "disabled";
 };
 
 &spi0 {
-	status = "okay";
+    status = "okay";
     SY87739L@0{
         compatible="spidev";
-    	reg = <0>; //chipselect 0
-    	spi-max-frequency= <250000>;
+        reg = <0>; //chipselect 0
+        spi-max-frequency= <250000>;
     };
 };
 

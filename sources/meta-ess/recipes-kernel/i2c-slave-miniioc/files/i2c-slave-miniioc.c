@@ -113,7 +113,7 @@ static ssize_t i2c_slave_miniioc_bin_write(struct file *filp, struct kobject *ko
 		spin_lock(&miniioc->status_mutex);
 		memcpy(&miniioc->status, buf, 1);
 		spin_unlock(&miniioc->status_mutex);
-		printk("%s: status chenged to %c \r\n", DRIVER_NAME, buf[0]);
+		printk("%s: status changed to %c \r\n", DRIVER_NAME, buf[0]);
 	}
 
 	return count;

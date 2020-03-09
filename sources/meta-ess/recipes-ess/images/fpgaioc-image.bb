@@ -37,6 +37,7 @@ IMAGE_INSTALL_append += " packagegroup-base \
                           python3-pkgutil \
                           packagegroup-core-ssh-openssh \
                           kernel-module-i2c-slave-miniioc \
+                          kernel-module-si5346 \
                           "
 
 IMAGE_FSTYPES="cpio.gz.u-boot tar.gz ext3"

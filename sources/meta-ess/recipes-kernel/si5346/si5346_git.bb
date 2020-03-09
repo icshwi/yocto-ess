@@ -8,7 +8,7 @@ SRC_URI = "git://git@gitlab.esss.lu.se/rosselliot/i2c-si5346.git;branch=master;p
 
 #Change these when updating
 PV = "0.0.1"
-SRCREV = "5bda3e53dd5a480d4535ea6c4225f9a8f873d7fe"
+SRCREV = "d3932960da4da3ec73bf9af19f0d7a90a76567f6"
 
 S = "${WORKDIR}/git"
 
@@ -17,10 +17,3 @@ inherit module
 RPROVIDES_${PN} += "kernel-module-si5346"
 
 KERNEL_MODULE_AUTOLOAD += "si5346 "
-#
-#FILES_${PN} += "${sysconfdir}/modules-load.d/si5346.conf"
-#                                                                                                                   
-#do_install_append () {
-#	install -d ${D}${sysconfdir}/modules-load.d
-#	install -m 0644 ${WORKDIR}/si5346.conf ${D}${sysconfdir}/modules-load.d/si5346.conf
-#}

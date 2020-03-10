@@ -8,8 +8,8 @@ RDEPENDS_${PN} = " bash tsc"
 SRC_URI = "git://github.com/icshwi/tsc.git;branch=master;protocol=https"
 
 #Change these when updating
-PV = "4.0.4"
-SRCREV = "6e53f71c62e65ffca8aa6280db00b91cd6b4e9e0"
+PV = "4.0.5"
+SRCREV = "d9a5345cb62e745f80e96a7ddeed7238dde6589d"
 
 S = "${WORKDIR}/git"
 

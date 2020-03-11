@@ -6,8 +6,8 @@ SRC_URI = "git://github.com/icshwi/tsc.git;branch=master;protocol=https \
            file://tsc.conf"
 
 #Change these when updating
-PV = "4.0.3"
-SRCREV = "812dec50dde4526ed40dfff15750aaea4a3bb098"
+PV = "4.0.5"
+SRCREV = "d9a5345cb62e745f80e96a7ddeed7238dde6589d"
 
 S = "${WORKDIR}/git/driver"
 

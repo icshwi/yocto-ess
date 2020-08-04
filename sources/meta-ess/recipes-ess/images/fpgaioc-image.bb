@@ -38,6 +38,7 @@ IMAGE_INSTALL_append += " packagegroup-base \
                           packagegroup-core-ssh-openssh \
                           kernel-module-i2c-slave-miniioc \
                           kernel-module-si5346 \
+                          kernel-module-si5332 \
                           "
 
 IMAGE_FSTYPES="cpio.gz.u-boot tar.gz ext3"

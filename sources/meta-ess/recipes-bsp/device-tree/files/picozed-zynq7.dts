@@ -11,6 +11,12 @@
     model = "Avnet picoZed / FPGA-IOC";
     compatible = "avnet,picozed", "xlnx,zynq-7000";
 
+    ref40: ref40M {
+        compatible = "fixed-clock";
+        #clock-cells = <0>;
+        clock-frequency = <40000000>;
+    };
+
     aliases {
         ethernet0 = &gem0;
         serial0 = &uart0;
@@ -82,13 +88,14 @@
         compatible = "nxp,pca9546";
         #address-cells = <1>;
         #size-cells = <0>;
+        reset-gpios = <&gpio0 42 1>;
         reg = <0x75>;
 
         i2c@0 {
             #address-cells = <1>;
             #size-cells = <0>;
             reg = <0>;
-            si5333@6a {
+            si5332@6a {
                 compatible = "linux,si5332";
                 reg = <0x6a>;
             };

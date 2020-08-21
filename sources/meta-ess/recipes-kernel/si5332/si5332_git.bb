@@ -8,11 +8,11 @@ SRC_URI = "git://git@gitlab.esss.lu.se/rosselliot/i2c-si5332.git;branch=master;p
 
 #Change these when updating
 PV = "0.0.1"
-SRCREV = "fcb0fa801f227c897c1002c265b39a4d8e370c91"
+SRCREV = "e991f6b4eb561067debd216fe854a027dcc072d1"
 S = "${WORKDIR}/git"
 
 inherit module
 
 RPROVIDES_${PN} += "kernel-module-si5332"
 
-KERNEL_MODULE_AUTOLOAD += "si5353"
+KERNEL_MODULE_AUTOLOAD += "si5332"

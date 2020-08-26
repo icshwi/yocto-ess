@@ -89,6 +89,14 @@ static int pm_miniioc_probe(struct platform_device *dev)
 
 static int pm_miniioc_remove(struct platform_device *dev)
 {
+    int ret;
+
+    ret = unregister_restart_handler(&pmu_restart_handler);
+    if (ret)
+        printk("%s: can't unregister restart handler err=%d!\r\n", DRIVER_NAME, ret);
+    else
+        printk("%s: unregistered restart handler!\r\n", DRIVER_NAME);
+
     printk("%s: removed\r\n", DRIVER_NAME);
     return 0;
 }
@@ -109,7 +117,6 @@ static struct platform_driver pm_miniioc_driver = {
         .of_match_table = of_match_ptr(pm_miniioc_table),
     },
 };
-
 
 module_platform_driver(pm_miniioc_driver);
 

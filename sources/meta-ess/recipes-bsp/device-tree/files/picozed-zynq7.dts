@@ -1,4 +1,4 @@
-e
+/*
  * Avnet PicoZed board DTS
  * Modified for FPGA-IOC
  */
@@ -39,6 +39,13 @@ e
         #phy-cells = <0>;
         reset-gpios = <&gpio0 7 1>; /* MIO 7, GPIO_ACTIVE_LOW */
     };
+
+    power_ctrl: power_ctrl {
+        status = "okay";
+        compatible = "gpio-poweroff";
+        gpiopin = <949>; /* <&gpio0 917 0> */
+    };
+
 };
 
 &gem0 {

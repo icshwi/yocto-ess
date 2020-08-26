@@ -1,8 +1,8 @@
-/*
+e
  * Avnet PicoZed board DTS
  * Modified for FPGA-IOC
- */ 
- 
+ */
+
 /dts-v1/;
 /include/ "zynq-7000.dtsi"
 /include/ "zynq-7000-qspi-dummy.dtsi"
@@ -54,7 +54,7 @@
 
 &sdhci0 {
     status = "disabled";
-}; 
+};
 
 &sdhci1 {
     status = "okay";
@@ -85,6 +85,7 @@
     clock-frequency = <400000>;
 
     i2c-mux@75 {
+        status = "okay";
         compatible = "nxp,pca9546";
         #address-cells = <1>;
         #size-cells = <0>;
@@ -107,10 +108,12 @@
             reg = <1>;
 
             pca9541a@77 {
+                status = "okay";
                 compatible = "nxp,pca9541";
                 reg = <0x77>;
 
                 i2c-arb {
+                    status = "okay";
                     #address-cells = <1>;
                     #size-cells = <0>;
 /*
@@ -123,33 +126,47 @@
                         reg = <0x11>;
                     };
 
-                    temp@49 {
-                        reg = <0x49>;
-                    };
 
                     adp5051@4a {
                         reg = <0x4a>;
                     };
 */
+                    temp@49 {
+                        status = "okay";
+                        compatible = "microchip,at30ts75a";
+                        reg = <0x49>;
+                    };
+
                     svc-eth-mac@50 {
+                        status = "okay";
                         compatible = "atmel,24c02";
+                        read-only;
+                        pagesize=<16>;
                         reg = <0x50>;
                     };
 
                     zynq-eth-mac@52 {
+                        status = "okay";
                         compatible = "atmel,24c02";
+                        read-only;
+                        pagesize=<16>;
                         reg = <0x52>;
                     };
 
                     zynq-sfp-mac@53 {
+                        status = "okay";
                         compatible = "atmel,24c02";
+                        read-only;
+                        pagesize=<16>;
                         reg = <0x53>;
                     };
 
                     rtc@69 {
+                        status = "okay";
                         compatible = "abracon,ab0805";
                         reg = <0x69>;
                         abracon,tc-diode = "standard";
+                        abracon,tc-resistor = <0>;
                     };
                 };
             };

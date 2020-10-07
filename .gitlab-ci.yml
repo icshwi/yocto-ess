@@ -124,6 +124,7 @@ build_image_cct:
     - bitbake vim
     - bitbake gcc
     - bitbake make
+    - bitbake python3-pyepics
     - bitbake package-index
   artifacts:
     paths:

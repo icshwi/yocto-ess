@@ -46,7 +46,12 @@ EPICS_LIB_FILES_qoriq = " \
     file://qoriq/libComPYEPICS.so \
 "
 
-# Patch to remove unused architectures (win32, darwin, arm, linux32)
+EPICS_LIB_FILES_fpgaioc += " \
+    file://fpgaioc/libca.so \
+    file://fpgaioc/libComPYEPICS.so \
+"
+
+# Patch to remove unused architectures (win32, darwin, linux32)
 SRC_URI += "file://0001-Remove-unused-architectures.patch"
 
 SRC_URI[md5sum] = "398d808f987de79c0547392fc007ed21"
@@ -59,11 +64,24 @@ require python3-versions.inc
 
 RDEPENDS_${PN} = "python3-setuptools"
 
+# Copy the updated shared object files to replace the bundled sources
+# NOTE: Shared objects are used as dummy SOs for unrelated architectures
+#       as the lib files are rquired for the recipe. They will never
+#       be used on the target.
+#       I.e, linux64 .so used as a dummy for linuxarm, etc...
+
 distutils3_do_configure_append_intel-x86-common() {
+    cp ${WORKDIR}/cct/*.so ${S}/epics/clibs/linuxarm/
     cp ${WORKDIR}/cct/*.so ${S}/epics/clibs/linux64/
 }
 
 distutils3_do_configure_append_qoriq() {
+    cp ${WORKDIR}/qoriq/*.so ${S}/epics/clibs/linuxarm/
     cp ${WORKDIR}/qoriq/*.so ${S}/epics/clibs/linux64/
+}
+
+distutils3_do_configure_append_zynq() {
+    cp ${WORKDIR}/fpgaioc/*.so ${S}/epics/clibs/linuxarm/
+    cp ${WORKDIR}/fpgaioc/*.so ${S}/epics/clibs/linux64/
 }
 BBCLASSEXTEND = "native nativesdk"

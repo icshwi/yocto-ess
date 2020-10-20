@@ -8,13 +8,21 @@ SRCREV = "e63775855294b50820ef44d1b157f4de1cc38d3e"
 
 S = "${WORKDIR}/git"
 
-EXTRA_OECMAKE += "-DBUILD_SHARED=OFF -DBUILD_TESTS=OFF -DBUILD_BENCHMARKS=OFF"
+EXTRA_OECMAKE += "-DBUILD_TESTS=OFF -DBUILD_BENCHMARKS=OFF"
 inherit cmake
 
 PACKAGES = "${PN} ${PN}-dev ${PN}-staticdev ${PN}-dbg"
 PROVIDES = "${PN} ${PN}-dev ${PN}-staticdev ${PN}-dbg"
 
-FILES_${PN} += "/usr/include"
-FILES_${PN}-dev += "/usr/include"
-FILES_${PN}-staticdev += "/usr/lib/ /usr/include"
+FILES_${PN} += "${includedir} ${libdir}/*.so.*"
+FILES_${PN}-dev += "${includedir} ${libdir}/[a-z]*.so ${libdir}/pkgconfig"
+FILES_${PN}-staticdev += "${includedir} ${libdir}/*.a"
+
+# Install lib files into the correct directory (/usr/lib64)
+# for ifc14xx
+do_install_append_qoriq() {
+    install -d ${D}${libdir}
+    mv ${D}/usr/lib/* ${D}${libdir}
+    rm -rf ${D}/usr/lib
+}
 

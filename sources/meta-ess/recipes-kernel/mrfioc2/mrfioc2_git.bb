@@ -10,6 +10,8 @@ SRC_URI = "git://git@github.com/javicereijo/mrfioc2.git;branch=master;protocol=s
 #Change these when updating
 PV = "2.2.0_ess_rc5"
 SRCREV = "b4a57281cb11c831aab242b32b00557b174a0506"
+# Increment revision number if package changes...
+PR = "r1"
 
 S = "${WORKDIR}/git/mrmShared/linux"
 

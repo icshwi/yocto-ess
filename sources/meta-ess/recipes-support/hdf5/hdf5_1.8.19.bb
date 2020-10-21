@@ -38,6 +38,8 @@ SRC_URI[sha256sum] = "59c03816105d57990329537ad1049ba22c2b8afe1890085f0c022b75f1
 
 DEPENDS += "zlib"
 S = "${WORKDIR}/hdf5-1.8.19"
+# Increment revision number if package changes...
+PR = "r1"
 
 EXTRA_OECONF = "--with-szlib=no --with-pthread=no --enable-threadsafe=no --enable-cxx=yes"
 EXTRA_OECONF += "hdf5_cv_fp_to_integer_overflow_works=yes"

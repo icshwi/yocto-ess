@@ -7,6 +7,8 @@ SRC_URI = "git://github.com/Blosc/c-blosc.git;nobranch=1;protocol=https \
 SRCREV = "e63775855294b50820ef44d1b157f4de1cc38d3e"
 
 S = "${WORKDIR}/git"
+# Increment revision number if package changes...
+PR = "r1"
 
 EXTRA_OECMAKE += "-DBUILD_TESTS=OFF -DBUILD_BENCHMARKS=OFF"
 inherit cmake

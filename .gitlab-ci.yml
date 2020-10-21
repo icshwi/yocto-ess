@@ -295,7 +295,7 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/perl-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*gdb-dev*;*gdb-dbg*;*gdbserver*" "*/gdb-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libtiff*.rpm" rpm-ics/yocto/ioxos/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/c-blosc-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libblosc*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/netcdf-c-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-dev-*;*-misc-*;*-doc-*;*-staticdev-*" "*/i2c-tools-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-staticdev-*" "*/valgrind-*.rpm" rpm-ics/yocto/ioxos/ || true
@@ -326,7 +326,7 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/perl-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*gdb-dev*;*gdb-dbg*;*gdbserver*" "*/gdb-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libtiff*.rpm" rpm-ics/yocto/cct/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/c-blosc-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libblosc*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/netcdf-c-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-staticdev-*" "*/valgrind-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*;*-perltools-*" "*/git-*.rpm" rpm-ics/yocto/cct/ || true

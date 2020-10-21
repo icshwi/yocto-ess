@@ -2,11 +2,10 @@ DESCRIPTION = "Helper utilities for use with the Struck SIS8300 Digitizer AMC"
 LICENSE = "GPLv3"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=73f1eb20517c55bf9493b7dd6e480788"
 
-#RDEPENDS_${PN} = "sis8300-dev"
+RDEPENDS_${PN} = "sis8300"
 INSANE_SKIP_${PN} = "ldflags"
 SOLIBS = ".so"
 FILES_SOLIBSDEV = ""
-
 
 SRC_URI = "git://git@gitlab.esss.lu.se/epics-modules/sis8300drv.git;branch=master;protocol=ssh \
            file://0001-Update-Makefiles-for-cross-compilation.patch \
@@ -14,11 +13,13 @@ SRC_URI = "git://git@gitlab.esss.lu.se/epics-modules/sis8300drv.git;branch=maste
 
 PV = "0.0.1"
 SRCREV = "327c9420bdad485635fed1a462b4f60715baeb0c"
+# Increment revision number if package changes...
+PR = "r1"
 
 S = "${WORKDIR}/git"
 
-#do_configure() {
-#}
+do_configure() {
+}
 
 do_compile_prepend() {
     cd src/main/c/lib

@@ -10,7 +10,7 @@ build_image:
   tags:
     - yocto
   stage: build
-  image: crops/yocto:debian-9-base
+  image: registry.esss.lu.se/ics-docker/yocto:debian-9-base
   before_script:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
@@ -53,7 +53,7 @@ build_image_rt:
   tags:
     - yocto
   stage: build
-  image: crops/yocto:debian-9-base
+  image: registry.esss.lu.se/ics-docker/yocto:debian-9-base
   before_script:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
@@ -77,7 +77,7 @@ build_toolchain:
   tags:
     - yocto
   stage: build
-  image: crops/yocto:debian-9-base
+  image: registry.esss.lu.se/ics-docker/yocto:debian-9-base
   before_script:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
@@ -98,7 +98,7 @@ build_image_cct:
   tags:
     - yocto
   stage: build
-  image: crops/yocto:debian-9-base
+  image: registry.esss.lu.se/ics-docker/yocto:debian-9-base
   before_script:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
@@ -140,7 +140,7 @@ build_image_rt_cct:
   tags:
     - yocto
   stage: build
-  image: crops/yocto:debian-9-base
+  image: registry.esss.lu.se/ics-docker/yocto:debian-9-base
   before_script:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
@@ -163,7 +163,7 @@ build_toolchain_cct:
   tags:
     - yocto
   stage: build
-  image: crops/yocto:debian-9-base
+  image: registry.esss.lu.se/ics-docker/yocto:debian-9-base
   before_script:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null

@@ -418,6 +418,7 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*" "*/libmpfr6-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*;*-locale-*;*-mod-*" "*/procps-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*;*-locale-*;*-mod-*" "*/make-*.rpm" rpm-ics/yocto/cct/ || true
+<<<<<<< HEAD
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/sis8300-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/kernel-module-sis8300drv-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-ec-dev*;*kernel-module-ec-dbg*" "*/kernel-module-ec-*.rpm" rpm-ics/yocto/cct/ || true
@@ -426,6 +427,8 @@ release_rpm:
     - cd ../../../../build_cct-rt-64/tmp/deploy/rpm
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-tsc-dev*;*kernel-module-tsc-dbg*" "*/kernel-module-tsc-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*mrfioc2-dev*;*mrfioc2-dbg*" "*/mrfioc2-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-ec-dev*;*kernel-module-ec-dbg*" "*/kernel-module-ec-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/ethercat-*.rpm" rpm-ics/yocto/cct/ || true
     - cd ../../../../build_fpgaioc/tmp/deploy/rpm/
     - jfrog rt upload --flat=false --exclude-patterns="*i2c-slave-miniioc-dev*;*i2c-slave-miniioc-dbg*" "*/i2c-slave-miniioc-*.rpm" rpm-ics/yocto/fpgaioc/ || true
     - jfrog rt upload --flat=false "*/kernel-module-i2c-slave-miniioc-*.rpm" rpm-ics/yocto/fpgaioc/ || true
@@ -443,3 +446,5 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-staticdev-*" "*/valgrind-*.rpm" rpm-ics/yocto/fpgaioc/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*;*-perltools-*" "*/git-*.rpm" rpm-ics/yocto/fpgaioc/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/fpgautil*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-ec-dev*;*kernel-module-ec-dbg*" "*/kernel-module-ec-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/ethercat-*.rpm" rpm-ics/yocto/fpgaioc/ || true

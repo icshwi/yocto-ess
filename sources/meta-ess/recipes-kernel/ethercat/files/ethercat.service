@@ -1,0 +1,16 @@
+#
+# EtherCAT master kernel modules
+#
+
+[Unit]
+Description=EtherCAT Master Kernel Modules
+After=systemd-modules-load.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/sbin/ethercatctl start
+ExecStop=/usr/sbin/ethercatctl stop
+
+[Install]
+WantedBy=multi-user.target

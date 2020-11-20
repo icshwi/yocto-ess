@@ -312,8 +312,8 @@ SSTATE_DIR = "$CACHES"
 # Add iocuser
 INHERIT += "extrausers"
 EXTRA_USERS_PARAMS = "\
-        groupadd -f iocgroup; \
-        useradd -P vaha23neca -g iocgroup -G sudo,dialout iocuser;"
+        groupadd -g 1042 -f iocgroup; \
+        useradd -P vaha23neca -g iocgroup -u 1042 -G sudo,dialout iocuser;"
 
 BBMASK = " lxc"
 

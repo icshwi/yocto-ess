@@ -339,7 +339,8 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*" "*/libmpfr6-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*;*-locale-*;*-mod-*" "*/procps-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*;*-locale-*;*-mod-*" "*/make-*.rpm" rpm-ics/yocto/cct/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/sis8300-tools-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/sis8300-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/kernel-module-sis8300drv-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-ec-dev*;*kernel-module-ec-dbg*" "*/kernel-module-ec-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/ethercat-*.rpm" rpm-ics/yocto/cct/ || true
     - cd ../../../../build_cct-rt-64/tmp/deploy/rpm

@@ -773,8 +773,8 @@ unsigned long get_board_ddr_clk(void);
  * have to be in the first 64 MB of memory, since this is
  * the maximum mapped by the Linux kernel during initialization.
  */
-#define CONFIG_SYS_BOOTMAPSZ	(256 << 20)	/* Initial map for Linux*/
-#define CONFIG_SYS_BOOTM_LEN	(256 << 20)	/* Increase max gunzip size */
+#define CONFIG_SYS_BOOTMAPSZ	(512 << 20)	/* Initial map for Linux*/
+#define CONFIG_SYS_BOOTM_LEN	(512 << 20)	/* Increase max gunzip size */
 
 #ifdef CONFIG_CMD_KGDB
 #define CONFIG_KGDB_BAUDRATE	230400	/* speed to run kgdb serial port */

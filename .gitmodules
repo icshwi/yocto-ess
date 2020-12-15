@@ -16,3 +16,6 @@
 [submodule "sources/meta-intel"]
 	path = sources/meta-intel
 	url = git://git.yoctoproject.org/meta-intel
+[submodule "meta-security"]
+	path = sources/meta-security
+	url = git://git.yoctoproject.org/meta-security

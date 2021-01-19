@@ -1,0 +1,13 @@
+diff --git a/script/ethercat.conf b/script/ethercat.conf
+index b4f68e2..d83e1f2 100644
+--- a/script/ethercat.conf
++++ b/script/ethercat.conf
+@@ -97,7 +97,7 @@ MASTER0_DEVICE=""
+ # has to be activated (with OS methods, for example 'ip link set ethX up'),
+ # before the master is started, otherwise all frames will time out.
+ #
+-DEVICE_MODULES=""
++DEVICE_MODULES="generic"
+ 
+ #
+ # Flags for loading kernel modules.

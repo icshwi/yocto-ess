@@ -14,3 +14,6 @@ TOOLCHAIN_TARGET_TASK += " \
     kernel-devsrc \
 "
 
+TOOLCHAIN_HOST_TASK += " \
+    nativesdk-perl-modules \
+"

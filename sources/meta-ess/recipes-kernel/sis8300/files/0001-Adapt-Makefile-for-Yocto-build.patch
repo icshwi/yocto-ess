@@ -1,7 +1,7 @@
-diff --git a/Makefile b/Makefile
+diff --git a/src/main/c/driver/Makefile b/src/main/c/driver/Makefile
 index 6af8072..aec3bc3 100644
---- a/Makefile
-+++ b/Makefile
+--- a/src/main/c/driver/Makefile
++++ b/src/main/c/driver/Makefile
 @@ -7,14 +7,14 @@ ifneq ($(KERNELRELEASE),)
  
  else

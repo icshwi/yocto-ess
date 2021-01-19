@@ -1,0 +1,34 @@
+diff --git a/src/main/c/lib/Makefile b/src/main/c/lib/Makefile
+index ea3cb42..6d83ec6 100644
+--- a/src/main/c/lib/Makefile
++++ b/src/main/c/lib/Makefile
+@@ -17,8 +17,8 @@ OBJS := sis8300drv      \
+ 	sis8300drv_flash    \
+ 	sis8300drv_rtm      \
+ 	sis8300drv_utils
+-	
+-	
++
++
+ INCLUDES := . ../include
+ 
+ LIBS :=
+@@ -32,13 +32,13 @@ all: $(TARGETSO) $(TARGETA)
+ clean:
+ 	rm -rf *~ $(TARGETA) $(TARGETSO) $(OBJDIR)
+ 
+-$(TARGETSO): $(OBJS:%=$(OBJDIR)/%.o) 
+-	gcc -shared $(LDFLAGS) $(LIBS:%=-l%) -o  $@ $^
++$(TARGETSO): $(OBJS:%=$(OBJDIR)/%.o)
++	${CC} -shared $(LDFLAGS) $(LIBS:%=-l%) -o  $@ $^
+ 
+ $(OBJDIR)/%.o: %.c
+ 	mkdir -p $(OBJDIR)
+-	gcc -c $(CCFLAGS) $(INCLUDES:%=-I%) -o $@ $<
++	${CC} -c $(CCFLAGS) $(INCLUDES:%=-I%) -o $@ $<
+ 
+-$(TARGETA): $(OBJS:%=$(OBJDIR)/%.o) 
+-	/usr/bin/ar -rcs		$@		$^ 
++$(TARGETA): $(OBJS:%=$(OBJDIR)/%.o)
++	${AR} -rcs		$@		$^
+ 

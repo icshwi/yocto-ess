@@ -30,5 +30,5 @@ TOOLCHAIN_HOST_TASK += " \
     nativesdk-dtc \
     nativesdk-u-boot-mkimage \
     nativesdk-cst \
+    nativesdk-perl-modules \
 "
-

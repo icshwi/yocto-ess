@@ -8,14 +8,14 @@
     path = sources/meta-openembedded
     url = git://git.openembedded.org/meta-openembedded
 [submodule "sources/meta-freescale-distro"]
-    path = sources/meta-freescale-distro
-    url = https://github.com/Freescale/meta-freescale-distro
-[submodule "sources/meta-qoriq-demos"]
-    path = sources/meta-qoriq-demos
-    url = https://source.codeaurora.org/external/qoriq/qoriq-components/meta-qoriq-demos
+	path = sources/meta-freescale-distro
+	url = https://github.com/Freescale/meta-freescale-distro
 [submodule "sources/meta-intel"]
     path = sources/meta-intel
     url = git://git.yoctoproject.org/meta-intel
 [submodule "sources/meta-xilinx"]
 	path = sources/meta-xilinx
 	url = git://github.com/Xilinx/meta-xilinx
+[submodule "sources/meta-xilinx-tools"]
+	path = sources/meta-xilinx-tools
+	url = https://github.com/Xilinx/meta-xilinx-tools.git

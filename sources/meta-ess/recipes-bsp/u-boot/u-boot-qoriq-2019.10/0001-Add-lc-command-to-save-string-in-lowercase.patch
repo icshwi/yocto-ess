@@ -1,0 +1,75 @@
+From 15a037ad7c68281f5793805a3cf5b7eecb5a21ca Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Fri, 15 Mar 2019 15:11:05 +0100
+Subject: [PATCH] Add lc command to save string in lowercase
+
+---
+ cmd/Makefile |  1 +
+ cmd/lc.c     | 46 ++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 47 insertions(+)
+ create mode 100644 cmd/lc.c
+
+diff --git a/cmd/Makefile b/cmd/Makefile
+index fb91a77ed9..aea6eeee93 100644
+--- a/cmd/Makefile
++++ b/cmd/Makefile
+@@ -9,6 +9,7 @@ obj-y += boot.o
+ obj-$(CONFIG_CMD_BOOTM) += bootm.o
+ obj-y += help.o
+ obj-y += version.o
++obj-y += lc.o
+ 
+ # command
+ obj-$(CONFIG_CMD_AES) += aes.o
+diff --git a/cmd/lc.c b/cmd/lc.c
+new file mode 100644
+index 0000000000..eec80b065d
+--- /dev/null
++++ b/cmd/lc.c
+@@ -0,0 +1,46 @@
++#include <common.h>
++#include <command.h>
++#include <env_internal.h>
++#include <linux/string.h>
++#include <malloc.h>
++
++void str_to_lowercase(char *str)
++{
++	int count = strlen(str);
++	char c;
++
++	while (count--)
++	{
++		c = *str;
++		if ((c >= 'A') && (c <= 'Z'))
++			*str = 'a' + (c - 'A');
++		str++;
++	}
++}
++
++int do_lc(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
++{
++	int rc = 0;
++	char *str;
++
++	if (argc <= 1)
++	{
++		return cmd_usage(cmdtp);
++	}
++
++	str = malloc(strlen(argv[2] + 1));
++	strcpy(str, argv[2]);
++	str_to_lowercase(str);
++
++	printf("Setting %s=%s\n", argv[1], str);
++	env_set(argv[1], str);
++
++	free(str);
++	return rc;
++}
++
++U_BOOT_CMD(
++	lc, CONFIG_SYS_MAXARGS, 1, do_lc,
++	"LC: convert string to lowercase",
++	"<env> <string>: save string to env in lowercase\n"
++);

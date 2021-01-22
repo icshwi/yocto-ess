@@ -16,6 +16,15 @@ SRC_URI += "file://0001-etherlab-patchset.patch"
 # Patch to modify the conf/systemd files for CCT
 SRC_URI += "file://0002-modify-ethercat-config-for-cct.patch"
 
+# Patch to update vm_fault struct type for kernel 5.4
+SRC_URI += "file://0002-Update_vm_fault_definition_for_kernel_5_4.patch"
+
+# Patch to replace old do_gettimeofday call with getnstimeofday (kernel 5.4)
+SRC_URI += "file://0002-Replace-do-gettimeofday-with-getnstimeofday.patch"
+
+# Patch to fix path to uapi/linux/sched/types.h (kernel 5.4)
+SRC_URI += "file://0003-Fix-include-path-for-uapi-linux-sched-types-header.patch"
+
 # udev rule to enable automatic device node creation
 SRC_URI += "file://99-ethercat.rules" 
 

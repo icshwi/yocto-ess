@@ -6,8 +6,8 @@ SRC_URI = "git://github.com/icshwi/tsc.git;branch=master;protocol=https \
            file://tsc.conf"
 
 #Change these when updating
-PV = "4.0.7"
-SRCREV = "9716d5a347abf6507951f684956f1900f0f290aa"
+PV = "4.0.8"
+SRCREV = "299f7d5f2ee68d0cd085edb26c9fe4e09dcc9198"
 # Increment revision number if package changes...
 PR = "r0"
 

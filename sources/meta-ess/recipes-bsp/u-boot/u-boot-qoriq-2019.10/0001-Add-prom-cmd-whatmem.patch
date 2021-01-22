@@ -1,0 +1,50 @@
+From 1f0070d04c64852e9643568f1e5ea5f7cc53af68 Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Wed, 20 Mar 2019 08:57:55 +0100
+Subject: [PATCH] Add prom cmd whatmem
+
+	Sets env var whatmem to cypress or micron. whatmem can then
+	be used with test cmd to decide if it is cypress or micron
+	flash on device.
+
+---
+ cmd/prom.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/cmd/prom.c b/cmd/prom.c
+index 4a4222e01c..68db3f2ed2 100644
+--- a/cmd/prom.c
++++ b/cmd/prom.c
+@@ -844,6 +844,24 @@ int do_prom(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+     printf("environment exported at PROM offset 0x3f20000\n");
+     ifc_sflash_wr( &ifc_node,  (unsigned char *)&env_new, (dev<<28) | 0x3f20000, CONFIG_ENV_SIZE);
+   }
++  else if(strcmp(argv[1], "whatmem") == 0)
++  {
++    unsigned char id[3];
++    char whatmem[8];
++
++    if(!dev) dev = 2;
++    spi_set_dev(dev);
++    spi_slow_mode(&ifc_node);
++    spi_read_ID(&ifc_node, id);
++
++    if(id[0] == SPI_CYPRESS)
++      strcpy(whatmem, "cypress");
++    else
++      strcpy(whatmem, "micron");
++
++    env_set("whatmem", whatmem);
++    return 0;
++  }
+   else
+   {
+     rc = cmd_usage(cmdtp);
+@@ -859,6 +877,7 @@ U_BOOT_CMD(
+     "prom.<idx> wrsr <data>: write status register\n"
+     "prom.<idx> read <addr> <offset> <size>: read from PROM <offset>\n"
+     "prom.<idx> write <addr> <offset> <size>: write to PROM at <offset>\n"
++    "prom.<idx> whatmem: set env var whatmem to cypress or micron\n"
+     "prom load <addr> central:<idx> <size>: load CENTRAL FPGA to PROM\n"
+     "prom load <addr> io:<idx> <size>: load IO FPGA to PROM\n"
+ );

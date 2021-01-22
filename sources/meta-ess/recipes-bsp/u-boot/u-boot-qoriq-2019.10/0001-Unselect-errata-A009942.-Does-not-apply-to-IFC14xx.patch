@@ -1,0 +1,25 @@
+From 67b560a5b02697384aa176464c06a2424168a577 Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Fri, 26 Apr 2019 09:11:43 +0200
+Subject: [PATCH] Unselect errata A009942. Does not apply to IFC14xx.
+
+	The errata is for the reference board memory controller.
+	IFC14xx uses a different memory controller.
+	Fixes ICSHWI-2393
+
+---
+ arch/powerpc/cpu/mpc85xx/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/powerpc/cpu/mpc85xx/Kconfig b/arch/powerpc/cpu/mpc85xx/Kconfig
+index ffe1adb1ee..40a87d9219 100644
+--- a/arch/powerpc/cpu/mpc85xx/Kconfig
++++ b/arch/powerpc/cpu/mpc85xx/Kconfig
+@@ -1120,7 +1120,6 @@ config ARCH_T2081
+ 	select SYS_FSL_ERRATUM_A006593
+ 	select SYS_FSL_ERRATUM_A007186
+ 	select SYS_FSL_ERRATUM_A007212
+-	select SYS_FSL_ERRATUM_A009942
+ 	select SYS_FSL_ERRATUM_ESDHC111
+ 	select FSL_PCIE_RESET
+ 	select SYS_FSL_HAS_DDR3

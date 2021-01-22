@@ -26,7 +26,6 @@ build_image:
     - bitbake unzip
     - bitbake bzip2
     - bitbake hdf5
-    - bitbake python-numpy
     - bitbake python3-numpy
     - bitbake gdb
     - bitbake tiff
@@ -114,7 +113,6 @@ build_image_cct:
     - bitbake unzip
     - bitbake bzip2
     - bitbake hdf5
-    - bitbake python-numpy
     - bitbake python3-numpy
     - bitbake gdb
     - bitbake tiff
@@ -200,7 +198,6 @@ build_image_fpgaioc:
     - bitbake zip
     - bitbake unzip
     - bitbake bzip2
-    - bitbake python-numpy
     - bitbake python3-numpy
     - bitbake gdb
     - bitbake tiff
@@ -346,7 +343,7 @@ release_images_web:
     - echo $CI_COMMIT_SHA > SHA-$CI_COMMIT_SHA
     - jfrog rt upload --flat=false "*" yocto/toolchain/$CI_PIPELINE_ID/
 
-release_rpm:
+.release_rpm:
   variables:
     GIT_STRATEGY: none
   only:

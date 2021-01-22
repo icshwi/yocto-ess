@@ -1,0 +1,100 @@
+From 9ba3bece9553c8d6d246431d55d5a7f62ce45e04 Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Mon, 18 Mar 2019 11:07:58 +0100
+Subject: [PATCH] Add support for Micron & Cypress
+
+---
+ cmd/prom.c | 31 ++++++++++++++++++++++++-------
+ 1 file changed, 24 insertions(+), 7 deletions(-)
+
+diff --git a/cmd/prom.c b/cmd/prom.c
+index 93219f9d3f..4a4222e01c 100644
+--- a/cmd/prom.c
++++ b/cmd/prom.c
+@@ -4,6 +4,9 @@
+ #include <env_internal.h>
+ #include <malloc.h>
+ 
++/* JEDEC Manufacturer Identifier */
++#define SPI_MICRON  0x20
++#define SPI_CYPRESS 0x01
+ 
+ #define SFLASH_CMD_DUMMY 0xA5
+ #define SFLASH_CMD_WREN  0x06
+@@ -475,16 +478,15 @@ spi_write_sector( struct ifc_node *ifc,
+                   uint start,
+                   unsigned char *buf,
+                   uint size,
+-                  uint sect_size)
++                  uint sect_size,
++                  int pg_size)
+ {
+   int i, retval;
+   uint offset;
+   unsigned char status;
+-  int pg_size;
+ 
+   retval = 0;
+ 
+-  pg_size = 0x200;
+   offset = start;
+   //printf("spi_write_sector(%x,%x,%x)\n", start, size, sect_size);
+   while( offset < start+size)
+@@ -500,7 +502,7 @@ spi_write_sector( struct ifc_node *ifc,
+       retval = -1;
+       goto spi_write_data_exit;
+     }
+-    printf("program -> %x ", offset);
++    printf("program -> ");
+     for( i = 0; i < (sect_size/pg_size); i++)
+     {
+       if( !(i&0xf))
+@@ -545,6 +547,8 @@ ifc_sflash_wr( struct ifc_node *ifc,
+   uint sect_size, sect_mask;
+   uint dev;
+   int dyn_alloc;
++  unsigned char id[3];
++  int pg_size;
+ 
+   if( len < 1)
+   {
+@@ -554,7 +558,20 @@ ifc_sflash_wr( struct ifc_node *ifc,
+   offset &= 0xfffffff;
+   spi_set_dev (dev);
+   spi_slow_mode( ifc);
+-  sect_size = 0x40000;
++
++  /* detect SPI manufacturer */
++  spi_read_ID(ifc, &id);
++
++  if (id[0] == SPI_MICRON) {
++    sect_size = 0x10000;
++    pg_size   = 0x100;
++  }
++  else {
++    sect_size = 0x40000;
++    pg_size   = 0x200;
++  }
++  printf("%s SPI (%02X.%02X.%02X)\n", ((id[0]==SPI_MICRON)?"Micron":"Cypress"), id[0], id[1], id[2]);
++
+   sect_mask = sect_size - 1;
+   s_start = offset & ~sect_mask;
+   first   = offset & sect_mask;
+@@ -591,7 +608,7 @@ ifc_sflash_wr( struct ifc_node *ifc,
+   }
+   memcpy( t_buf+first, buf, len);
+ 
+-  spi_write_sector( ifc, s_start, t_buf, t_size, sect_size);
++  spi_write_sector( ifc, s_start, t_buf, t_size, sect_size, pg_size);
+ 
+   if( dyn_alloc)
+   {
+@@ -809,7 +826,7 @@ int do_prom(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+   {
+     int i;
+     env_t env_new;
+-    int    rc = 1;
++    int rc = 1;
+ 
+     printf("in prom saveenv -> ");
+     for( i = 0; i < argc; i++)

@@ -1,0 +1,97 @@
+diff --git a/include/cli.h b/include/cli.h
+index 1461aa4..c88b2d3 100644
+--- a/include/cli.h
++++ b/include/cli.h
+@@ -95,7 +95,7 @@ struct cli_xconf
+   // complete structure if needed
+ };
+ 
+-struct cli_xconf xconf_structure;
++//static struct cli_xconf xconf_structure;
+ 
+ #define CLI_ERR   -1
+ #define CLI_OK     0
+diff --git a/src/TscMon/acq1430.c b/src/TscMon/acq1430.c
+index 91fde14..05263a0 100644
+--- a/src/TscMon/acq1430.c
++++ b/src/TscMon/acq1430.c
+@@ -174,7 +174,7 @@ acq1430_rcsid()
+   return( rcsid);
+ }
+ 
+-char filename[0x100];
++//static char filename[0x100];
+ struct cli_cmd_history acq1430_history;
+ 
+ /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+diff --git a/src/TscMon/adc3110.c b/src/TscMon/adc3110.c
+index 8ad4767..d6bf554 100644
+--- a/src/TscMon/adc3110.c
++++ b/src/TscMon/adc3110.c
+@@ -178,7 +178,7 @@ adc3110_rcsid()
+   return( rcsid);
+ }
+ 
+-char filename[0x100];
++//static char filename[0x100];
+ struct cli_cmd_history adc3110_history;
+ 
+ /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+diff --git a/src/TscMon/adc3117.c b/src/TscMon/adc3117.c
+index ad03ac7..4820f0c 100644
+--- a/src/TscMon/adc3117.c
++++ b/src/TscMon/adc3117.c
+@@ -86,7 +86,7 @@ static char *rcsid = "$Id: adc3117.c,v 1.10 2016/01/15 10:21:19 ioxos Exp $";
+ #define ACQ_REG_ADC_CTL          0x1184
+ #define ACQ_REG_BUF_CTL          0x11a0
+ 
+-char line[256];
++static char line[256];
+ 
+ struct adc3117_reg
+ {
+diff --git a/src/TscMon/alias.c b/src/TscMon/alias.c
+index e3ecb94..e9995e6 100644
+--- a/src/TscMon/alias.c
++++ b/src/TscMon/alias.c
+@@ -66,7 +66,8 @@ static char *rcsid = "$Id: $";
+ #include <time.h>
+ #include "TscMon.h"
+ 
+-char line[512];
++static char line[512];
++struct tsc_alias_struct alias_ctl;
+ 
+ char *
+ alias_rcsid()
+diff --git a/src/TscMon/alias.h b/src/TscMon/alias.h
+index 2dd2485..3001f15 100644
+--- a/src/TscMon/alias.h
++++ b/src/TscMon/alias.h
+@@ -50,11 +50,11 @@
+ 
+ #define ALIAS_SIZE 80
+ 
+-struct tsc_alias
++struct tsc_alias_struct
+ {
+   char alias[ALIAS_SIZE][32];
+   char cmd[ALIAS_SIZE][256];
+-} alias_ctl;
++}; 
+ 
+ int tsc_alias( struct cli_cmd_para *);
+ void alias_init( void);
+diff --git a/src/TscMon/script.c b/src/TscMon/script.c
+index ff82eeb..99e943a 100644
+--- a/src/TscMon/script.c
++++ b/src/TscMon/script.c
+@@ -61,7 +61,7 @@ static char *rcsid = "$Id: script.c,v 1.2 2015/12/03 15:15:21 ioxos Exp $";
+ #include <tscioctl.h>
+ #include <tsculib.h>
+ 
+-char line[256];
++static char line[256];
+ extern struct cli_cmd_list cmd_list[];
+ extern char cli_prompt[];
+ extern struct cli_cmd_para cmd_para;

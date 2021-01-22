@@ -1,0 +1,43 @@
+From 91bc681ecf952c26293eb393b0fa3d0bdbe3601c Mon Sep 17 00:00:00 2001
+From: Oliver Talevski <oliver.talevski@esss.se>
+Date: Mon, 18 Mar 2019 10:59:09 +0100
+Subject: [PATCH] support for CPU at 1800MHz + ethernet 10GB line reverse
+
+---
+ drivers/ddr/fsl/ctrl_regs.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/ddr/fsl/ctrl_regs.c b/drivers/ddr/fsl/ctrl_regs.c
+index 5325e57d02..7a251fef82 100644
+--- a/drivers/ddr/fsl/ctrl_regs.c
++++ b/drivers/ddr/fsl/ctrl_regs.c
+@@ -2665,20 +2665,29 @@ compute_fsl_memctl_config_regs(const unsigned int ctrl_num,
+ 	ddr->timing_cfg_5 = 0x05401400;      /* 0x05401400  JFG */
+ 	ddr->timing_cfg_6 = 0x00000000;      /*             JFG */
+ 	ddr->ddr_sdram_mode = 0x00061E15;    /* 0x00441c70  JFG */
++	ddr->ddr_sdram_mode = 0x00041025;    /* 0x00441c70  XP */
+ 	ddr->ddr_sdram_mode_2 = 0x00200000;  /* 0x00200000  JFG */
+ 	ddr->ddr_sdram_interval = 0x1C6D071B;/* 0x14500100  JFG */
+ 	ddr->ddr_sdram_clk_cntl = 0x02800000;/* 0x02000000  JFG */
++	ddr->ddr_sdram_clk_cntl = 0x03400000;/* 0x02000000  XP */
+ 	ddr->ddr_zq_cntl = 0x8A090700;       /* 0x8A090700  JFG */
+ 	ddr->ddr_wrlvl_cntl = 0x8655F608;    /* 0x8675f609  JFG */
+ 	ddr->ddr_wrlvl_cntl = 0x8675F608;    /* 0x8675f609  JOEL */
++	ddr->ddr_wrlvl_cntl = 0x8655F609;    /* 0x8675f609  XP */
+ 	ddr->ddr_wrlvl_cntl_2 = 0x08080809;  /* 0x09090909  JFG */
++	ddr->ddr_wrlvl_cntl_2 = 0x090a090a;  /* 0x09090909  XP */
+ 	ddr->ddr_wrlvl_cntl_3 = 0x09060507;  /* 0x09080808  JFG */
++	ddr->ddr_wrlvl_cntl_3 = 0x0a070608;  /* 0x09080808  XP */
+ 	ddr->ddr_cdr1 = 0x800C0000;          /* 0x80080000  JFG */
+ 	ddr->ddr_cdr1 = 0x80080000;          /* 0x80080000  JOEL */
++	ddr->ddr_cdr1 = 0x80080000;          /* 0x80080000  XP */
+ 	ddr->ddr_cdr2 = 0x00000000;          /* 0x00000001; JFG */
+ 	ddr->ddr_cdr2 = 0x00000001;          /* 0x00000001; JOEL */
++	ddr->ddr_cdr2 = 0x00000000;          /* 0x00000001; XP */
+ 	ddr->ddr_sdram_cfg_2 = 0x00401050;   /* 0x00404100  JFG */
++	ddr->ddr_sdram_cfg_2 = 0x00401850;   /* 0x00404100  CG work around A-008109*/
+ 	ddr->ddr_sdram_cfg = 0xE7200008;     /* 0xe7040000; JFG */
++	ddr->ddr_sdram_cfg = 0xE7200008;     /* 0xe7200000; XP */
+ #endif
+ 
+ 	return check_fsl_memctl_config_regs(ddr);

@@ -1,0 +1,76 @@
+diff --git a/include/configs/zynq-common.h b/include/configs/zynq-common.h
+index 59e77f6ecc..c46ac4aaff 100644
+--- a/include/configs/zynq-common.h
++++ b/include/configs/zynq-common.h
+@@ -207,7 +207,61 @@
+ 	"kernel_addr_r=0x2000000\0"     \
+ 	"scriptaddr=0x3000000\0"        \
+ 	"ramdisk_addr_r=0x3100000\0"    \
+-	DFU_ALT_INFO \
++    "synth_codeword=01BB022D\0" \
++    "bootrescue=echo Booting **Rescue** FPGA-IOC Linux image from QSPI; " \
++            "sf probe 0; sf read 0x2080000 0x200000 0x400000; " \
++            "sf read 0x2000000 0x6f0000 0x10000; " \
++            "sf read 0x3000000 0x700000 0x800000; sleep 1; " \
++            "run set_mac_from_eeprom; bootm 0x2080000 0x3000000 0x2000000 \0" \
++    "bootcmd=echo Booting FPGA-IOC Linux image from MMC; " \
++            "mmc rescan; run setbootenv; " \
++            "fatload mmc 0:1 0x2000000 picoEVR.bit; " \
++            "fpga loadb 0 0x2000000 $filesize; run set_mac_from_eeprom; " \
++            "fatload mmc 0:1 0x3080000 uImage; " \
++            "fatload mmc 0:1 0x3000000 picozed-zynq7.dtb; sleep 1; " \
++            "bootm 0x3080000 - 0x3000000 \0" \
++    "bootnet=echo Booting FPGA-IOC RAMFS Linux image from the network; " \
++            "run setbootenv; dhcp;" \
++            "setenv serverip 172.30.4.170; run set_mac_from_eeprom; " \
++            "tftpboot 10200000 boot/fpgaioc/stable/uImage; " \
++            "tftpboot 11000000 boot/fpgaioc/stable/fpgaioc-image-picozed-zynq7.cpio.gz.u-boot; " \
++            "tftpboot 10000000 boot/fpgaioc/stable/devicetree/picozed-zynq7.dtb; " \
++            "bootm 10200000 11000000 10000000 \0" \
++    "pca9541_chip=0x77\0" \
++    "pca9541_ctl_reg=0x1\0" \
++    "pca9541_res_addr=100\0" \
++    "pca9541_put_cmp_vals=mw.b 101 5; mw.b 102 6; mw.b 103 a; mw.b 104 2; mw.b 105 7\0" \
++    "eeprom_chip_addr=0x52\0" \
++    "eeprom_mac_addr=fa\0" \
++    "eeprom_mac_mem_addr=120\0" \
++    "en_i2c_mux=echo Enabling gpio 42 (i2c mux reset pin); gpio set 42; " \
++            "echo Selecting I2C1 (zynq); i2c dev 1; i2c mw 75 1 1f \0" \
++    "pca9541_cmp_ctl_5=cmp.b $pca9541_res_addr 101 1\0" \
++    "pca9541_cmp_ctl_6=cmp.b $pca9541_res_addr 102 1\0" \
++    "pca9541_cmp_ctl_a=cmp.b $pca9541_res_addr 103 1\0" \
++    "pca9541_cmp_ctl_2=cmp.b $pca9541_res_addr 104 1\0" \
++    "pca9541_cmp_ctl_7=cmp.b $pca9541_res_addr 105 1\0" \
++    "pca9541_check_ctl_7=if run pca9541_cmp_ctl_7; then echo We already have control of I2C bus (0x7); " \
++            "else run pca9541_check_ctl_2; fi \0" \
++    "pca9541_check_ctl_2=if run pca9541_cmp_ctl_2; then i2c mw $pca9541_chip $pca9541_ctl_reg 5; " \
++            "echo Gained control of I2C bus (0x5); else run pca9541_check_ctl_a; fi \0" \
++    "pca9541_check_ctl_a=if run pca9541_cmp_ctl_a; then i2c mw $pca9541_chip $pca9541_ctl_reg 1; " \
++            "echo Gained control of I2C bus (0x1); else run pca9541_check_ctl_5; fi\0" \
++    "pca9541_check_ctl_5=if run pca9541_cmp_ctl_5; then i2c mw $pca9541_chip $pca9541_ctl_reg 4; " \
++            "echo Gained control of I2C bus (0x4); else run pca9541_check_ctl_6; fi\0" \
++    "pca9541_check_ctl_6=if run pca9541_cmp_ctl_6; then i2c mw $pca9541_chip $pca9541_ctl_reg 5; " \
++            "echo Gained control of the I2C bus (0x5); fi\0" \
++    "pca9541_get_ctl=i2c read $pca9541_chip $pca9541_ctl_reg.0 1 $pca9541_res_addr \0" \
++    "read_mac_from_eeprom=i2c read $eeprom_chip_addr $eeprom_mac_addr 6 $eeprom_mac_mem_addr \0" \
++    "form_mac=setenv ethaddr ${mac0}:$mac1:$mac2:$mac3:$mac4:$mac5 ;" \
++            "echo Setting MAC address to $ethaddr\0" \
++    "form_mac_from_mem=setexpr.b mac5 *125; setexpr.b mac4 *124; setexpr.b mac3 *123; " \
++            "setexpr.b mac2 *122; setexpr.b mac1 *121; setexpr.b mac0 *120\0" \
++    "set_mac_from_eeprom=run en_i2c_mux; run pca9541_put_cmp_vals; run pca9541_get_ctl; " \
++            "echo Checking current status of I2C bus...; " \
++            "run pca9541_check_ctl_7; sleep .1; run read_mac_from_eeprom; " \
++            "run form_mac_from_mem; run form_mac\0" \
++    DFU_ALT_INFO \
+ 	BOOTENV
+ #endif
+ 
+@@ -225,7 +279,7 @@
+ 
+ 
+ /* Extend size of kernel image for uncompression */
+-#define CONFIG_SYS_BOOTM_LEN	(60 * 1024 * 1024)
++#define CONFIG_SYS_BOOTM_LEN	(85 * 1024 * 1024)
+ 
+ /* Boot FreeBSD/vxWorks from an ELF image */
+ #define CONFIG_SYS_MMC_MAX_DEVICE	1

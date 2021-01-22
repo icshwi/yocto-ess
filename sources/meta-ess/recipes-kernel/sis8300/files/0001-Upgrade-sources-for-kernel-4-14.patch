@@ -21,7 +21,7 @@ index 89ca343..2b02985 100644
   */
 -static int sis8300_vm_fault(struct vm_area_struct *vma, struct vm_fault *vmfm) {
 -    sis8300_usr *sisusr = vma->vm_private_data;
-+static int sis8300_vm_fault(struct vm_fault *vmf) {
++static vm_fault_t sis8300_vm_fault(struct vm_fault *vmf) {
 +    sis8300_usr *sisusr = vmf->vma->vm_private_data;
      sis8300_dev *sisdevice = sisusr->sisdevice;
      

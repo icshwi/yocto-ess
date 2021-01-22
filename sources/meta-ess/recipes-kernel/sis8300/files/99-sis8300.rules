@@ -1,1 +1,1 @@
-KERNEL=="sis8300-[0-9]*", NAME="%k", MODE="0666"
+KERNEL=="sis8300-[0-9]*", MODE="0666"

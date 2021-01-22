@@ -1,0 +1,138 @@
+diff --git a/master/device.c b/master/device.c
+index 07172c8..0dd90ec 100644
+--- a/master/device.c
++++ b/master/device.c
+@@ -47,10 +47,10 @@
+ #define timersub(a, b, result) \
+     do { \
+         (result)->tv_sec = (a)->tv_sec - (b)->tv_sec; \
+-        (result)->tv_usec = (a)->tv_usec - (b)->tv_usec; \
+-        if ((result)->tv_usec < 0) { \
++        (result)->tv_nsec = (a)->tv_nsec - (b)->tv_nsec; \
++        if ((result)->tv_nsec < 0) { \
+             --(result)->tv_sec; \
+-            (result)->tv_usec += 1000000; \
++            (result)->tv_nsec += 1000000000; \
+         } \
+     } while (0)
+ #endif
+@@ -88,8 +88,8 @@ int ec_device_init(
+     device->cycles_poll = 0;
+ #endif
+ #ifdef EC_DEBUG_RING
+-    device->timeval_poll.tv_sec = 0;
+-    device->timeval_poll.tv_usec = 0;
++    device->timespec_poll.tv_sec = 0;
++    device->timespec_poll.tv_nsec = 0;
+ #endif
+     device->jiffies_poll = 0;
+ 
+@@ -100,7 +100,7 @@ int ec_device_init(
+         ec_debug_frame_t *df = &device->debug_frames[i];
+         df->dir = TX;
+         df->t.tv_sec = 0;
+-        df->t.tv_usec = 0;
++        df->t.tv_nsec = 0;
+         memset(df->data, 0, EC_MAX_DATA_SIZE);
+         df->data_size = 0;
+     }
+@@ -323,7 +323,7 @@ static void pcap_record(
+         long reqd = size + sizeof(pcaprec_hdr_t);
+         if (unlikely(reqd <= available)) {
+             pcaprec_hdr_t *pcaphdr;
+-            struct timeval t;
++            struct timespec t;
+           
+             // update curr data pointer
+             device->master->pcap_curr_data = curr_data + reqd;
+@@ -331,12 +331,12 @@ static void pcap_record(
+             // fill in pcap frame header info
+             pcaphdr = curr_data;
+ #ifdef EC_RTDM
+-            jiffies_to_timeval(device->jiffies_poll, &t);
++            jiffies_to_timespec(device->jiffies_poll, &t);
+ #else
+-            t = device->timeval_poll;
++            t = device->timespec_poll;
+ #endif
+             pcaphdr->ts_sec   = t.tv_sec;
+-            pcaphdr->ts_usec  = t.tv_usec;
++            pcaphdr->ts_nsec  = t.tv_nsec;
+             pcaphdr->incl_len = size;
+             pcaphdr->orig_len = size;
+             curr_data += sizeof(pcaprec_hdr_t);
+@@ -457,10 +457,10 @@ void ec_device_debug_ring_append(
+ 
+     df->dir = dir;
+     if (dir == TX) {
+-        do_gettimeofday(&df->t);
++        getnstimeofday(&df->t);
+     }
+     else {
+-        df->t = device->timeval_poll;
++        df->t = device->timespec_poll;
+     }
+     memcpy(df->data, data, size);
+     df->data_size = size;
+@@ -482,7 +482,7 @@ void ec_device_debug_ring_print(
+     int i;
+     unsigned int ring_index;
+     const ec_debug_frame_t *df;
+-    struct timeval t0, diff;
++    struct timespec t0, diff;
+ 
+     // calculate index of the newest frame in the ring to get its time
+     ring_index = (device->debug_frame_index + EC_DEBUG_RING_SIZE - 1)
+@@ -502,7 +502,7 @@ void ec_device_debug_ring_print(
+         EC_MASTER_DBG(device->master, 1, "Frame %u, dt=%u.%06u s, %s:\n",
+                 i + 1 - device->debug_frame_count,
+                 (unsigned int) diff.tv_sec,
+-                (unsigned int) diff.tv_usec,
++                (unsigned int) diff.tv_nsec,
+                 (df->dir == TX) ? "TX" : "RX");
+         ec_print_data(df->data, df->data_size);
+ 
+@@ -529,10 +529,10 @@ void ec_device_poll(
+ #endif
+     device->jiffies_poll = jiffies;
+ #ifdef EC_DEBUG_RING
+-    do_gettimeofday(&device->timeval_poll);
++    getnstimeofday(&device->timespec_poll);
+ #elif !defined(EC_RTDM)
+     if (pcap_size)
+-        do_gettimeofday(&device->timeval_poll);
++        getnstimeofday(&device->timespec_poll);
+ #endif
+     device->poll(device->dev);
+ }
+diff --git a/master/device.h b/master/device.h
+index 51db0d6..3ebf108 100644
+--- a/master/device.h
++++ b/master/device.h
+@@ -63,7 +63,7 @@ typedef enum {
+ 
+ typedef struct {
+     ec_debug_frame_dir_t dir;
+-    struct timeval t;
++    struct timespec t;
+     uint8_t data[EC_MAX_DATA_SIZE];
+     unsigned int data_size;
+ } ec_debug_frame_t;
+@@ -92,7 +92,7 @@ struct ec_device
+     cycles_t cycles_poll; /**< cycles of last poll */
+ #endif
+ #if defined(EC_DEBUG_RING) || !defined(EC_RTDM)
+-    struct timeval timeval_poll;
++    struct timespec timespec_poll;
+ #endif
+     unsigned long jiffies_poll; /**< jiffies of last poll */
+ 
+@@ -153,7 +153,7 @@ typedef struct {
+ 
+ typedef struct {
+     u32 ts_sec;         /* timestamp seconds */
+-    u32 ts_usec;        /* timestamp microseconds */
++    u32 ts_nsec;        /* timestamp nanoseconds */
+     u32 incl_len;       /* number of octets of packet saved in file */
+     u32 orig_len;       /* actual length of packet */
+ } pcaprec_hdr_t;

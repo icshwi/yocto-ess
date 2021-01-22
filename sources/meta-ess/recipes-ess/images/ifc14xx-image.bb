@@ -2,7 +2,7 @@ require recipes-core/images/core-image-minimal.bb
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-CORE_IMAGE_EXTRA_INSTALL += "udev-extraconf lsb"
+CORE_IMAGE_EXTRA_INSTALL += "udev-extraconf"
 
 IMAGE_FSTYPES = "tar.gz cpio.gz"
 

@@ -51,13 +51,15 @@ EPICS_LIB_FILES_fpgaioc += " \
     file://fpgaioc/libComPYEPICS.so \
 "
 
-# Patch to remove unused architectures (win32, darwin, linux32)
+# Patch to remove unused architectures (win32, darwin, arm, linux32)
 SRC_URI += "file://0001-Remove-unused-architectures.patch"
 
 SRC_URI[md5sum] = "398d808f987de79c0547392fc007ed21"
 SRC_URI[sha256sum] = "673fc8f6c8a2663c15473938fd3b55c2d3431dc739aa479b6d9d005373219068"
 
 S = "${WORKDIR}/pyepics-3.4.2"
+# Increment revision number if package changes...
+PR = "r1"
 
 inherit setuptools3 pypi
 require python3-versions.inc

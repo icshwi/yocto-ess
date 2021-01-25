@@ -1,7 +1,7 @@
-diff --git a/sis8300_ioctl.c b/sis8300_ioctl.c
+diff --git a/src/main/c/driver/sis8300_ioctl.c b/src/main/c/driver/sis8300_ioctl.c
 index 05d6715..287ff4a 100644
---- a/sis8300_ioctl.c
-+++ b/sis8300_ioctl.c
+--- a/src/main/c/driver/sis8300_ioctl.c
++++ b/src/main/c/driver/sis8300_ioctl.c
 @@ -5,7 +5,7 @@
  #include <linux/fs.h>
  #include <linux/wait.h>
@@ -11,10 +11,10 @@ index 05d6715..287ff4a 100644
  
  #include "sis8300.h"
  #include "sis8300_defs.h"
-diff --git a/sis8300_mmap.c b/sis8300_mmap.c
+diff --git a/src/main/c/driver/sis8300_mmap.c b/src/main/c/driver/sis8300_mmap.c
 index 89ca343..2b02985 100644
---- a/sis8300_mmap.c
-+++ b/sis8300_mmap.c
+--- a/src/main/c/driver/sis8300_mmap.c
++++ b/src/main/c/driver/sis8300_mmap.c
 @@ -55,12 +55,12 @@ static void sis8300_vm_close(struct vm_area_struct *vma) {
   * All pages that were mapped to userspace have already been allocated so this
   * should never happen.
@@ -31,10 +31,10 @@ index 89ca343..2b02985 100644
      
      /* Disallow faulting in any additional pages; if NULL the kernel would
      allocate 'normal', non-contiguous memory. */
-diff --git a/sis8300_read.c b/sis8300_read.c
+diff --git a/src/main/c/driver/sis8300_read.c b/src/main/c/driver/sis8300_read.c
 index 46c01eb..26aa06c 100644
---- a/sis8300_read.c
-+++ b/sis8300_read.c
+--- a/src/main/c/driver/sis8300_read.c
++++ b/src/main/c/driver/sis8300_read.c
 @@ -3,7 +3,7 @@
   */
  
@@ -44,10 +44,10 @@ index 46c01eb..26aa06c 100644
  
  #include "sis8300.h"
  #include "sis8300_defs.h"
-diff --git a/sis8300_write.c b/sis8300_write.c
+diff --git a/src/main/c/driver/sis8300_write.c b/src/main/c/driver/sis8300_write.c
 index 2713849..2a4c13f 100644
---- a/sis8300_write.c
-+++ b/sis8300_write.c
+--- a/src/main/c/driver/sis8300_write.c
++++ b/src/main/c/driver/sis8300_write.c
 @@ -3,7 +3,7 @@
   */
  

@@ -1,0 +1,32 @@
+diff --git a/src/main/c/lib/Makefile b/src/main/c/lib/Makefile
+index ea3cb42..06e95af 100644
+--- a/src/main/c/lib/Makefile
++++ b/src/main/c/lib/Makefile
+@@ -33,12 +33,12 @@ clean:
+ 	rm -rf *~ $(TARGETA) $(TARGETSO) $(OBJDIR)
+ 
+ $(TARGETSO): $(OBJS:%=$(OBJDIR)/%.o) 
+-	gcc -shared $(LDFLAGS) $(LIBS:%=-l%) -o  $@ $^
++	${CC} -shared $(LDFLAGS) $(LIBS:%=-l%) -o  $@ $^
+ 
+ $(OBJDIR)/%.o: %.c
+ 	mkdir -p $(OBJDIR)
+-	gcc -c $(CCFLAGS) $(INCLUDES:%=-I%) -o $@ $<
++	${CC} -c $(CCFLAGS) $(INCLUDES:%=-I%) -o $@ $<
+ 
+ $(TARGETA): $(OBJS:%=$(OBJDIR)/%.o) 
+-	/usr/bin/ar -rcs		$@		$^ 
++	${AR} -rcs		$@		$^ 
+ 
+diff --git a/src/main/c/lib/Makefile b/src/main/c/lib/Makefile
+index c163829..255d14b 100644
+--- a/src/main/c/tools/Makefile
++++ b/src/main/c/tools/Makefile
+@@ -16,7 +16,6 @@ FILES := $(foreach dir,$(SUBDIRS),$(wildcard $(dir)/*))
+ SOURCES := $(filter %.c,$(FILES))
+ OBJECTS := $(SOURCES:.c=)
+ 
+-CC := gcc
+ CCFLAGS := -O3 -std=c99 -D_GNU_SOURCE -Wall -I../include -I../lib
+ LDFLAGS := -lsis8300drv -lrt -lm -L../lib
+ 

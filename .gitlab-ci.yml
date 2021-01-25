@@ -442,3 +442,4 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/netcdf-c-*.rpm" rpm-ics/yocto/fpgaioc/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-staticdev-*" "*/valgrind-*.rpm" rpm-ics/yocto/fpgaioc/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*;*-perltools-*" "*/git-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/fpgautil*.rpm" rpm-ics/yocto/fpgaioc/ || true

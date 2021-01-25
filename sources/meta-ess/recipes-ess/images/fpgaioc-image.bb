@@ -41,6 +41,7 @@ IMAGE_INSTALL_append += " packagegroup-base \
                           kernel-module-si5346 \
                           kernel-module-si5332 \
                           si5332-config \
+                          fpgautil \
                           "
 
 IMAGE_FSTYPES="cpio.gz.u-boot tar.gz ext3"

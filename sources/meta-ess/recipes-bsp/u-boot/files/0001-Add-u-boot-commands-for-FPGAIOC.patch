@@ -1,12 +1,11 @@
 diff --git a/include/configs/zynq-common.h b/include/configs/zynq-common.h
-index 55b983fc16..8a79a3466a 100644
+index 55b983fc16..5ac96aaf80 100644
 --- a/include/configs/zynq-common.h
 +++ b/include/configs/zynq-common.h
-@@ -237,6 +237,60 @@
+@@ -237,6 +237,95 @@
  			"echo Copying FIT from USB to RAM... && " \
  			"load usb 0 ${load_addr} ${fit_image} && " \
  			"bootm ${load_addr}; fi\0" \
-+    "synth_codeword=01BB022D\0" \
 +    "bootrescue=echo Booting **Rescue** FPGA-IOC Linux image from QSPI; " \
 +            "sf probe 0; sf read 0x2080000 0x200000 0x400000; " \
 +            "sf read 0x2000000 0x6f0000 0x10000; " \
@@ -20,50 +19,86 @@ index 55b983fc16..8a79a3466a 100644
 +            "fatload mmc 0:1 0x3000000 picozed-zynq7.dtb; sleep 1; " \
 +            "bootm 0x3080000 - 0x3000000 \0" \
 +    "bootnet=echo Booting FPGA-IOC RAMFS Linux image from the network; " \
-+            "run setbootenv; dhcp;" \
-+            "setenv serverip 172.30.4.170; run set_mac_from_eeprom; " \
++            "run setbootenv; " \
++            "run set_mac_from_eeprom; dhcp; " \
 +            "tftpboot 10200000 boot/fpgaioc/stable/uImage; " \
 +            "tftpboot 11000000 boot/fpgaioc/stable/fpgaioc-image-picozed-zynq7.cpio.gz.u-boot; " \
 +            "tftpboot 10000000 boot/fpgaioc/stable/devicetree/picozed-zynq7.dtb; " \
 +            "bootm 10200000 11000000 10000000 \0" \
++    "serverip=172.30.4.252\0" \
 +    "pca9541_chip=0x77\0" \
 +    "pca9541_ctl_reg=0x1\0" \
 +    "pca9541_res_addr=100\0" \
-+    "pca9541_put_cmp_vals=mw.b 101 5; mw.b 102 6; mw.b 103 a; mw.b 104 2; mw.b 105 7\0" \
++    "pca9541_put_cmp_vals=mw.b 101 0; mw.b 102 1; mw.b 103 2; mw.b 104 3; mw.b 105 4; mw.b 106 5; mw.b 107 6;" \
++        "mw.b 108 7; mw.b 109 8; mw.b 10a 9; mw.b 10b a; mw.b 10c b; mw.b 10d c;  mw.b 10e d; mw.b 10f e; mw.b 110 f \0" \
 +    "eeprom_chip_addr=0x52\0" \
 +    "eeprom_mac_addr=fa\0" \
 +    "eeprom_mac_mem_addr=120\0" \
 +    "en_i2c_mux=echo Enabling gpio 42 (i2c mux reset pin); gpio set 42; " \
-+            "echo Selecting I2C1 (zynq); i2c dev 1; i2c mw 75 1 1f \0" \
-+    "pca9541_cmp_ctl_5=cmp.b $pca9541_res_addr 101 1\0" \
-+    "pca9541_cmp_ctl_6=cmp.b $pca9541_res_addr 102 1\0" \
-+    "pca9541_cmp_ctl_a=cmp.b $pca9541_res_addr 103 1\0" \
-+    "pca9541_cmp_ctl_2=cmp.b $pca9541_res_addr 104 1\0" \
-+    "pca9541_cmp_ctl_7=cmp.b $pca9541_res_addr 105 1\0" \
-+    "pca9541_check_ctl_7=if run pca9541_cmp_ctl_7; then echo We already have control of I2C bus (0x7); " \
-+            "else run pca9541_check_ctl_2; fi \0" \
++        "echo Selecting I2C1 (zynq); i2c dev 1; i2c mw 75 1 1f \0" \
++    "pca9541_cmp_ctl_0=cmp.b $pca9541_res_addr 101 1\0" \
++    "pca9541_cmp_ctl_1=cmp.b $pca9541_res_addr 102 1\0" \
++    "pca9541_cmp_ctl_2=cmp.b $pca9541_res_addr 103 1\0" \
++    "pca9541_cmp_ctl_3=cmp.b $pca9541_res_addr 104 1\0" \
++    "pca9541_cmp_ctl_4=cmp.b $pca9541_res_addr 105 1\0" \
++    "pca9541_cmp_ctl_5=cmp.b $pca9541_res_addr 106 1\0" \
++    "pca9541_cmp_ctl_6=cmp.b $pca9541_res_addr 107 1\0" \
++    "pca9541_cmp_ctl_7=cmp.b $pca9541_res_addr 108 1\0" \
++    "pca9541_cmp_ctl_8=cmp.b $pca9541_res_addr 109 1\0" \
++    "pca9541_cmp_ctl_9=cmp.b $pca9541_res_addr 10a 1\0" \
++    "pca9541_cmp_ctl_a=cmp.b $pca9541_res_addr 10b 1\0" \
++    "pca9541_cmp_ctl_b=cmp.b $pca9541_res_addr 10c 1\0" \
++    "pca9541_cmp_ctl_c=cmp.b $pca9541_res_addr 10d 1\0" \
++    "pca9541_cmp_ctl_d=cmp.b $pca9541_res_addr 10e 1\0" \
++    "pca9541_cmp_ctl_e=cmp.b $pca9541_res_addr 10f 1\0" \
++    "pca9541_cmp_ctl_f=cmp.b $pca9541_res_addr 110 1\0" \
++    "pca9541_check_ctl_0=if run pca9541_cmp_ctl_0; then i2c mw $pca9541_chip $pca9541_ctl_reg 4; " \
++        "echo Gained control of I2C bus (0x4); else run pca9541_check_ctl_1; fi\0" \
++    "pca9541_check_ctl_1=if run pca9541_cmp_ctl_1; then i2c mw $pca9541_chip $pca9541_ctl_reg 4; " \
++        "echo Gained control of I2C bus (0x5); else run pca9541_check_ctl_2; fi \0" \
 +    "pca9541_check_ctl_2=if run pca9541_cmp_ctl_2; then i2c mw $pca9541_chip $pca9541_ctl_reg 5; " \
-+            "echo Gained control of I2C bus (0x5); else run pca9541_check_ctl_a; fi \0" \
-+    "pca9541_check_ctl_a=if run pca9541_cmp_ctl_a; then i2c mw $pca9541_chip $pca9541_ctl_reg 1; " \
-+            "echo Gained control of I2C bus (0x1); else run pca9541_check_ctl_5; fi\0" \
++        "echo Gained control of I2C bus (0x5); else run pca9541_check_ctl_3; fi \0" \
++    "pca9541_check_ctl_3=if run pca9541_cmp_ctl_3; then i2c mw $pca9541_chip $pca9541_ctl_reg 5; " \
++        "echo Gained control of I2C bus (0x5); else run pca9541_check_ctl_4; fi \0" \
++    "pca9541_check_ctl_4=if run pca9541_cmp_ctl_4; then echo We already have control of I2C bus (0x4);" \
++        "else run pca9541_check_ctl_5; fi \0" \
 +    "pca9541_check_ctl_5=if run pca9541_cmp_ctl_5; then i2c mw $pca9541_chip $pca9541_ctl_reg 4; " \
-+            "echo Gained control of I2C bus (0x4); else run pca9541_check_ctl_6; fi\0" \
++        "echo Gained control of I2C bus (0x4); else run pca9541_check_ctl_6; fi\0" \
 +    "pca9541_check_ctl_6=if run pca9541_cmp_ctl_6; then i2c mw $pca9541_chip $pca9541_ctl_reg 5; " \
-+            "echo Gained control of the I2C bus (0x5); fi\0" \
++        "echo Gained control of I2C bus (0x5); else run pca9541_check_ctl_7; fi\0" \
++    "pca9541_check_ctl_7=if run pca9541_cmp_ctl_7; then echo We already have control of I2C bus (0x7); " \
++        "else run pca9541_check_ctl_8; fi \0" \
++    "pca9541_check_ctl_8=if run pca9541_cmp_ctl_8; then echo We already have control of I2C bus (0x8); " \
++        "else run pca9541_check_ctl_9; fi \0" \
++    "pca9541_check_ctl_9=if run pca9541_cmp_ctl_9; then i2c mw $pca9541_chip $pca9541_ctl_reg 0; " \
++        "echo Gained control of I2C bus (0x0); else run pca9541_check_ctl_a; fi\0" \
++    "pca9541_check_ctl_a=if run pca9541_cmp_ctl_a; then i2c mw $pca9541_chip $pca9541_ctl_reg 1; " \
++        "echo Gained control of I2C bus (0x1); else run pca9541_check_ctl_b; fi\0" \
++    "pca9541_check_ctl_b=if run pca9541_cmp_ctl_b; then echo We already have control of I2C bus (0xb); " \
++        "echo Gained control of I2C bus (0x1); else run pca9541_check_ctl_c; fi\0" \
++    "pca9541_check_ctl_c=if run pca9541_cmp_ctl_c; then i2c mw $pca9541_chip $pca9541_ctl_reg 0; " \
++        "echo Gained control of I2C bus (0x0); else run pca9541_check_ctl_d; fi\0" \
++    "pca9541_check_ctl_d=if run pca9541_cmp_ctl_d; then i2c mw $pca9541_chip $pca9541_ctl_reg 0; " \
++        "echo Gained control of I2C bus (0x0); else run pca9541_check_ctl_e; fi\0" \
++    "pca9541_check_ctl_e=if run pca9541_cmp_ctl_e; then i2c mw $pca9541_chip $pca9541_ctl_reg 1; " \
++        "echo Gained control of I2C bus (0x1); else run pca9541_check_ctl_f; fi\0" \
++    "pca9541_check_ctl_f=if run pca9541_cmp_ctl_f; then i2c mw $pca9541_chip $pca9541_ctl_reg 1; " \
++        "echo Gained control of I2C bus (0x1); else run pca9541_print_err; fi\0" \
++    "pca9541_print_err=echo ERROR: Failed to gain access to the I2C bus.\0" \
 +    "pca9541_get_ctl=i2c read $pca9541_chip $pca9541_ctl_reg.0 1 $pca9541_res_addr \0" \
 +    "read_mac_from_eeprom=i2c read $eeprom_chip_addr $eeprom_mac_addr 6 $eeprom_mac_mem_addr \0" \
 +    "form_mac=setenv ethaddr ${mac0}:$mac1:$mac2:$mac3:$mac4:$mac5 ;" \
-+            "echo Setting MAC address to $ethaddr\0" \
++        "echo Setting MAC address to $ethaddr\0" \
 +    "form_mac_from_mem=setexpr.b mac5 *125; setexpr.b mac4 *124; setexpr.b mac3 *123; " \
-+            "setexpr.b mac2 *122; setexpr.b mac1 *121; setexpr.b mac0 *120\0" \
++        "setexpr.b mac2 *122; setexpr.b mac1 *121; setexpr.b mac0 *120\0" \
 +    "set_mac_from_eeprom=run en_i2c_mux; run pca9541_put_cmp_vals; run pca9541_get_ctl; " \
-+            "echo Checking current status of I2C bus...; " \
-+            "run pca9541_check_ctl_7; sleep .1; run read_mac_from_eeprom; " \
-+            "run form_mac_from_mem; run form_mac\0" \
++        "echo Checking current status of I2C bus...; " \
++        "run pca9541_check_ctl_0; sleep .1; run read_mac_from_eeprom; " \
++        "run form_mac_from_mem; run form_mac\0" \
  		DFU_ALT_INFO \
  		BOOTENV
  #endif
-@@ -263,7 +313,7 @@
+@@ -263,7 +352,7 @@
  
  
  /* Extend size of kernel image for uncompression */

@@ -1,26 +1,30 @@
 diff --git a/include/configs/zynq-common.h b/include/configs/zynq-common.h
-index 55b983fc16..5ac96aaf80 100644
+index 55b983fc16..f33d08ffde 100644
 --- a/include/configs/zynq-common.h
 +++ b/include/configs/zynq-common.h
-@@ -237,6 +237,95 @@
+@@ -237,6 +237,99 @@
  			"echo Copying FIT from USB to RAM... && " \
  			"load usb 0 ${load_addr} ${fit_image} && " \
  			"bootm ${load_addr}; fi\0" \
++    "bootcmd=run set_mac_from_eeprom; dhcp; if ping $serverip; then run bootnet; else run bootlocal; fi \0" \
++    "bootlocal=echo Booting FPGA-IOC Linux image from MMC; mmc rescan; run setbootenv; " \
++            "fatload mmc 0:1 0x2000000 picoEVR.bit; fpga loadb 0 0x2000000 $filesize; " \
++            "fatload mmc 0:1 0x3080000 uImage; fatload mmc 0:1 0x3000000 picozed-zynq7.dtb; " \
++            "sleep 1; bootm 0x3080000 - 0x3000000 \0" \
 +    "bootrescue=echo Booting **Rescue** FPGA-IOC Linux image from QSPI; " \
 +            "sf probe 0; sf read 0x2080000 0x200000 0x400000; " \
 +            "sf read 0x2000000 0x6f0000 0x10000; " \
 +            "sf read 0x3000000 0x700000 0x800000; sleep 1; " \
 +            "run set_mac_from_eeprom; bootm 0x2080000 0x3000000 0x2000000 \0" \
-+    "bootcmd=echo Booting FPGA-IOC Linux image from MMC; " \
++    "bootlocal=echo Booting FPGA-IOC Linux image from MMC; " \
 +            "mmc rescan; run setbootenv; " \
 +            "fatload mmc 0:1 0x2000000 picoEVR.bit; " \
-+            "fpga loadb 0 0x2000000 $filesize; run set_mac_from_eeprom; " \
++            "fpga loadb 0 0x2000000 $filesize; " \
 +            "fatload mmc 0:1 0x3080000 uImage; " \
 +            "fatload mmc 0:1 0x3000000 picozed-zynq7.dtb; sleep 1; " \
 +            "bootm 0x3080000 - 0x3000000 \0" \
 +    "bootnet=echo Booting FPGA-IOC RAMFS Linux image from the network; " \
 +            "run setbootenv; " \
-+            "run set_mac_from_eeprom; dhcp; " \
 +            "tftpboot 10200000 boot/fpgaioc/stable/uImage; " \
 +            "tftpboot 11000000 boot/fpgaioc/stable/fpgaioc-image-picozed-zynq7.cpio.gz.u-boot; " \
 +            "tftpboot 10000000 boot/fpgaioc/stable/devicetree/picozed-zynq7.dtb; " \
@@ -98,7 +102,7 @@ index 55b983fc16..5ac96aaf80 100644
  		DFU_ALT_INFO \
  		BOOTENV
  #endif
-@@ -263,7 +352,7 @@
+@@ -263,7 +356,7 @@
  
  
  /* Extend size of kernel image for uncompression */

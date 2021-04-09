@@ -17,8 +17,15 @@
         clock-frequency = <40000000>;
     };
 
+    emio_phy_clk: emio_phy_clk {
+        compatible = "fixed-clock";
+        #clock-cells = <0>;
+        clock-frequency = <25000000>;
+    };
+
     aliases {
         ethernet0 = &gem0;
+        ethernet1 = &gem1;
         serial0 = &uart0;
         serial1 = &uart1;
         mmc0 = &sdhci1;
@@ -56,6 +63,22 @@
     ethernet_phy: ethernet-phy@0 {
         device_type = "ethernet-phy";
         reg = <0>;
+    };
+};
+
+&gem1 {
+    status = "okay";
+    phy-mode = "mii";
+    phy-handle = <&ethernet_phy_1>;
+    local-mac-address = [aa bb cc dd 00 11];
+    mdio {
+        #address-cells = <1>;
+        #size-cells = <0>;
+        ethernet_phy_1: ethernet-phy@1 {
+            compatible = "ethernet-phy-id2000.a210",  "ethernet-phy-ieee802.3-c22";
+            device_type = "ethernet-phy";
+            reg = <1>;
+        };
     };
 };
 

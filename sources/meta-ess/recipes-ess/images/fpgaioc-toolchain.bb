@@ -11,6 +11,7 @@ TOOLCHAIN_TARGET_TASK += " \
     netcdf-c-dev \
     c-blosc-staticdev \
     kernel-devsrc \
+    ethercat-dev \
 "
 # TODO: 
 # Re-enable removed packages:

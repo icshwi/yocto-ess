@@ -210,6 +210,8 @@ build_image_fpgaioc:
     - bitbake git
     - bitbake python3-pyepics
     - bitbake conserver
+    - bitbake ethercat
+    - bitbake ehtercat-tools
     - bitbake package-index
   artifacts:
     paths:

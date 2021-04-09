@@ -210,6 +210,8 @@ build_image_fpgaioc:
     - bitbake git
     - bitbake python3-pyepics
     - bitbake conserver
+    - bitbake ethercat
+    - bitbake ethercat-tools
     - bitbake package-index
   artifacts:
     paths:
@@ -418,7 +420,6 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*" "*/libmpfr6-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*;*-locale-*;*-mod-*" "*/procps-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*;*-locale-*;*-mod-*" "*/make-*.rpm" rpm-ics/yocto/cct/ || true
-<<<<<<< HEAD
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/sis8300-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/kernel-module-sis8300drv-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-ec-dev*;*kernel-module-ec-dbg*" "*/kernel-module-ec-*.rpm" rpm-ics/yocto/cct/ || true

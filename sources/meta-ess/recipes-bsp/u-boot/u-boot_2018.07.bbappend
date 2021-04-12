@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/u-boot-2018.07:"
 
 SRC_URI_append := " file://zynq-picozed.dts \
                     file://0001-Modify-defconfig-for-FPGAIOC.patch \

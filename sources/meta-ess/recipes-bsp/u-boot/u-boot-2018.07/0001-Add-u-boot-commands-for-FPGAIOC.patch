@@ -2,7 +2,7 @@ diff --git a/include/configs/zynq-common.h b/include/configs/zynq-common.h
 index 55b983fc16..e81a1ad738 100644
 --- a/include/configs/zynq-common.h
 +++ b/include/configs/zynq-common.h
-@@ -237,6 +237,101 @@
+@@ -237,6 +237,102 @@
  			"echo Copying FIT from USB to RAM... && " \
  			"load usb 0 ${load_addr} ${fit_image} && " \
  			"bootm ${load_addr}; fi\0" \
@@ -26,11 +26,12 @@ index 55b983fc16..e81a1ad738 100644
 +            "bootm 0x3080000 - 0x3000000 \0" \
 +    "bootnet=echo Booting FPGA-IOC RAMFS Linux image from the network; " \
 +            "run setbootenv; " \
-+            "tftpboot 10200000 boot/fpgaioc/stable/uImage; " \
-+            "tftpboot 11000000 boot/fpgaioc/stable/fpgaioc-image-picozed-zynq7.cpio.gz.u-boot; " \
-+            "tftpboot 10000000 boot/fpgaioc/stable/devicetree/picozed-zynq7.dtb; " \
++            "tftpboot 10200000 $serverip1:boot/fpgaioc/stable/uImage; " \
++            "tftpboot 11000000 $serverip1:boot/fpgaioc/stable/fpgaioc-image-picozed-zynq7.cpio.gz.u-boot; " \
++            "tftpboot 10000000 $serverip1:boot/fpgaioc/stable/devicetree/picozed-zynq7.dtb; " \
 +            "bootm 10200000 11000000 10000000 \0" \
 +    "serverip=172.30.4.252\0" \
++    "serverip1=172.30.4.252\0" \
 +    "bootmode=net\0" \
 +    "pca9541_chip=0x77\0" \
 +    "pca9541_ctl_reg=0x1\0" \

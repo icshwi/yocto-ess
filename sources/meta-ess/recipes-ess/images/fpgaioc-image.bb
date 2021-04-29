@@ -45,3 +45,5 @@ IMAGE_INSTALL_append += " packagegroup-base \
                           "
 
 IMAGE_FSTYPES="cpio.gz.u-boot tar.gz ext3"
+
+IMAGE_ROOTFS_EXTRA_SPACE_append = " + 600000"

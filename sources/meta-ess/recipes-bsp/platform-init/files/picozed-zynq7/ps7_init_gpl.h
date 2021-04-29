@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2018 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010-2019 <Xilinx Inc.>
 * 
 *  This program is free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
@@ -90,12 +90,12 @@ extern unsigned long  * ps7_peripherals_init_data;
 #define QSPI_FREQ  200000000
 #define SMC_FREQ  10000000
 #define ENET0_FREQ  125000000
-#define ENET1_FREQ  10000000
+#define ENET1_FREQ  25000000
 #define USB0_FREQ  60000000
 #define USB1_FREQ  60000000
 #define SDIO_FREQ  25000000
 #define UART_FREQ  50000000
-#define SPI_FREQ  10000000
+#define SPI_FREQ  166666672
 #define I2C_FREQ  111111115
 #define WDT_FREQ  111111115
 #define TTC_FREQ  50000000

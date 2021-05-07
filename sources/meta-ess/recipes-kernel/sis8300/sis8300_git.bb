@@ -27,6 +27,9 @@ PROVIDES = "${PN} ${PN}-dbg ${PN}-dev"
 
 MODULES_MODULE_SYMVERS_LOCATION = "src/main/c/driver"
 
+# Prevent do_configure from running clean step
+CLEANBROKEN = "1"
+
 do_compile_prepend() {
     cd src/main/c/driver
 }

@@ -1,0 +1,24 @@
+From 1461be864c430d7f57382d84fc3807878b532637 Mon Sep 17 00:00:00 2001
+From: Ross Elliot <Ross.Elliot@ess.eu>
+Date: Tue, 1 Jun 2021 15:19:05 +0200
+Subject: [PATCH] Add LDB_MODULES_PATH to environment
+
+---
+ src/sysv/systemd/sssd.service.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/sysv/systemd/sssd.service.in b/src/sysv/systemd/sssd.service.in
+index 0c515d3..f1d7f44 100644
+--- a/src/sysv/systemd/sssd.service.in
++++ b/src/sysv/systemd/sssd.service.in
+@@ -5,6 +5,7 @@ Before=systemd-user-sessions.service nss-user-lookup.target
+ Wants=nss-user-lookup.target
+ 
+ [Service]
++Environment=LDB_MODULES_PATH=/usr/lib/ldb
+ Environment=DEBUG_LOGGER=--logger=files
+ EnvironmentFile=-@environment_file@
+ ExecStart=@sbindir@/sssd -i ${DEBUG_LOGGER}
+-- 
+2.20.1
+

@@ -44,7 +44,7 @@ build_image:
     - bitbake logrotate
     - bitbake iproute2
     - bitbake sssd
-    - bitbake chronyd
+    - bitbake chrony
     - bitbake rsyslog
     - bitbake tmux
     - bitbake tcpdump
@@ -143,7 +143,7 @@ build_image_cct:
     - bitbake logrotate
     - bitbake iproute2
     - bitbake sssd
-    - bitbake chronyd
+    - bitbake chrony
     - bitbake rsyslog
     - bitbake tmux
     - bitbake tcpdump

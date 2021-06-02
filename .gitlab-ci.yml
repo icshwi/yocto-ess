@@ -52,6 +52,9 @@ build_image:
     - bitbake ntp
     - bitbake openssl-bin
     - bitbake openldap
+    - bitbake pciutils
+    - bitbkae nmap
+    - bitbake ipmitool
     - bitbake package-index
   artifacts:
     paths:
@@ -151,6 +154,9 @@ build_image_cct:
     - bitbake ntp
     - bitbake openssl-bin
     - bitbake openldap
+    - bitbake pciutils
+    - bitbkae nmap
+    - bitbake ipmitool
     - bitbake package-index
   artifacts:
     paths:
@@ -346,6 +352,11 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/tmux-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/rsyslog-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libldap-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pciutils-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/nmap-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/ipmitool-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libevent-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libpcap1-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-localuser-*rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-succeed-if-*rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-mkhomedir-*rpm" rpm-ics/yocto/ioxos/ || true
@@ -396,6 +407,11 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/tmux-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/rsyslog-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libldap-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pciutils-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/nmap-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/ipmitool-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libevent-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libpcap1-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-localuser-*rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-succeed-if-*rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-mkhomedir-*rpm" rpm-ics/yocto/cct/ || true

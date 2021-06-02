@@ -50,10 +50,10 @@ build_image:
     - bitbake tcpdump
     - bitbake autofs
     - bitbake ntp
-    - bitbake openssl-bin
+    - bitbake openssl
     - bitbake openldap
     - bitbake pciutils
-    - bitbkae nmap
+    - bitbake nmap
     - bitbake ipmitool
     - bitbake package-index
   artifacts:
@@ -152,10 +152,10 @@ build_image_cct:
     - bitbake tcpdump
     - bitbake autofs
     - bitbake ntp
-    - bitbake openssl-bin
+    - bitbake openssl
     - bitbake openldap
     - bitbake pciutils
-    - bitbkae nmap
+    - bitbake nmap
     - bitbake ipmitool
     - bitbake package-index
   artifacts:
@@ -349,6 +349,7 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/sssd-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/tcpdump-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/ntp-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/openssl-bin-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/tmux-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/rsyslog-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libldap-*.rpm" rpm-ics/yocto/ioxos/ || true
@@ -404,6 +405,7 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/sssd-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/tcpdump-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/ntp-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/openssl-bin-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/tmux-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/rsyslog-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libldap-*.rpm" rpm-ics/yocto/cct/ || true

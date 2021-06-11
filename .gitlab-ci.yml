@@ -45,7 +45,7 @@ build_image:
     - bitbake iproute2
     - bitbake sssd
     - bitbake chrony
-    - bitbake rsyslog
+    - bitbake syslog-ng
     - bitbake tmux
     - bitbake tcpdump
     - bitbake autofs
@@ -55,6 +55,7 @@ build_image:
     - bitbake pciutils
     - bitbake nmap
     - bitbake ipmitool
+    - bitbake cronie
     - bitbake package-index
   artifacts:
     paths:
@@ -147,7 +148,7 @@ build_image_cct:
     - bitbake iproute2
     - bitbake sssd
     - bitbake chrony
-    - bitbake rsyslog
+    - bitbake syslog-ng
     - bitbake tmux
     - bitbake tcpdump
     - bitbake autofs
@@ -157,6 +158,7 @@ build_image_cct:
     - bitbake pciutils
     - bitbake nmap
     - bitbake ipmitool
+    - bitbake cronie
     - bitbake package-index
   artifacts:
     paths:
@@ -351,7 +353,9 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/ntp-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/openssl-bin-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/tmux-*.rpm" rpm-ics/yocto/ioxos/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/rsyslog-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/syslog-ng-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libsyslog-ng-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-locale-*;*-ptest-*" "*/gawk-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libldap-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pciutils-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/nmap-*.rpm" rpm-ics/yocto/ioxos/ || true
@@ -361,6 +365,8 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-localuser-*rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-succeed-if-*rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-mkhomedir-*rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-access-*rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/cronie-*rpm" rpm-ics/yocto/ioxos/ || true
     - cd ../../../../build_ifc14xx-rt-64b/tmp/deploy/rpm
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-tsc-dev*;*kernel-module-tsc-dbg*" "*/kernel-module-tsc-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*mrfioc2-dev*;*mrfioc2-dbg*" "*/mrfioc2-*.rpm" rpm-ics/yocto/ioxos/ || true
@@ -407,7 +413,9 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/ntp-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/openssl-bin-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/tmux-*.rpm" rpm-ics/yocto/cct/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/rsyslog-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/syslog-ng-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libsyslog-ng-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-locale-*;*-ptest-*" "*/gawk-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libldap-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pciutils-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/nmap-*.rpm" rpm-ics/yocto/cct/ || true
@@ -417,6 +425,8 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-localuser-*rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-succeed-if-*rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-mkhomedir-*rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/pam-plugin-access-*rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/cronie-*rpm" rpm-ics/yocto/cct/ || true
     - cd ../../../../build_cct-rt-64/tmp/deploy/rpm
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-tsc-dev*;*kernel-module-tsc-dbg*" "*/kernel-module-tsc-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*mrfioc2-dev*;*mrfioc2-dbg*" "*/mrfioc2-*.rpm" rpm-ics/yocto/cct/ || true

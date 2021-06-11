@@ -56,7 +56,8 @@ build_image:
     - bitbake nmap
     - bitbake ipmitool
     - bitbake cronie
-    - bitbake ethtool 
+    - bitbake ethtool
+    - bitbake ethercat
     - bitbake package-index
   artifacts:
     paths:
@@ -160,7 +161,8 @@ build_image_cct:
     - bitbake nmap
     - bitbake ipmitool
     - bitbake cronie
-    - bitbake ethtool 
+    - bitbake ethtool
+    - bitbake ethercat
     - bitbake package-index
   artifacts:
     paths:

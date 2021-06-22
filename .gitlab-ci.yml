@@ -81,6 +81,8 @@ build_image:
     - bitbake readline
     - bitbake tcl
     - bitbake tree
+    - bitbake xfont
+    - bitbake kernel-devsrc
     - bitbake package-index
   artifacts:
     paths:
@@ -201,6 +203,7 @@ build_image_cct:
     - bitbake libusb
     - bitbake libxml2
     - bitbake m4
+    - bitbake mercurial
     - bitbake ncurses
     - bitbake net-snmp
     - bitbake nfs-utils
@@ -211,6 +214,8 @@ build_image_cct:
     - bitbake readline
     - bitbake tcl
     - bitbake tree
+    - bitbake kernel-devsrc
+    - bitbake xfont
     - bitbake package-index
   artifacts:
     paths:
@@ -234,6 +239,7 @@ build_image_rt_cct:
   script:
     - . ./setup-env -m cct-rt-64 -j 8 -t 8
     - bitbake cct-image
+    - bitbake ethercat
     - bitbake package-index
   artifacts:
     paths:
@@ -371,7 +377,7 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*tscmon-dev*;*tscmon-dbg*" "*/tscmon-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*hdf5-dbg*" "*/hdf5-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*tar-dev*;*tar-dbg*" "*/tar-*.rpm" rpm-ics/yocto/ioxos/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*zip-dev*;*zip-dbg*" "*/zip-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*zip-dbg*" "*/zip-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*unzip-dev*;*unzip-dbg*" "*/unzip-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*bzip2-dev*;*bzip2-dbg*" "*/bzip2-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/python-*.rpm" rpm-ics/yocto/ioxos/ || true
@@ -424,13 +430,21 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-locale-*;*-ptest-*" "*/autoconf-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-locale-*;*-ptest-*" "*/automake-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-doc-*" "*/curl-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-locale-*;*-doc-;*-ptest-*" "*/libgdbm*-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libpanelw5-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libtic5-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libticw5-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libform5-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libformw5-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libmenu5-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libmenuw5-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-doc-*" "*/libxt*-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-doc-*" "*/libxpm*-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-doc-*" "*/libxmu*-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-doc-*" "*/liberation-fonts-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-test-*;*-math-*;*-serialization-*" "*/boost-dev*.rpm" rpm-ics/yocto/ioxos/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/mercurial-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/libjpeg*-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/libturbojpeg*-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/libpng*-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/libtirpc*-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-doc-*;*-dbg-*" "*/libraw1394-*.rpm" rpm-ics/yocto/ioxos/ || true
@@ -438,17 +452,36 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/libusb-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/libxml2-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*" "*/m4-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/mercurial-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/ncurses-*.rpm" rpm-ics/yocto/ioxos/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-server-*;*-mibs-*" "*/net-snmp-*.rpm" rrpm-ics/yocto/ioxos/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*;*-mibs-*" "*/nfs-utils-*.rpm" rrpm-ics/yocto/ioxos/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*" "*/-patch*.rpm" rrpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-server-*" "*/net-snmp-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*" "*/nfs-utils-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*" "*/-patch*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/pcre*-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/procserv-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/libpcre*-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*" "*/re2c-*.rpm" rpm-ics/yocto/ioxos/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*;*-staticdev-*" "*/libreadline-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*;*-staticdev-*" "*/libreadline*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/systemd-dev-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;-dev-*" "*/tree-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*;*-dev-*" "*/tcl-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/kernel-devsrc-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/bc-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/bison-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/elfutils-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/flex-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/libc6-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/openssl-dev-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/util-linux-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/libsmartcols*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/libasm*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/gnu-config*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libtcl*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libice*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libnetsnmp*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libsm6*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxfont*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libfontenc*.rpm" rpm-ics/yocto/ioxos/ || true
     - cd ../../../../build_ifc14xx-rt-64b/tmp/deploy/rpm
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-tsc-dev*;*kernel-module-tsc-dbg*" "*/kernel-module-tsc-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*mrfioc2-dev*;*mrfioc2-dbg*" "*/mrfioc2-*.rpm" rpm-ics/yocto/ioxos/ || true
@@ -456,14 +489,14 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-tsc-dev*;*kernel-module-tsc-dbg*" "*/kernel-module-tsc-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*mrfioc2-dev*;*mrfioc2-dbg*" "*/mrfioc2-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*tscmon-dev*;*tscmon-dbg*" "*/tscmon-*.rpm" rpm-ics/yocto/cct/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*hdf5-dev*;*hdf5-dbg*" "*/hdf5-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*hdf5-dbg*" "*/hdf5-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*tar-dev*;*tar-dbg*" "*/tar-*.rpm" rpm-ics/yocto/cct/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*zip-dev*;*zip-dbg*" "*/zip-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*zip-dbg*" "*/zip-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*unzip-dev*;*unzip-dbg*" "*/unzip-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*bzip2-dev*;*bzip2-dbg*" "*/bzip2-*.rpm" rpm-ics/yocto/cct/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/python-*.rpm" rpm-ics/yocto/cct/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/python3-*.rpm" rpm-ics/yocto/cct/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/perl-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/python-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/python3-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/perl-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*gdb-dev*;*gdb-dbg*;*gdbserver*" "*/gdb-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libtiff*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libblosc*.rpm" rpm-ics/yocto/cct/ || true
@@ -515,6 +548,14 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-locale-*;*-ptest-*" "*/autoconf-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-locale-*;*-ptest-*" "*/automake-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-doc-*" "*/curl-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-locale-*;*-doc-;*-ptest-*" "*/libgdbm*-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libpanelw5-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libtic5-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libticw5-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libform5-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libformw5-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libmenu5-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/libmenuw5-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-doc-*" "*/libxt*-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-doc-*" "*/libxpm*-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-doc-*" "*/libxmu*-*.rpm" rpm-ics/yocto/cct/ || true
@@ -522,6 +563,7 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-test-*;*-math-*;*-serialization-*" "*/boost-dev*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/mercurial-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/libjpeg*-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/libturbojpeg*-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/libpng*-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/libtirpc*-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-doc-*;*-dbg-*" "*/libraw1394-*.rpm" rpm-ics/yocto/cct/ || true
@@ -530,17 +572,80 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/libxml2-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*" "*/m4-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/ncurses-*.rpm" rpm-ics/yocto/cct/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-server-*;*-mibs-*" "*/net-snmp-*.rpm" rrpm-ics/yocto/cct/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*;*-mibs-*" "*/nfs-utils-*.rpm" rrpm-ics/yocto/cct/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/opencv-*.rpm" rrpm-ics/yocto/cct/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*" "*/-patch*.rpm" rrpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-server-*;*-mibs-*" "*/net-snmp-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*;*-mibs-*" "*/nfs-utils-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/opencv-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libopencv*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*" "*/-patch*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/pcre*-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/procserv-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/libpcre*-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*" "*/re2c-*.rpm" rpm-ics/yocto/cct/ || true
-    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*;*-staticdev-*" "*/libreadline-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-staticdev-*" "*/libreadline*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*" "*/systemd-dev-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;-dev-*" "*/tree-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*;*-dev-*" "*/tcl-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/kernel-devsrc-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/bc-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/bison-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/elfutils-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/flex-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/libc6-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/openssl-dev-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/util-linux-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/libsmartcols*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/libasm*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/gnu-config*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libtcl*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libice*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libnetsnmp*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libsm6*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libcairo*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libwebp*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libgphoto*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libgstapp*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*gtk+3-dev*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libgtk*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libgdk*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*gstreamer*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*tbb*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libgst*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libv4l*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libldtl*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxext*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*fontconfig*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libexif*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*freetype*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*media-ctl*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*liborc*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*wayland*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxi*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*pango*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxrender1*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxcomposite1*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libgl-mesa*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*pixman*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxcb-render*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxdamage*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxfixes*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxcursor*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxcb*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxrandr*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libatk*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libepoxy*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxkbcommon*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libglib-2.0-utils*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxft*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libfribidi*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libx11*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libharfbuzz*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxxf86vm*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libatspi*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libdrm*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libglapi*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxshmfence*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libxfont*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-ptest-*" "*/*libfontenc*.rpm" rpm-ics/yocto/cct/ || true
     - cd ../../../../build_cct-rt-64/tmp/deploy/rpm
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-tsc-dev*;*kernel-module-tsc-dbg*" "*/kernel-module-tsc-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*mrfioc2-dev*;*mrfioc2-dbg*" "*/mrfioc2-*.rpm" rpm-ics/yocto/cct/ || true

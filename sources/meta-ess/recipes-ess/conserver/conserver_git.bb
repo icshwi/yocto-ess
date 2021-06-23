@@ -13,7 +13,7 @@ SRC_URI = "git://git@github.com/bstansell/conserver.git;protocol=http;branch=mas
 SRCREV = "c8355ae8b9691f02e9b76fe74397b2fa9d8c3562"
 
 PV = "8.2.6"
-PR = "r1"
+PR = "r2"
 
 S = "${WORKDIR}/git"
 
@@ -33,7 +33,7 @@ EXTRA_OEMAKE = "INSTALL_PROGRAM=install"
 
 # Compile with the --with-uds option to enable Unix domain sockets for client/server
 # communication
-EXTRA_OECONF += " --with-uds"
+EXTRA_OECONF += " --with-libwrap --with-openssl --with-pam --with-freeipmi --with-gssapi --with-striprealm --with-port=782"
 
 # Packages
 PACKAGES = "${PN} ${PN}-dbg ${PN}-doc"

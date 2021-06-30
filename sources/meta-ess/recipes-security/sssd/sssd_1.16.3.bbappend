@@ -12,12 +12,14 @@ PACKAGECONFIG[systemd] = "--with-initscript=systemd,--with-initscript=sysv"
 
 inherit systemd
 
-PR = "r1.2"
+PR = "r1.3"
 
 # Symlink /var/run -> /run conflicts with base-files package.
 # So remove it
 do_install_append () {
     rm -rf ${D}/var/run
+    install -d ${D}/lib/security
+    ln -s -r ${D}${libdir}/security/pam_sss.so ${D}/lib/security/pam_sss.so
 }
 
 SYSTEMD_SERVICE_${PN} = " \
@@ -34,4 +36,4 @@ SYSTEMD_SERVICE_${PN} = " \
     sssd.service \
 "
 
-FILES_${PN} += "/lib/systemd" 
+FILES_${PN} += "/lib/systemd /lib/security"

@@ -77,6 +77,7 @@ build_image:
     - bitbake nfs-utils
     - bitbake patch
     - bitbake pcre
+    - bitbake python-pip
     - bitbake re2c
     - bitbake readline
     - bitbake tcl
@@ -210,6 +211,7 @@ build_image_cct:
     - bitbake opencv
     - bitbake patch
     - bitbake pcre
+    - bitbake python-pip
     - bitbake re2c
     - bitbake readline
     - bitbake tcl
@@ -459,6 +461,8 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*" "*/-patch*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/pcre*-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/procserv-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*;*-dev-*" "*/python-pip-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*;*-dev-*" "*/python-setuptools-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/libpcre*-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*" "*/re2c-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*;*-staticdev-*" "*/libreadline*.rpm" rpm-ics/yocto/ioxos/ || true
@@ -579,6 +583,8 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*" "*/-patch*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/pcre*-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/procserv-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*;*-dev-*" "*/python-pip-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*;*-dev-*" "*/python-setuptools-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-ptest-*" "*/libpcre*-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-dev-*" "*/re2c-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-doc-*;*-dbg-*;*-staticdev-*" "*/libreadline*.rpm" rpm-ics/yocto/cct/ || true

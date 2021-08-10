@@ -1,0 +1,24 @@
+From 98cac96ca1090732e0ce08a1861e3201a0ce3126 Mon Sep 17 00:00:00 2001
+From: Ross Elliot <Ross.Elliot@ess.eu>
+Date: Thu, 20 May 2021 09:36:31 +0200
+Subject: [PATCH] Remove 'desktop-file-install' step from Makefile
+
+---
+ Makefile | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 8f83a44..94f323c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -218,7 +218,6 @@ install: install-dirs
+ 
+ 	# desktop file
+ 	install -dD $(DESTDIR)$(DATADIR)/applications
+-	desktop-file-install --dir=$(DESTDIR)$(DATADIR)/applications tuned-gui.desktop
+ 
+ clean: clean-html
+ 	find -name "*.pyc" | xargs rm -f
+-- 
+2.20.1
+

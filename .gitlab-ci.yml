@@ -212,6 +212,7 @@ build_image_fpgaioc:
     - bitbake conserver
     - bitbake ethercat
     - bitbake ethercat-tools
+    - bitbake tuned
     - bitbake package-index
   artifacts:
     paths:
@@ -449,3 +450,31 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*" "*/fpgautil*.rpm" rpm-ics/yocto/fpgaioc/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-ec-dev*;*kernel-module-ec-dbg*" "*/kernel-module-ec-*.rpm" rpm-ics/yocto/fpgaioc/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/ethercat-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*" "*/tuned-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/virt-what-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/systemtap-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libcairo-gobject2-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libcairo2-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libdrm2-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libfontconfig1-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libfreetype6-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libgl-mesa-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libglib-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libjson-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libpixman-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libx11-xcb1-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxcb-dri2-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxcb-dri3-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxcb-glx0-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxcb-present0-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxcb-render0-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxcb-shm0-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxcb-sync1-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxcb-xfixes0-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxdamage1-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxext6-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxfixes3-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxrender1-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxshmfence1-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/libxxf86vm1-*.rpm" rpm-ics/yocto/fpgaioc/ || true
+

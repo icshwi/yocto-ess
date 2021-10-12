@@ -172,6 +172,7 @@ build_image_cct:
     - bitbake make
     - bitbake python3-pyepics
     - bitbake sis8300-tools
+    - bitbake ics-xdriver
     - bitbake conserver
     - bitbake logrotate
     - bitbake iproute2
@@ -522,6 +523,8 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*;*-doc-*;*-locale-*;*-mod-*" "*/make-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/sis8300-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/kernel-module-sis8300drv-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/ics-xdriver-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/kernel-module-xdma-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-ec-dev*;*kernel-module-ec-dbg*" "*/kernel-module-ec-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/ethercat-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dev-*;*-dbg-*" "*/bash-completion-*.rpm" rpm-ics/yocto/cct/ || true

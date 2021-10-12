@@ -1,0 +1,37 @@
+From 78fbc9bdd54c7cee7d829c2ddf14ca130c958eb3 Mon Sep 17 00:00:00 2001
+From: Ross Elliot <ross.elliot@ess.eu>
+Date: Tue, 12 Oct 2021 11:51:58 +0200
+Subject: [PATCH] Modify Makefile for Yocto
+
+Use the standard KERNEL_SRC variable
+---
+ Makefile | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index d1c07a8..9e434b0 100644
+--- a/Makefile
++++ b/Makefile
+@@ -21,15 +21,12 @@ ifneq ($(KERNELRELEASE),)
+ 	$(TARGET_MODULE)-objs := libxdma.o xdma_cdev.o cdev_ctrl.o cdev_events.o cdev_sgdma.o cdev_xvc.o cdev_bypass.o xdma_mod.o
+ 	obj-m := $(TARGET_MODULE).o
+ else
+-	BUILDSYSTEM_DIR:=/lib/modules/$(shell uname -r)/build
++	KERNEL_SRC:=/lib/modules/$(shell uname -r)/build
+ 	PWD:=$(shell pwd)
+-all : 
+-	$(MAKE) -C $(BUILDSYSTEM_DIR) M=$(PWD) modules
+ 
+-clean:
+-	$(MAKE) -C $(BUILDSYSTEM_DIR) M=$(PWD) clean
++all: modules
+ 
+-install: all
+-	$(MAKE) -C $(BUILDSYSTEM_DIR) M=$(PWD) modules_install
++modules modules_install clean:
++	$(MAKE) -C $(KERNEL_SRC) M=$(PWD) $@
+ 
+ endif
+-- 
+2.20.1
+

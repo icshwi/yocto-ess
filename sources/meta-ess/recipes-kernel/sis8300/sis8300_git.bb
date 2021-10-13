@@ -11,15 +11,15 @@ SRC_URI = "git://git@gitlab.esss.lu.se/epics-modules/sis8300drv.git;branch=maste
 "
 
 #Change these when updating
-PV = "4.10.0"
-SRCREV = "50b88356313e356841356337f718d237fb4717ae"
+PV = "4.10.2"
+SRCREV = "d2d85a425b72c839a764af1d924d7f16411c8b33"
 
 S = "${WORKDIR}/git"
 
 # Build number - increment on change
 PR = "r0"
 
-inherit module qoriq_build_64bit_kernel
+inherit module
 
 RPROVIDES_${PN} += "kernel-module-sis8300-ku"
 PACKAGES = "${PN} ${PN}-dbg ${PN}-dev"

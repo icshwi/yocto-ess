@@ -11,8 +11,8 @@ SRC_URI = "git://git@gitlab.esss.lu.se/epics-modules/sis8300drv.git;branch=maste
            file://0001-Update-Makefiles-for-cross-compilation.patch \
 "
 
-PV = "4.10.0"
-SRCREV = "50b88356313e356841356337f718d237fb4717ae"
+PV = "4.10.2"
+SRCREV = "d2d85a425b72c839a764af1d924d7f16411c8b33"
 # Increment revision number if package changes...
 PR = "r0"
 

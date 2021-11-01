@@ -10,3 +10,4 @@ IMAGE_INSTALL_append = " \
 
 IMAGE_FSTYPES += " cpio.gz"
 
+IMAGE_LINGUAS = "en-gb en-us"

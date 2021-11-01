@@ -16,3 +16,4 @@ IMAGE_INSTALL_append = " \
     packagegroup-core-ssh-openssh \
 "
 
+IMAGE_LINGUAS = "en-gb en-us"

@@ -13,7 +13,7 @@ SRC_URI = "git://git@github.com/bstansell/conserver.git;protocol=http;branch=mas
 SRCREV = "c8355ae8b9691f02e9b76fe74397b2fa9d8c3562"
 
 PV = "8.2.6"
-PR = "r2"
+PR = "r3"
 
 S = "${WORKDIR}/git"
 
@@ -56,5 +56,6 @@ do_install_append() {
     install -m 0644 ${WORKDIR}/conserver.service ${D}${systemd_system_unitdir}
 }
 
+SYSTEMD_AUTO_ENABLE_${PN} = "disable"
 SYSTEMD_SERVICE_${PN} = "conserver.service"
 PACKAGE_ARCH = "${MACHINE_ARCH}"

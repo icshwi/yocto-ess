@@ -6,13 +6,13 @@ DEPENDS = "automake autoconf"
 
 SRC_URI = "git://github.com/ralphlange/procServ.git;branch=master;protocol=https \
 "
-SRCREV = "2eab20f7f80ed1aaaeb46c7bbdcc0db09116a2e3"
+SRCREV = "9e91bd0db0b292d45947d2cce4fdc25a7fcafc35"
 
 S = "${WORKDIR}/git"
 
 do_compile() {
     make
-    ./configure --disable-doc --enable-access-from-anywhere --host=ppc64
+    ./configure --disable-doc --enable-access-from-anywhere --host=${HOST_PREFIX}
     make
 }
 

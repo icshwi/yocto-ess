@@ -8,6 +8,9 @@ SRC_URI = "git://github.com/ralphlange/procServ.git;branch=master;protocol=https
 "
 SRCREV = "9e91bd0db0b292d45947d2cce4fdc25a7fcafc35"
 
+PV = "2.9.0-dev"
+PR = "r0"
+
 S = "${WORKDIR}/git"
 
 do_compile() {

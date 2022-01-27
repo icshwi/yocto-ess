@@ -84,6 +84,7 @@ build_image:
     - bitbake tcl
     - bitbake tree
     - bitbake xfont
+    - bitbake polkit
     - bitbake kernel-devsrc
     - bitbake package-index
   artifacts:
@@ -221,6 +222,7 @@ build_image_cct:
     - bitbake tree
     - bitbake kernel-devsrc
     - bitbake xfont
+    - bitbake polkit
     - bitbake package-index
   artifacts:
     paths:
@@ -492,7 +494,8 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-dev-*;*-locale-*" "*/*libpwquality*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-dev-*;*-locale-*" "*/*cracklib*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="" "*/*glibc-binary-localedata-*.rpm" rpm-ics/yocto/ioxos/ || true
-
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-dev-*;*-examples-*;*-locale-*" "*/polkit-*.rpm" rpm-ics/yocto/ioxos/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="" "*/libmozjs-*.rpm" rpm-ics/yocto/ioxos/ || true
     - cd ../../../../build_ifc14xx-rt-64b/tmp/deploy/rpm
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-tsc-dev*;*kernel-module-tsc-dbg*" "*/kernel-module-tsc-*.rpm" rpm-ics/yocto/ioxos/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*mrfioc2-dev*;*mrfioc2-dbg*" "*/mrfioc2-*.rpm" rpm-ics/yocto/ioxos/ || true
@@ -664,6 +667,8 @@ release_rpm:
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-dev-*;*-locale-*" "*/*libpwquality*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-staticdev-*;*-dev-*;*-locale-*" "*/*cracklib*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="" "*/*glibc-binary-localedata-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="*-dbg-*;*-dev-*;*-examples-*;*-locale-*" "*/polkit-*.rpm" rpm-ics/yocto/cct/ || true
+    - jfrog rt upload --flat=false --exclude-patterns="" "*/libmozjs-*.rpm" rpm-ics/yocto/ioxos/ || true
     - cd ../../../../build_cct-rt-64/tmp/deploy/rpm
     - jfrog rt upload --flat=false --exclude-patterns="*kernel-module-tsc-dev*;*kernel-module-tsc-dbg*" "*/kernel-module-tsc-*.rpm" rpm-ics/yocto/cct/ || true
     - jfrog rt upload --flat=false --exclude-patterns="*mrfioc2-dev*;*mrfioc2-dbg*" "*/mrfioc2-*.rpm" rpm-ics/yocto/cct/ || true

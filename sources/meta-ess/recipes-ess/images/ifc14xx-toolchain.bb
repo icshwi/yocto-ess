@@ -22,6 +22,7 @@ TOOLCHAIN_TARGET_TASK += " \
     netcdf-c-dev \
     c-blosc-staticdev \
     gawk \
+    gsl-dev \
     kernel-devsrc \
 "
 

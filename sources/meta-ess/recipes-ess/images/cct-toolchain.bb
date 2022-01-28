@@ -11,6 +11,7 @@ TOOLCHAIN_TARGET_TASK += " \
     tiff \
     netcdf-c-dev \
     c-blosc-staticdev \
+    gsl-dev \
     kernel-devsrc \
 "
 

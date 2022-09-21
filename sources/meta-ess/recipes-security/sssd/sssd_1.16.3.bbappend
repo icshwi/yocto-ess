@@ -2,6 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 # Add patch to add LDB_MODULES_PATH to environment
 SRC_URI += "file://0001-Add-LDB_MODULES_PATH-to-environment.patch"
+SRC_URI += "file://0001-Add-ExecStartPre-to-create-log-directory.patch"
 
 # Use systemd and autofs
 PACKAGECONFIG += "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)}"

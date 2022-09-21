@@ -1,0 +1,24 @@
+From 5707de9f97b4fc4ed7f433b37f18dc679288dbb4 Mon Sep 17 00:00:00 2001
+From: "Lucas A. M. Magalhaes" <lucas.magalhaes@ess.eu>
+Date: Wed, 21 Sep 2022 13:18:54 +0200
+Subject: [PATCH] Add ExecStartPre to create log directory
+
+---
+ src/sysv/systemd/sssd.service.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/sysv/systemd/sssd.service.in b/src/sysv/systemd/sssd.service.in
+index 32bb27b..591fed1 100644
+--- a/src/sysv/systemd/sssd.service.in
++++ b/src/sysv/systemd/sssd.service.in
+@@ -8,6 +8,7 @@ Wants=nss-user-lookup.target
+ Environment=LDB_MODULES_PATH=/usr/lib/ldb
+ Environment=DEBUG_LOGGER=--logger=files
+ EnvironmentFile=-@environment_file@
++ExecStartPre=mkdir -p /var/log/sssd
+ ExecStart=@sbindir@/sssd -i ${DEBUG_LOGGER}
+ Type=notify
+ NotifyAccess=main
+-- 
+1.8.3.1
+

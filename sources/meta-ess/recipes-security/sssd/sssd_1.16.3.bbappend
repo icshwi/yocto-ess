@@ -13,7 +13,7 @@ PACKAGECONFIG[systemd] = "--with-initscript=systemd,--with-initscript=sysv"
 
 inherit systemd
 
-PR = "r1.3"
+PR = "r1.4"
 
 # Symlink /var/run -> /run conflicts with base-files package.
 # So remove it

@@ -1,0 +1,13 @@
+Index: git/Makefile
+===================================================================
+--- /dev/null
++++ git/Makefile
+@@ -0,0 +1,8 @@
++ifneq (KERNEL_SRC,)
++	export KERNEL_SRC
++endif
++
++all: modules
++
++modules modules_install clean:
++	make -C xdma/ M=${PWD} $@

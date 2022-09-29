@@ -10,6 +10,14 @@ $: git clone https://gitlab.esss.lu.se/icshwi/yocto-ess.git
 $: cd yocto-ess/
 $: git submodule update --init --reference ./
 
+================
+ Dependencies
+================
+
+Make sure the folowing packages are installed.
+CentOS 7:
+  yum install gcc gcc-c++ bzip2 chrpath diffstat patch git python3 make cmake texinfo perl perl-Thread-Queue.noarch
+
 ===========================
 Building images for IFC14xx
 ===========================

@@ -2,7 +2,7 @@ DESCRIPTION = "Kernel module for Xilinx XDMA"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=441c1ecbc199a036abf37f3aa47c5f34"
 
-SRC_URI = "git://git@gitlab.esss.lu.se/beam-diagnostics/fpga/dma_ip_drivers.git;branch=master;protocol=ssh;subpath=XDMA/linux-kernel;destsuffix=git \
+SRC_URI = "git://gitlab.esss.lu.se/icshwi/dma_ip_drivers.git;branch=master;protocol=https;subpath=XDMA/linux-kernel;destsuffix=git \
 	   file://Fix-Makefile.patch \
 	   file://Add-Makefile.patch \
 	   file://xdma.conf \

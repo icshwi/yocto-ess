@@ -1,0 +1,65 @@
+From a536c46c6807b16e8715a399417665b9e8b35099 Mon Sep 17 00:00:00 2001
+From: "Lucas A. M. Magalhaes" <lucas.magalhaes@ess.eu>
+Date: Thu, 20 Oct 2022 10:48:32 +0200
+Subject: [PATCH 2/2] Add configure options to build static and shared
+ libraries
+
+---
+ configure.ac | 34 +++++++++++++++++++++++++---------
+ 1 file changed, 25 insertions(+), 9 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index e216b42890..b04a2aab31 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -3432,22 +3432,38 @@ touch ./config/stamp2
+ ## Finally the makefiles
+ test "$no_create" = yes || ${CONFIG_SHELL-/bin/sh} $CONFIG_STATUS || exit 1
+ 
++
++# Add options for enabling shared and static library build
++AC_ARG_ENABLE([static],
++              [AC_HELP_STRING([--enable-static],
++                              [builds a static library])],
++              [],
++              [enable_static=auto])
++AC_ARG_ENABLE([shared],
++              [AC_HELP_STRING([--enable-shared],
++                              [builds a shared library])],
++              [],
++              [enable_shared=auto])
++
+ ## Are we compiling static libraries, shared libraries, or both?  This
+ ## is only used for the libhdf5.settings file. We can't just look at
+ ## $enable_static and $enable_shared because if they're yes the ltconfig
+ ## might have decided that one or the other is simply not possible.
+ ## Therefore we have to ask the generated `libtool' shell script
+ ## which 'features' it has enabled.
+-if (./libtool --features | grep '^enable shared libraries' > /dev/null); then
+-  enable_shared=yes
+-else
+-  enable_shared=no
++if test $enable_shared = auto; then
++  if (./libtool --features | grep '^enable shared libraries' > /dev/null); then
++    enable_shared=yes
++  else
++    enable_shared=no
++  fi
+ fi
+-
+-if (./libtool --features | grep '^enable static libraries' > /dev/null); then
+-  enable_static=yes
+-else
+-  enable_static=no
++if test $enable_static = auto; then
++  if (./libtool --features | grep '^enable static libraries' > /dev/null); then
++    enable_static=yes
++  else
++    enable_static=no
++  fi
+ fi
+ 
+ ## Expose things for *.in markup
+-- 
+2.38.0
+

@@ -1,0 +1,80 @@
+From 84b991161bd6d58b17fc1f841526e4f0158ae2db Mon Sep 17 00:00:00 2001
+From: "Lucas A. M. Magalhaes" <lucas.magalhaes@ess.eu>
+Date: Wed, 19 Oct 2022 14:57:35 +0200
+Subject: [PATCH 1/2] Add new option for c max real precision and float 128
+
+---
+ configure.ac | 46 ++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 36 insertions(+), 10 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 7246485b7c..e216b42890 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -413,27 +413,53 @@ AC_CHECK_SIZEOF([long double])
+ ## ----------------------------------------------------------------------
+ ## Check for non-standard extension __FLOAT128
+ ##
++AC_ARG_WITH([c-max-real-precision],
++            [AS_HELP_STRING([--with-c-max-real-precision],
++                            [Set max C real precision and skip checks])],
++            [],
++            [with_c_max_real_precision=auto])
++
++AC_ARG_ENABLE([float_128],
++            [AS_HELP_STRING([--enable-float-128],
++                            [Select usage of float128, mandatory if --with-c-max-real-precision is used])],
++            [],
++            [enable_float_128=auto])
++
+ HAVE_FLOAT128=0
+ HAVE_QUADMATH=0
+ FLT128_DIG=0
+ LDBL_DIG=0
+-
+ AC_CHECK_SIZEOF([__float128])
+ AC_CHECK_SIZEOF([_Quad])
+ AC_CHECK_HEADERS([quadmath.h], [HAVE_QUADMATH=1], [])
+-PAC_FC_LDBL_DIG
+ 
+-AC_SUBST([PAC_C_MAX_REAL_PRECISION])
++if test "$with_c_max_real_precision" != auto; then
++
++  if test "$enable_float_128" = auto; then
++     AC_MSG_ERROR([--enable-float-128=(yes|no) is mandatory when using --with-c-max-real-precision])
++  else
++    if test "$enable_float_128" = yes; then
++       AC_DEFINE([HAVE_FLOAT128], [1], [Determine if __float128 is available])
++    fi
++  fi
++  AC_DEFINE_UNQUOTED([PAC_C_MAX_REAL_PRECISION], $with_c_max_real_precision, [Determine the maximum precision in C])
++  AC_MSG_RESULT([$PAC_C_MAX_REAL_PRECISION])
+ 
+-if test "$ac_cv_sizeof___float128" != 0 && test "$FLT128_DIG" != 0 ; then
+-  AC_DEFINE([HAVE_FLOAT128], [1], [Determine if __float128 is available])
+-  PAC_C_MAX_REAL_PRECISION=$FLT128_DIG
+ else
+-  PAC_C_MAX_REAL_PRECISION=$LDBL_DIG
+-fi
+-AC_DEFINE_UNQUOTED([PAC_C_MAX_REAL_PRECISION], $PAC_C_MAX_REAL_PRECISION, [Determine the maximum decimal precision in C])
+-AC_MSG_RESULT([$PAC_C_MAX_REAL_PRECISION])
+ 
++  PAC_FC_LDBL_DIG
++
++  AC_SUBST([PAC_C_MAX_REAL_PRECISION])
++
++  if test "$ac_cv_sizeof___float128" != 0 && test "$FLT128_DIG" != 0 ; then
++    AC_DEFINE([HAVE_FLOAT128], [1], [Determine if __float128 is available])
++    PAC_C_MAX_REAL_PRECISION=$FLT128_DIG
++  else
++    PAC_C_MAX_REAL_PRECISION=$LDBL_DIG
++  fi
++  AC_DEFINE_UNQUOTED([PAC_C_MAX_REAL_PRECISION], $PAC_C_MAX_REAL_PRECISION, [Determine the maximum decimal precision in C])
++  AC_MSG_RESULT([$PAC_C_MAX_REAL_PRECISION])
++fi
+ ## ----------------------------------------------------------------------
+ ## Check if they would like the Fortran interface compiled
+ ##
+-- 
+2.38.0
+
